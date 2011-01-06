@@ -54,6 +54,9 @@ public:
 	
 	virtual bool IsAuthed(int ClientID) = 0;
 	virtual void Kick(int ClientID, const char *pReason) = 0;
+
+	/* unfortunately we need this here to access it from ingame */
+	virtual void ImphDump(int Seconds, const char *pFilename) = 0;
 };
 
 class IGameServer : public IInterface

@@ -199,6 +199,28 @@ public:
 	virtual void SnapFreeID(int ID);
 	virtual void *SnapNewItem(int Type, int Id, int Size);
 	void SnapSetStaticsize(int ItemType, int Size);
+
+	/*imph*/
+	void ImphInit(int BufSz, int MaxMem, int PackSz, int MaxPayloadSz);
+	void ImphFeed(struct CNetChunk *Packet);
+	virtual void ImphDump(int Seconds, const char *pFilename);
+
+	char *ImphChunk;
+	char **ImphBuf;
+
+	int ImphInd;
+	int ImphMaxInd;
+
+	int ImphWraps;
+
+	int ImphPackSz;
+	int ImphMaxPayloadSz;
+
+	int ImphMemUsed;
+	int ImphMaxMemory;
+
+	static void ConImphDump(IConsole::IResult *pResult, void *pUser);
+	static void ConImphInit(IConsole::IResult *pResult, void *pUser);
 };
 
 #endif

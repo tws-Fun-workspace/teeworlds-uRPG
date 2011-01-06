@@ -77,6 +77,8 @@ public:
 	IGameController *m_pController;
 	CGameWorld m_World;
 	
+	int m_ImphCooldown;
+
 	// helper functions
 	class CCharacter *GetPlayerChar(int ClientId);
 	
