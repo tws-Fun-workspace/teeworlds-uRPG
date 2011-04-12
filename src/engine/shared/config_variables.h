@@ -69,7 +69,7 @@ MACRO_CONFIG_INT(GfxFinish, gfx_finish, 1, 0, 1, CFGFLAG_SAVE|CFGFLAG_CLIENT, ""
 
 MACRO_CONFIG_INT(InpMousesens, inp_mousesens, 100, 5, 100000, CFGFLAG_SAVE|CFGFLAG_CLIENT, "Mouse sensitivity", IConsole::CONSOLELEVEL_USER)
 
-MACRO_CONFIG_STR(SvName, sv_name, 128, "unnamed server", CFGFLAG_SERVER, "Server name", IConsole::CONSOLELEVEL_ADMIN)
+MACRO_CONFIG_STR(SvName, sv_name, 128, "unnamed server", CFGFLAG_SERVER, "XXLDDRace Default", IConsole::CONSOLELEVEL_ADMIN)
 MACRO_CONFIG_STR(SvBindaddr, sv_bindaddr, 128, "", CFGFLAG_SERVER, "Address to bind the server to", IConsole::CONSOLELEVEL_ADMIN)
 MACRO_CONFIG_INT(SvPort, sv_port, 8303, 0, 0, CFGFLAG_SERVER, "Port to use for the server", IConsole::CONSOLELEVEL_ADMIN)
 MACRO_CONFIG_INT(SvExternalPort, sv_external_port, 0, 0, 0, CFGFLAG_SERVER, "External port to report to the master servers", IConsole::CONSOLELEVEL_ADMIN)
@@ -94,7 +94,7 @@ MACRO_CONFIG_INT(DbgResizable, dbg_resizable, 0, 0, 0, CFGFLAG_CLIENT, "Enables 
 // DDRace
 
 MACRO_CONFIG_STR(SvWelcome, sv_welcome, 64, "", CFGFLAG_SERVER, "Message that will be displayed to players who join the server", IConsole::CONSOLELEVEL_ADMIN)
-MACRO_CONFIG_STR(SvBroadcast, sv_broadcast, 64, "DDRace.info Trunk 0.5", CFGFLAG_SERVER, "The broadcasting message", IConsole::CONSOLELEVEL_ADMIN)
+MACRO_CONFIG_STR(SvBroadcast, sv_broadcast, 64, "XXL-Clan.com", CFGFLAG_SERVER, "The broadcasting message", IConsole::CONSOLELEVEL_ADMIN)
 MACRO_CONFIG_INT(SvReservedSlots, sv_reserved_slots, 0, 0, 16, CFGFLAG_SERVER, "The number of slots that are reserved for special players", IConsole::CONSOLELEVEL_ADMIN)
 MACRO_CONFIG_STR(SvReservedSlotsPass, sv_reserved_slots_pass, 32, "", CFGFLAG_SERVER, "The password that is required to use a reserved slot", IConsole::CONSOLELEVEL_ADMIN)
 MACRO_CONFIG_STR(SvRconPasswordAdmin, sv_admin_pass, 32, "", CFGFLAG_SERVER, "Remote console administrator password", IConsole::CONSOLELEVEL_ADMIN)
@@ -183,5 +183,24 @@ MACRO_CONFIG_INT(SvMaxAfkTime, sv_max_afk_time, 0, 0, 9999, CFGFLAG_SERVER, "The
 MACRO_CONFIG_INT(SvChatPenalty, sv_chat_penalty, 250, 50, 1000, CFGFLAG_SERVER, "chat score will be increased by this on every message, and decremented by 1 on every tick.", IConsole::CONSOLELEVEL_ADMIN)
 MACRO_CONFIG_INT(SvChatThreshold, sv_chat_threshold, 1000, 50, 10000 , CFGFLAG_SERVER, "if chats core exceeds this, the player will be muted for sv_spam_mute_duration seconds", IConsole::CONSOLELEVEL_ADMIN)
 MACRO_CONFIG_INT(SvSpamMuteDuration, sv_spam_mute_duration, 60, 0, 3600 , CFGFLAG_SERVER, "how many seconds to mute, if player triggers mute on spam. 0 = off", IConsole::CONSOLELEVEL_ADMIN)
+
+//XXLmod client:
+MACRO_CONFIG_INT(GfxFullClear, gfx_full_clear, 0, 0, 1, CFGFLAG_SAVE|CFGFLAG_CLIENT, "Show gamelayer", IConsole::CONSOLELEVEL_USER)
+MACRO_CONFIG_INT(GfxMiniTees, gfx_mini_tees, 0, 0, 1, CFGFLAG_SAVE|CFGFLAG_CLIENT, "Cute!!!! Minitees", IConsole::CONSOLELEVEL_USER)
+
+//XXLmod server:
+MACRO_CONFIG_STR(SvRconPasswordSAdmin, sv_sadmin_pass, 32, "", CFGFLAG_SERVER, "Remote console super administrator password", IConsole::CONSOLELEVEL_CONFIG)
+MACRO_CONFIG_STR(SvRconPasswordHelper, sv_helper_pass, 32, "", CFGFLAG_SERVER, "Remote console helper password", IConsole::CONSOLELEVEL_CONFIG)
+MACRO_CONFIG_INT(SvDmgBlood, sv_dmg_blood, 0, 0, 1, CFGFLAG_SERVER, "Turns blood on damage on/off", IConsole::CONSOLELEVEL_CONFIG)
+MACRO_CONFIG_INT(SvHybridMode, sv_hybrid_mode, 0, 0, 1, CFGFLAG_SERVER, "Turns hybrid mode on/off", IConsole::CONSOLELEVEL_CONFIG)
+MACRO_CONFIG_INT(SvRescue, sv_rescue, 0, 0, 1, CFGFLAG_SERVER, "Turns rescue /r on/off", IConsole::CONSOLELEVEL_CONFIG)
+MACRO_CONFIG_INT(SvRescueEffects, sv_rescue_effect, 0, 0, 1, CFGFLAG_SERVER, "Turns rescue effects on/off", IConsole::CONSOLELEVEL_CONFIG)
+MACRO_CONFIG_INT(SvLolFilter, sv_lol_filter, 1, 0, 1, CFGFLAG_SERVER, "Turns 'lol' filter on/off", IConsole::CONSOLELEVEL_CONFIG)
+MACRO_CONFIG_INT(SvHelper, sv_helper, 1, 0, 1, CFGFLAG_SERVER, "Turns /helper on/off", IConsole::CONSOLELEVEL_CONFIG)
+MACRO_CONFIG_INT(SvSilentXXL, sv_silent_xxl, 0, 0, 1, CFGFLAG_SERVER, "Makes XXL silent.", IConsole::CONSOLELEVEL_CONFIG)
+MACRO_CONFIG_INT(SvRconScore, sv_rcon_score, 0, 0, 1, CFGFLAG_SERVER, "Shows the rcon lvl in scoreboard.", IConsole::CONSOLELEVEL_CONFIG)
+MACRO_CONFIG_INT(SvWhisperLevel, sv_whisper_lvl, 1, -1, 4, CFGFLAG_SERVER, "Sets the rcon lvl to whisper", IConsole::CONSOLELEVEL_CONFIG)
+MACRO_CONFIG_INT(SvWhisperAdmin, sv_whisper_allow_to_admin, 0, 0, 1, CFGFLAG_SERVER, "Allows to whisper to admins", IConsole::CONSOLELEVEL_CONFIG)
+MACRO_CONFIG_INT(SvShortGameType, sv_short_gametype, 0, 0, 1, CFGFLAG_SERVER, "Use xDDRace instead of XXLDDRace", IConsole::CONSOLELEVEL_CONFIG)
 
 #endif

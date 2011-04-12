@@ -87,7 +87,7 @@ void CCollision::Init(class CLayers *pLayers)
 		{
 			Index = m_pFront[i].m_Index;
 
-			if(Index <= TILE_NPH)
+			if(Index <= TILE_RMNINJA)
 			{
 				switch(Index)
 				{
@@ -108,12 +108,14 @@ void CCollision::Init(class CLayers *pLayers)
 				}
 
 				// DDRace tiles
-				if(Index == TILE_THROUGH || (Index >= TILE_FREEZE && Index <= TILE_UNFREEZE) || (Index >= TILE_SWITCHOPEN && Index <= TILE_BOOST) || (Index >= TILE_BEGIN && Index <= TILE_STOPA) || Index == TILE_CP || Index == TILE_CP_F || (Index >= TILE_OLDLASER && Index <= TILE_NPH) || (Index >= TILE_EHOOK_START && Index <= TILE_EHOOK_END) || (Index >= TILE_DFREEZE && Index <= TILE_DUNFREEZE))
+				if(Index == TILE_THROUGH || (Index >= TILE_FREEZE && Index <= TILE_UNFREEZE) || (Index >= TILE_SWITCHOPEN && Index <= TILE_BOOST) || (Index >= TILE_BEGIN && Index <= TILE_STOPA) || Index == TILE_CP || Index == TILE_CP_F || (Index >= TILE_OLDLASER && Index <= TILE_NPH) || (Index >= TILE_EHOOK_START && Index <= TILE_EHOOK_END) || (Index >= TILE_DFREEZE && Index <= TILE_DUNFREEZE)
+						|| (Index >=TILE_RAINBOW && Index<= TILE_RMNINJA)
+						|| (Index >=TILE_JUMPS_DEFAULT && Index<= TILE_JUMPS_REMOVE))
 					m_pFront[i].m_Index = Index;
 			}
 		}
 		Index = m_pTiles[i].m_Index;
-		if(Index <= TILE_NPH)
+		if(Index <= TILE_RMNINJA)
 		{
 			switch(Index)
 			{
@@ -129,12 +131,17 @@ void CCollision::Init(class CLayers *pLayers)
 			case TILE_NOLASER:
 				m_pTiles[i].m_Index = COLFLAG_NOLASER;
 				break;
+			/*case TILE_RMNINJA://Todo: Does not work correct (maybe rmninja too...)
+				m_pTiles[i].m_Index = COLFLAG_SOLID; //so you can't pass a remove ninja-tile with ninja.
+				break;*/
 			default:
 				m_pTiles[i].m_Index = 0;
 			}
 
 			// DDRace tiles
-			if(Index == TILE_THROUGH || (Index >= TILE_FREEZE && Index <= TILE_UNFREEZE) || (Index >= TILE_SWITCHOPEN && Index <= TILE_BOOST) || (Index >= TILE_BEGIN && Index <= TILE_STOPA) || Index == TILE_CP || Index == TILE_CP_F || (Index >= TILE_OLDLASER && Index <= TILE_NPH) || (Index >= TILE_EHOOK_START && Index <= TILE_EHOOK_END) || (Index >= TILE_DFREEZE && Index <= TILE_DUNFREEZE))
+			if(Index == TILE_THROUGH || (Index >= TILE_FREEZE && Index <= TILE_UNFREEZE) || (Index >= TILE_SWITCHOPEN && Index <= TILE_BOOST) || (Index >= TILE_BEGIN && Index <= TILE_STOPA) || Index == TILE_CP || Index == TILE_CP_F || (Index >= TILE_OLDLASER && Index <= TILE_NPH) || (Index >= TILE_EHOOK_START && Index <= TILE_EHOOK_END) || (Index >= TILE_DFREEZE && Index <= TILE_DUNFREEZE)
+					|| (Index >=TILE_RAINBOW && Index<= TILE_RMNINJA)
+					|| (Index >=TILE_JUMPS_DEFAULT && Index<= TILE_JUMPS_REMOVE))
 				m_pTiles[i].m_Index = Index;
 		}
 	}
@@ -551,6 +558,14 @@ bool CCollision::TileExists(int Index)
 	if(m_pTiles[Index].m_Index >= TILE_FREEZE && m_pTiles[Index].m_Index <= TILE_NPH)
 		return true;
 	if(m_pFront && m_pFront[Index].m_Index >= TILE_FREEZE && m_pFront[Index].m_Index  <= TILE_NPH)
+		return true;
+	if(m_pTiles[Index].m_Index >= TILE_RAINBOW && m_pTiles[Index].m_Index <= TILE_RMNINJA)
+		return true;
+	if(m_pFront && m_pFront[Index].m_Index >= TILE_RAINBOW && m_pFront[Index].m_Index  <= TILE_RMNINJA)
+		return true;
+	if(m_pTiles[Index].m_Index >= TILE_JUMPS_DEFAULT && m_pTiles[Index].m_Index <= TILE_JUMPS_REMOVE)
+		return true;
+	if(m_pFront && m_pFront[Index].m_Index >= TILE_JUMPS_DEFAULT && m_pFront[Index].m_Index  <= TILE_JUMPS_REMOVE)
 		return true;
 	if(m_pTele && (m_pTele[Index].m_Type == TILE_TELEIN || m_pTele[Index].m_Type == TILE_TELEINEVIL))
 		return true;

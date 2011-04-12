@@ -212,6 +212,11 @@ public:
 	bool m_pReset;
 	class CCollision *Collision() { return m_pCollision; }
 
+	//XXLmod
+	int m_max_jumps;
+	int m_jump_count;
+	void HandleFly();
+
 private:
 
 	CTeamsCore* m_pTeams;
@@ -246,6 +251,7 @@ private:
 	int m_TileSIndexB;
 	int m_TileSFlagsB;
 	bool IsRightTeam(int MapIndex);
+
 };
 
 #endif

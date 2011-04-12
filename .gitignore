@@ -49,4 +49,4 @@ bam.exe
 .settings
 *.opensdf
 banmaster*
-
+*.orig

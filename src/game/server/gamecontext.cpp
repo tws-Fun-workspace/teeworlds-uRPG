@@ -637,17 +637,27 @@ void CGameContext::OnClientEnter(int ClientID)
 	// init the player
 	Score()->PlayerData(ClientID)->Reset();
 	Score()->LoadScore(ClientID);
-	Score()->PlayerData(ClientID)->m_CurrentTime = Score()->PlayerData(ClientID)->m_BestTime;
-	m_apPlayers[ClientID]->m_Score = (Score()->PlayerData(ClientID)->m_BestTime)?Score()->PlayerData(ClientID)->m_BestTime:-9999;
 
+	if (g_Config.m_SvRconScore){ //TODO: XXLTomate: lol, wth?
+		if (g_Config.m_SvRconScore)
+			m_apPlayers[ClientID]->m_Score = m_apPlayers[ClientID]->m_Authed;
+		else
+			m_apPlayers[ClientID]->m_Score = 0;
+	}
+	else
+	{
+		Score()->PlayerData(ClientID)->m_CurrentTime = Score()->PlayerData(ClientID)->m_BestTime;
+		m_apPlayers[ClientID]->m_Score = (Score()->PlayerData(ClientID)->m_BestTime)?Score()->PlayerData(ClientID)->m_BestTime:-9999;
+	}
 	if(((CServer *) Server())->m_aPrevStates[ClientID] < CServer::CClient::STATE_INGAME)
 	{
 		char aBuf[512];
 		str_format(aBuf, sizeof(aBuf), "'%s' entered and joined the %s", Server()->ClientName(ClientID), m_pController->GetTeamName(m_apPlayers[ClientID]->GetTeam()));
 		SendChat(-1, CGameContext::CHAT_ALL, aBuf);
 
-		SendChatTarget(ClientID, "DDRace Mod. Version: " GAME_VERSION);
-		SendChatTarget(ClientID, "please visit http://DDRace.info or say /info for more info");
+		SendChatTarget(ClientID, "   XXLDDrace "  XXL_VERSION " by XXLTomate");
+		SendChatTarget(ClientID, "   DDRace-mod with some extras.");
+		SendChatTarget(ClientID, "   For more infos write /info");
 
 		if(g_Config.m_SvWelcome[0]!=0) SendChatTarget(ClientID,g_Config.m_SvWelcome);
 		//str_format(aBuf, sizeof(aBuf), "team_join player='%d:%s' team=%d", ClientID, Server()->ClientName(ClientID), m_apPlayers[ClientID]->GetTeam());
@@ -711,9 +721,9 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 	
 	if(!pRawMsg)
 	{
-		char aBuf[256];
-		str_format(aBuf, sizeof(aBuf), "dropped weird message '%s' (%d), failed on '%s'", m_NetObjHandler.GetMsgName(MsgID), MsgID, m_NetObjHandler.FailedMsgOn());
-		Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "server", aBuf);
+//		char aBuf[256];
+//		str_format(aBuf, sizeof(aBuf), "dropped weird message '%s' (%d), failed on '%s'", m_NetObjHandler.GetMsgName(MsgId), MsgId, m_NetObjHandler.FailedMsgOn());
+//		Console()->Print(IConsole::OUTPUT_LEVEL_ADDINFO, "server", aBuf);
 		return;
 	}
 	
@@ -763,9 +773,59 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 					SendChatResponse, &Info);
 			Console()->Print(IConsole::OUTPUT_LEVEL_ADDINFO, "chat",
 					pMsg->m_pMessage);
+
+			//Same in server.cpp
+			//TODO: put this in a seperate file...
+			int Censor = 0;
+			int cCounter = 0;
+			char reg[] = "register ";
+			char log[] = "login ";
+
+			//Login
+			for (int i = 0; i < strlen(log)+1 ; i++)
+				if (log[i] == pMsg->m_pMessage[i+1])
+					cCounter++;
+				else if(cCounter == strlen(log))
+				{
+					Censor = 1;
+					break;
+				}
+				else
+					break;
+			//Register
+			for (int i = 0; i < strlen(reg)+1 ; i++)
+				if (reg[i] == pMsg->m_pMessage[i+1])
+					cCounter++;
+				else if(cCounter == strlen(reg))
+				{
+					Censor = 2;
+					break;
+				}
+				else
+					break;
+
+			if (Censor == 1)
+				Console()->Print(IConsole::OUTPUT_LEVEL_ADDINFO, "chat", "login ***");
+			else if(Censor == 2)
+				Console()->Print(IConsole::OUTPUT_LEVEL_ADDINFO, "chat", "register ***");
+			else
+				Console()->Print(IConsole::OUTPUT_LEVEL_ADDINFO, "chat", pMsg->m_pMessage);
 		}
 		else
-			SendChat(ClientID, Team, pMsg->m_pMessage, ClientID);
+		{
+			if(!str_comp_nocase(pMsg->m_pMessage, "lol") && g_Config.m_SvLolFilter)
+				SendChat(ClientID, Team, "I like turtles.");
+			else if(!str_comp_nocase(pMsg->m_pMessage, "help") && g_Config.m_SvHelper)
+			{
+				ChatResponseInfo Info;
+				Info.m_GameContext = this;
+				Info.m_To = ClientID;
+				SendChat(ClientID, Team, pMsg->m_pMessage);
+				Console()->ExecuteLine("helper", ((CServer *) Server())->m_aClients[ClientID].m_Authed, ClientID, CServer::SendRconLineAuthed, Server(), SendChatResponse, &Info);
+			}
+			else
+				SendChat(ClientID, Team, pMsg->m_pMessage, ClientID);
+		}
 	}
 	else if(MsgID == NETMSGTYPE_CL_CALLVOTE)
 	{
@@ -1659,6 +1719,8 @@ void CGameContext::OnInit(/*class IKernel *pKernel*/)
 	m_pController = new CGameControllerDDRace(this);
 	((CGameControllerDDRace*)m_pController)->m_Teams.Reset();
 
+	//MemberList
+	MemberList = new CMemberList(this);
 	// delete old score object
 	if(m_pScore)
 		delete m_pScore;
@@ -1903,6 +1965,8 @@ void CGameContext::OnSetAuthed(int ClientID, int Level)
 			m_VoteEnforce = CGameContext::VOTE_ENFORCE_NO;
 			Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "CGameContext", "Aborted vote by admin login.");
 		}
+		if (g_Config.m_SvRconScore)
+			m_apPlayers[ClientID]->m_Score = Level;
 	}
 }
 

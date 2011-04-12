@@ -597,8 +597,8 @@ int IGameController::OnCharacterDeath(class CCharacter *pVictim, class CPlayer *
 
 void IGameController::OnCharacterSpawn(class CCharacter *pChr)
 {
-	// default health
-	pChr->IncreaseHealth(10);
+	// default health //XXLmod
+	pChr->IncreaseHealth(9);
 	
 	// give default weapons
 	pChr->GiveWeapon(WEAPON_HAMMER, -1);

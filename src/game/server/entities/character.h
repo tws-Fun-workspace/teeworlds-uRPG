@@ -141,6 +141,16 @@ private:
 	void DDRaceTick();
 	void DDRacePostCoreTick();
 	void HandleBroadcast();
+
+	//XXLmod
+	void XXLDDRaceInit();
+	void XXLDDRaceTick();
+	void HandleRainbow();
+	void HandleBlood();
+	void HandleRescue();
+	void HandleJumps();
+	void HandleFly();
+
 public:
 	CGameTeams* Teams();
 	bool Freeze(int Time);
@@ -224,6 +234,17 @@ public:
 	void SetNinjaActivationDir(vec2 ActivationDir) { m_Ninja.m_ActivationDir = ActivationDir; };
 	void SetNinjaActivationTick(int ActivationTick) { m_Ninja.m_ActivationTick = ActivationTick; };
 	void SetNinjaCurrentMoveTime(int CurrentMoveTime) { m_Ninja.m_CurrentMoveTime = CurrentMoveTime; };
+	//XXLmod
+	int m_ReloadMultiplier;
+	bool m_FastReload;
+	int m_LastIndexTile;
+	int m_LastIndexFrontTile;
+	bool m_Bloody;
+	vec2 m_RescuePos;
+	int m_LastRescue;
+	int m_LastRescueSave;
+	bool m_IceHammer;
+	bool m_Fly;
 };
 
 enum

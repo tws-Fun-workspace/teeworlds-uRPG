@@ -14,6 +14,7 @@
 #include "gamecontroller.h"
 #include "gameworld.h"
 #include "player.h"
+#include "memberlist.h"
 
 #include "score.h"
 /*
@@ -61,7 +62,7 @@ class CGameContext : public IGameServer
 	static void ConClearVotes(IConsole::IResult *pResult, void *pUserData, int ClientID);
 	static void ConVote(IConsole::IResult *pResult, void *pUserData, int ClientID);
 	static void ConchainSpecialMotdupdate(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData);
-	
+
 	CGameContext(int Resetting);
 	void Construct(int Resetting);
 
@@ -83,6 +84,8 @@ public:
 	IGameController *m_pController;
 	CGameWorld m_World;
 	
+	CMemberList *MemberList;
+
 	// helper functions
 	class CCharacter *GetPlayerChar(int ClientID);
 	
@@ -184,6 +187,8 @@ private:
 	static void ConLogOut(IConsole::IResult *pResult, void *pUserData, int ClientID);
 	static void ConSetlvl1(IConsole::IResult *pResult, void *pUserData, int ClientID);
 	static void ConSetlvl2(IConsole::IResult *pResult, void *pUserData, int ClientID);
+	static void ConSetlvl3(IConsole::IResult *pResult, void *pUserData, int ClientID);
+	static void ConSetlvl4(IConsole::IResult *pResult, void *pUserData, int ClientID);
 	static void ConKillPlayer(IConsole::IResult *pResult, void *pUserData, int ClientID);
 
 	static void ConNinja(IConsole::IResult *pResult, void *pUserData, int ClientID);
@@ -250,6 +255,32 @@ private:
 	static void ConMuteIP(IConsole::IResult *pResult, void *pUserData, int ClientID);
 	static void ConUnmute(IConsole::IResult *pResult, void *pUserData, int ClientID);
 	static void ConMutes(IConsole::IResult *pResult, void *pUserData, int ClientID);
+
+	//jDDRace
+	static void ConSetJumps(IConsole::IResult *pResult, void *pUserData, int ClientID);
+	static void ConJumps(IConsole::IResult *pResult, void *pUserData, int ClientID);
+	//XXLmod
+	static void ConSkin(IConsole::IResult *pResult, void *pUserData, int ClientID);
+	static void ConRename(IConsole::IResult *pResult, void *pUserData, int ClientID);
+	static void ConOrgname(IConsole::IResult *pResult, void *pUserData, int ClientID);
+	static void ConFakeMessage(IConsole::IResult *pResult, void *pUserData, int ClientID);
+	static void ConFastReload(IConsole::IResult *pResult, void *pUserData, int ClientID);
+	static void ConRainbow(IConsole::IResult *pResult, void *pUserData, int ClientID);
+	static void ConWhisper(IConsole::IResult *pResult, void *pUserData, int ClientID);
+	static void ConHelper(IConsole::IResult *pResult, void *pUserData, int ClientID);
+	static void ConScore(IConsole::IResult *pResult, void *pUserData, int ClientID);
+	static void ConBlood(IConsole::IResult *pResult, void *pUserData, int ClientID);
+	static void ConTest(IConsole::IResult *pResult, void *pUserData, int ClientID);
+	static void ConRescue(IConsole::IResult *pResult, void *pUserData, int ClientID);
+	static void ConRegister(IConsole::IResult *pResult, void *pUserData, int ClientID);
+	static void ConLogin(IConsole::IResult *pResult, void *pUserData, int ClientID);
+	static void ConMember(IConsole::IResult *pResult, void *pUserData, int ClientID);
+	static void ConUnMember(IConsole::IResult *pResult, void *pUserData, int ClientID);
+	static void ConCheckMember(IConsole::IResult *pResult, void *pUserData, int ClientID);
+	static void ConHammer(IConsole::IResult *pResult, void *pUserData, int ClientID);
+	static void ConToggleFly(IConsole::IResult *pResult, void *pUserData, int ClientID);
+	static void ConIceHammer(IConsole::IResult *pResult, void *pUserData, int ClientID);
+	static void ConUnIceHammer(IConsole::IResult *pResult, void *pUserData, int ClientID);
 
 	enum
 	{

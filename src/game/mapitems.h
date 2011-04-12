@@ -115,6 +115,23 @@ enum
 	TILE_EHOOK,
 	TILE_NOHIT,
 	TILE_NPH,//Remember to change this in collision.cpp if you add anymore tiles
+	//XXLmod
+	TILE_RAINBOW=176,
+	TILE_XXL,
+	TILE_ADMIN,
+	TILE_MEMBER,
+	TILE_SUPER,
+	TILE_HAMMER,
+	TILE_INVIS,
+	TILE_BLOODY,
+	TILE_RMEXTRAS,
+	TILE_RMNINJA,
+
+	TILE_JUMPS_DEFAULT=189,
+	TILE_JUMPS_ADD,
+	TILE_JUMPS_REMOVE,
+
+
 	//End of higher tiles
 	//Layers
 	LAYER_GAME=0,

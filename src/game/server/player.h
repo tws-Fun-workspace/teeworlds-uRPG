@@ -7,6 +7,14 @@
 #include "entities/character.h"
 #include "gamecontext.h"
 
+//Rainbowstates
+enum
+{
+	RAINBOW_NONE = 0,
+	RAINBOW_COLOR,
+	RAINBOW_BLACKWHITE
+};
+
 // player object
 class CPlayer
 {
@@ -95,6 +103,16 @@ public:
 		int m_Max;	
 	} m_Latency;
 	
+	//XXL
+	int m_rainbow;
+	int m_last_rainbow;
+	bool m_up_bw_rainbow;
+	int m_Helped;
+	char m_OrginalName[MAX_NAME_LENGTH];
+	bool m_isOrginalName;
+	bool m_IsMember;
+	bool m_IsLoggedIn;
+
 private:
 	CCharacter *Character;
 	CGameContext *m_pGameServer;
@@ -132,6 +150,15 @@ public:
 		bool m_EndlessHook;
 		int m_PauseTime;
 		int m_Team;
+		//XXLDDRace
+		bool m_Bloody;
+		int m_ReloadMultiplier;
+		bool m_FastReload;
+		int m_LastIndexTile;
+		int m_LastIndexFrontTile;
+		vec2 m_RescuePos;
+		int m_LastRescue;
+		int m_LastRescueSave;
 	} m_PauseInfo;
 	bool m_InfoSaved;
 	void LoadCharacter();

@@ -85,6 +85,13 @@ bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
 	GameServer()->m_pController->OnCharacterSpawn(this);
 
 	DDRaceInit();
+	
+	XXLDDRaceInit();
+
+	//jDDRace
+	m_Core.m_max_jumps = 2; //2 is default
+	m_Core.m_jump_count = 0;
+
 
 	return true;
 }
@@ -269,6 +276,8 @@ void CCharacter::FireWeapon()
 	vec2 Direction = normalize(vec2(m_LatestInput.m_TargetX, m_LatestInput.m_TargetY));
 	
 	bool FullAuto = false;
+	if(m_FastReload && (m_ActiveWeapon == WEAPON_GRENADE || m_ActiveWeapon == WEAPON_SHOTGUN || m_ActiveWeapon == WEAPON_RIFLE || m_ActiveWeapon == WEAPON_HAMMER||m_ActiveWeapon == WEAPON_GUN))
+			FullAuto = true;
 	if(m_ActiveWeapon == WEAPON_GRENADE || m_ActiveWeapon == WEAPON_SHOTGUN || m_ActiveWeapon == WEAPON_RIFLE)
 		FullAuto = true;
 
@@ -307,7 +316,8 @@ void CCharacter::FireWeapon()
 		{
 			// reset objects Hit
 			m_NumObjectsHit = 0;
-			GameServer()->CreateSound(m_Pos, SOUND_HAMMER_FIRE, Teams()->TeamMask(Team()));
+			if (!(g_Config.m_SvSilentXXL && m_FastReload))
+				GameServer()->CreateSound(m_Pos, SOUND_HAMMER_FIRE, Teams()->TeamMask(Team()));
 
 			if (!g_Config.m_SvHit) break;
 			
@@ -348,7 +358,11 @@ void CCharacter::FireWeapon()
 				Temp -= pTarget->m_Core.m_Vel;
 				pTarget->TakeDamage(vec2(0.f, -1.f) + Temp, g_pData->m_Weapons.m_Hammer.m_pBase->m_Damage,
 					m_pPlayer->GetCID(), m_ActiveWeapon);
-				pTarget->UnFreeze();
+				if(m_IceHammer)
+					pTarget->Freeze();
+				else
+					pTarget->UnFreeze();
+
 				Hits++;
 			}
 			
@@ -386,7 +400,8 @@ void CCharacter::FireWeapon()
 				
 			Server()->SendMsg(&Msg, 0, m_pPlayer->GetCID());
 	
-			GameServer()->CreateSound(m_Pos, SOUND_GUN_FIRE, Teams()->TeamMask(Team()));
+			if (!(g_Config.m_SvSilentXXL && m_FastReload))
+				GameServer()->CreateSound(m_Pos, SOUND_GUN_FIRE, Teams()->TeamMask(Team()));
 		} break;
 		
 		case WEAPON_SHOTGUN:
@@ -422,7 +437,8 @@ void CCharacter::FireWeapon()
 			
 			GameServer()->CreateSound(m_Pos, SOUND_SHOTGUN_FIRE);*/
 			new CLaser(&GameServer()->m_World, m_Pos, Direction, GameServer()->Tuning()->m_LaserReach, m_pPlayer->GetCID(), 1);
-			GameServer()->CreateSound(m_Pos, SOUND_SHOTGUN_FIRE, Teams()->TeamMask(Team()));
+			if (!(g_Config.m_SvSilentXXL && m_FastReload))
+				GameServer()->CreateSound(m_Pos, SOUND_SHOTGUN_FIRE, Teams()->TeamMask(Team()));
 		} break;
 
 		case WEAPON_GRENADE:
@@ -452,13 +468,15 @@ void CCharacter::FireWeapon()
 				Msg.AddInt(((int *)&p)[i]);
 			Server()->SendMsg(&Msg, 0, m_pPlayer->GetCID());
 			
-			GameServer()->CreateSound(m_Pos, SOUND_GRENADE_FIRE, Teams()->TeamMask(Team()));
+			if (!(g_Config.m_SvSilentXXL && m_FastReload))
+				GameServer()->CreateSound(m_Pos, SOUND_GRENADE_FIRE, Teams()->TeamMask(Team()));
 		} break;
 
 		case WEAPON_RIFLE:
 		{
 			new CLaser(GameWorld(), m_Pos, Direction, GameServer()->Tuning()->m_LaserReach, m_pPlayer->GetCID(), 0);
-			GameServer()->CreateSound(m_Pos, SOUND_RIFLE_FIRE, Teams()->TeamMask(Team()));
+			if (!(g_Config.m_SvSilentXXL && m_FastReload))
+				GameServer()->CreateSound(m_Pos, SOUND_RIFLE_FIRE, Teams()->TeamMask(Team()));
 		} break;
 		
 		case WEAPON_NINJA:
@@ -470,7 +488,8 @@ void CCharacter::FireWeapon()
 			m_Ninja.m_CurrentMoveTime = g_pData->m_Weapons.m_Ninja.m_Movetime * Server()->TickSpeed() / 1000;
 			m_Ninja.m_OldVelAmount = length(m_Core.m_Vel);
 
-			GameServer()->CreateSound(m_Pos, SOUND_NINJA_FIRE, Teams()->TeamMask(Team()));
+			if (!(g_Config.m_SvSilentXXL && m_FastReload))
+				GameServer()->CreateSound(m_Pos, SOUND_NINJA_FIRE, Teams()->TeamMask(Team()));
 		} break;
 		
 	}
@@ -481,7 +500,8 @@ void CCharacter::FireWeapon()
 		m_aWeapons[m_ActiveWeapon].m_Ammo--;
 	*/
 	if(!m_ReloadTimer)
-		m_ReloadTimer = g_pData->m_Weapons.m_aId[m_ActiveWeapon].m_Firedelay * Server()->TickSpeed() / 1000;
+		m_ReloadTimer = g_pData->m_Weapons.m_aId[m_ActiveWeapon].m_Firedelay * Server()->TickSpeed() / m_ReloadMultiplier;
+		//m_ReloadTimer = g_pData->m_Weapons.m_aId[m_ActiveWeapon].m_Firedelay * Server()->TickSpeed() / 1000;
 }
 
 void CCharacter::HandleWeapons()
@@ -585,6 +605,8 @@ void CCharacter::OnDirectInput(CNetObj_PlayerInput *pNewInput)
 		HandleWeaponSwitch();
 		FireWeapon();
 	}
+	if(pNewInput->m_Jump&1 && m_Super && m_Fly) //XXLmod
+		HandleFly();
 	
 	mem_copy(&m_LatestPrevInput, &m_LatestInput, sizeof(m_LatestInput));
 }
@@ -601,6 +623,7 @@ void CCharacter::Tick()
 	}*/
 
 	DDRaceTick();
+	XXLDDRaceTick();
 
 	m_Core.m_Input = m_Input;
 	m_Core.Tick(true);
@@ -854,6 +877,10 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon)
 		Temp.y = 0;
 	m_Core.m_Vel = Temp;
 
+	//XXLmod blood
+	if (g_Config.m_SvDmgBlood)
+		GameServer()->CreateDeath(m_Pos, m_pPlayer->GetCID());
+
 	return true;
 }
 
@@ -1083,6 +1110,12 @@ CGameTeams* CCharacter::Teams()
 {
 	return &((CGameControllerDDRace*)GameServer()->m_pController)->m_Teams;
 }
+
+void CCharacter::HandleFly()
+{
+	m_Core.HandleFly();
+}
+
 //TODO: DDRace Revise Braodcast, make sure all vars are needed ..etc
 void CCharacter::HandleBroadcast()
 {
@@ -1425,6 +1458,226 @@ void CCharacter::HandleTiles(int Index)
 		m_Core.m_Vel.y = 0;
 		m_Core.m_Jumped = 0;
 	}
+
+
+	//XXLmod
+	//~ char aBuf[256];
+	//~ str_format(aBuf, sizeof(aBuf), "I:%i FI:%i", m_TileIndex,m_TileFIndex);
+	//~ GameServer()->SendChat(-1, CGameContext::CHAT_ALL, aBuf);
+
+	if(((m_TileIndex == TILE_RAINBOW) || (m_TileFIndex == TILE_RAINBOW)))
+	{
+		if (m_LastIndexTile == TILE_RAINBOW || m_LastIndexFrontTile == TILE_RAINBOW)
+			return;
+
+		char aBuf[256];
+		if (m_pPlayer->m_rainbow)
+		{
+			m_pPlayer->m_rainbow = false;
+			str_format(aBuf, sizeof(aBuf), "Rainbow is OFF!!");
+		}
+		else
+		{
+			m_pPlayer->m_rainbow = true;
+			str_format(aBuf, sizeof(aBuf), "Rainbow is ON!!!");
+		}
+
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
+	}
+	if(((m_TileIndex == TILE_XXL) || (m_TileFIndex == TILE_XXL)))
+	{
+		if (m_LastIndexTile == TILE_XXL || m_LastIndexFrontTile == TILE_XXL)
+			return;
+
+		char aBuf[256];
+		if (m_FastReload)
+		{
+			m_FastReload = false;
+			m_ReloadMultiplier = 1000;
+			str_format(aBuf, sizeof(aBuf), "XXL is OFF!!");
+		}
+		else
+		{
+			m_FastReload = true;
+			m_ReloadMultiplier = 10000;
+			str_format(aBuf, sizeof(aBuf), "XXL is ON!!!");
+		}
+
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
+	}
+	if(((m_TileIndex == TILE_ADMIN) || (m_TileFIndex == TILE_ADMIN)))
+	{
+		//~ m_pPlayer->GetCID()
+		if (GetPlayer()->m_Authed  <= 2)
+		{
+			Die(m_pPlayer->GetCID(), WEAPON_WORLD);
+			char aBuf[256];
+			str_format(aBuf, sizeof(aBuf), "Admins only! Your rank:%i", GetPlayer()->m_Authed);
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
+		}
+	}
+	if(((m_TileIndex == TILE_MEMBER) || (m_TileFIndex == TILE_MEMBER)))
+	{
+		char aBuf[256];
+		if (!m_pPlayer->m_IsLoggedIn)
+		{
+			Die(m_pPlayer->GetCID(), WEAPON_WORLD);
+			str_format(aBuf, sizeof(aBuf), "Login first with /login <pass>", GetPlayer()->m_Authed);
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
+		}
+		if (m_pPlayer->m_IsLoggedIn && !m_pPlayer->m_IsMember)
+		{
+			Die(m_pPlayer->GetCID(), WEAPON_WORLD);
+			str_format(aBuf, sizeof(aBuf), "Members only!!! (You are logged in, but not Member)", GetPlayer()->m_Authed);
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
+		}
+	}
+	if(((m_TileIndex == TILE_SUPER) || (m_TileFIndex == TILE_SUPER)))
+	{
+		if (m_LastIndexTile == TILE_SUPER || m_LastIndexFrontTile == TILE_SUPER)
+			return;
+
+		char aBuf[256];
+		if (m_Super){
+			m_Super = false;
+			Teams()->SetForceCharacterTeam(m_pPlayer->GetCID(), m_TeamBeforeSuper);
+			str_format(aBuf, sizeof(aBuf), "Super is OFF!!");
+		}
+		else
+		{
+			m_Super = true;
+			UnFreeze();
+			m_TeamBeforeSuper = Team();
+			dbg_msg("Teamb4super","%d",m_TeamBeforeSuper = Team());
+			Teams()->SetCharacterTeam(m_pPlayer->GetCID(), TEAM_SUPER);
+			m_DDRaceState = DDRACE_CHEAT;
+			str_format(aBuf, sizeof(aBuf), "Super is ON!!!");
+		}
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
+	}
+
+	if(((m_TileIndex == TILE_HAMMER) || (m_TileFIndex == TILE_HAMMER)))
+	{
+		if (m_LastIndexTile == TILE_HAMMER || m_LastIndexFrontTile == TILE_HAMMER)
+			return;
+
+		char aBuf[256];
+		if (m_HammerType == 3)
+		{
+			m_HammerType = 0;
+			str_format(aBuf, sizeof(aBuf), "HeavyHammer is OFF!!");
+		}else{
+			m_HammerType = 3;
+			str_format(aBuf, sizeof(aBuf), "HeavyHammer is ON!!!");
+		}
+
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
+	}
+
+	if(((m_TileIndex == TILE_INVIS) || (m_TileFIndex == TILE_INVIS)))
+	{
+		if (m_LastIndexTile == TILE_INVIS || m_LastIndexFrontTile == TILE_INVIS)
+			return;
+
+		char aBuf[256];
+		if (m_pPlayer->m_Invisible)
+		{
+			m_pPlayer->m_Invisible = false;
+			str_format(aBuf, sizeof(aBuf), "Invisible is OFF!!");
+		}
+		else{
+			m_pPlayer->m_Invisible = true;
+			str_format(aBuf, sizeof(aBuf), "Invisible is ON!!!");
+		}
+
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
+	}
+
+	if(((m_TileIndex == TILE_BLOODY) || (m_TileFIndex == TILE_BLOODY)))
+	{
+		if (m_LastIndexTile == TILE_BLOODY || m_LastIndexFrontTile == TILE_BLOODY)
+			return;
+
+		char aBuf[256];
+		if (m_Bloody)
+		{
+			m_Bloody = false;
+			str_format(aBuf, sizeof(aBuf), "Bloody is OFF!!");
+		}
+		else
+		{
+			m_Bloody = true;
+			str_format(aBuf, sizeof(aBuf), "Bloody is ON!!!");
+		}
+
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
+	}
+
+	if(((m_TileIndex == TILE_RMEXTRAS) || (m_TileFIndex == TILE_RMEXTRAS)))
+	{
+		if (m_LastIndexTile == TILE_RMEXTRAS || m_LastIndexFrontTile == TILE_RMEXTRAS)
+			return;
+
+		//disable all extras
+		m_pPlayer->m_rainbow = false;
+		m_FastReload = false;
+		m_ReloadMultiplier = 1000;
+		m_Super = false;
+		m_HammerType = 0;
+		m_Bloody = false;
+		m_pPlayer->m_Invisible = false;
+		char aBuf[256];
+		str_format(aBuf, sizeof(aBuf), "ALL extras are OFF!!!");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
+	}
+	
+	if(((m_TileIndex == TILE_RMNINJA) || (m_TileFIndex == TILE_RMNINJA)))
+	{
+		if (m_LastIndexTile == TILE_RMNINJA || m_LastIndexFrontTile == TILE_RMNINJA || m_ActiveWeapon != WEAPON_NINJA)
+			return;
+
+		m_aWeapons[WEAPON_NINJA].m_Got = false;
+		m_ActiveWeapon = m_LastWeapon;
+		if(m_ActiveWeapon == WEAPON_NINJA)
+			m_ActiveWeapon = WEAPON_GUN;
+
+		SetWeapon(m_ActiveWeapon);
+
+		char aBuf[256];
+		str_format(aBuf, sizeof(aBuf), "You lost ninja!!!");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
+	}
+
+    //jDDRace
+	if(((m_TileIndex == TILE_JUMPS_DEFAULT) || (m_TileFIndex == TILE_JUMPS_DEFAULT))) //87
+	{
+		if (m_LastIndexTile == TILE_JUMPS_DEFAULT || m_LastIndexFrontTile == TILE_JUMPS_DEFAULT)
+			return;
+
+		m_Core.m_max_jumps = 2; //default
+	}
+	if(((m_TileIndex == TILE_JUMPS_ADD) || (m_TileFIndex == TILE_JUMPS_ADD))) //87
+	{
+		if (m_LastIndexTile == TILE_JUMPS_ADD || m_LastIndexFrontTile == TILE_JUMPS_ADD)
+			return;
+
+		m_Core.m_max_jumps++; //add a jump
+	}
+	if(((m_TileIndex == TILE_JUMPS_REMOVE) || (m_TileFIndex == TILE_JUMPS_REMOVE))) //87
+	{
+		if (m_LastIndexTile == TILE_JUMPS_REMOVE || m_LastIndexFrontTile == TILE_JUMPS_REMOVE)
+			return;
+		if (m_Core.m_max_jumps >0)
+			m_Core.m_max_jumps--; //remove a jump
+	}
+
+	//First time here?
+	m_LastIndexTile = m_TileIndex;
+	m_LastIndexFrontTile = m_TileFIndex;
+
+	//-----
+
+
 	// handle switch tiles
 	if(GameServer()->Collision()->IsSwitch(MapIndex) == TILE_SWITCHOPEN && Team() != TEAM_SUPER)
 	{
@@ -1552,6 +1805,8 @@ void CCharacter::DDRacePostCoreTick()
 		else
 		{
 			HandleTiles(CurrentIndex);
+			m_LastIndexTile = 0;
+			m_LastIndexFrontTile = 0;
 			//dbg_msg("Running","%d", CurrentIndex);
 		}
 
@@ -1631,3 +1886,100 @@ void CCharacter::DDRaceInit()
 	m_DefEmote = EMOTE_NORMAL;
 	m_DefEmoteReset = -1;
 }
+
+void CCharacter::XXLDDRaceInit()
+{
+	m_FastReload = false;
+	m_ReloadMultiplier = 1000;
+	m_LastIndexTile = 0;
+	m_LastIndexFrontTile = 0;
+	m_Bloody = 0;
+	//spawnpunkt als erste position TODO: Check this
+	//m_RescuePos = m_Pos;
+	m_LastRescue = 0;
+	m_IceHammer = false;
+	m_Fly = true;
+}
+
+void CCharacter::XXLDDRaceTick(){
+	HandleRainbow();
+	HandleBlood();
+	HandleRescue();
+	HandleJumps();
+	if(m_LastRescue > 0) m_LastRescue--;
+	if(m_LastRescueSave > 0) m_LastRescueSave--;
+}
+
+void CCharacter::HandleBlood()
+{
+	if (m_Bloody){
+		GameServer()->CreateDeath(m_Pos, m_pPlayer->GetCID(), Teams()->TeamMask(Team()));
+	}
+
+}
+
+void CCharacter::HandleRainbow()
+{
+	//~ CPlayerData *pData = GameServer()->Score()->PlayerData(m_pPlayer->GetCID());
+
+	//~ str_copy(m_pPlayer->m_TeeInfos.m_SkinName, "default", sizeof(m_pPlayer->m_TeeInfos.m_SkinName));
+
+	if (m_pPlayer->m_rainbow == RAINBOW_COLOR){
+		m_pPlayer->m_TeeInfos.m_UseCustomColor = 1;
+		if (m_pPlayer->m_last_rainbow >= 16711424 ||m_pPlayer->m_last_rainbow < 65280 ){
+			m_pPlayer->m_last_rainbow =65280;
+		}else{
+			m_pPlayer->m_last_rainbow+=65536;  //the magic number
+		}
+		m_pPlayer->m_TeeInfos.m_ColorBody = m_pPlayer->m_last_rainbow;
+		m_pPlayer->m_TeeInfos.m_ColorFeet = m_pPlayer->m_last_rainbow;
+
+
+	}else if (m_pPlayer->m_rainbow == RAINBOW_BLACKWHITE){
+		m_pPlayer->m_TeeInfos.m_UseCustomColor = 1;
+		if (m_pPlayer->m_last_rainbow > 255){
+			m_pPlayer->m_last_rainbow = 0;
+		}else if (m_pPlayer->m_last_rainbow == 0){
+			m_pPlayer->m_up_bw_rainbow = false;
+		}else if (m_pPlayer->m_last_rainbow == 255){
+			m_pPlayer->m_up_bw_rainbow = true;
+		}
+		if (m_pPlayer->m_up_bw_rainbow){
+			m_pPlayer->m_last_rainbow-=1;
+		}else{
+			m_pPlayer->m_last_rainbow+=1;
+		}
+//		str_format(aBuf, sizeof(aBuf), "RBC: %d", m_pPlayer->m_last_rainbow);
+//		GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
+		m_pPlayer->m_TeeInfos.m_ColorBody = m_pPlayer->m_last_rainbow;
+		m_pPlayer->m_TeeInfos.m_ColorFeet = m_pPlayer->m_last_rainbow;
+	}
+
+	//0 "dark tee" -.- (not realy dark..)
+	//black old client 0.5.2
+
+	//~ m_pPlayer->m_TeeInfos.m_ColorBody = 34275072;
+	//~ m_pPlayer->m_TeeInfos.m_ColorFeet = 34275072;
+}
+
+void CCharacter::HandleRescue()
+{ 	//Do I realy need everything?
+	if(IsGrounded() &&  m_TileIndex != TILE_FREEZE && m_TileFIndex != TILE_FREEZE && !m_FreezeTime && !m_DeepFreeze && !m_LastRescueSave && m_Pos != m_RescuePos && m_Pos != vec2(0,0)){
+		m_RescuePos = m_Pos;
+		m_LastRescueSave = 7; //not every point will be stored
+	}
+}
+
+void CCharacter::HandleJumps()
+{
+	if (m_Core.m_Jumped > 1 && m_Core.m_max_jumps > m_Core.m_jump_count+2){
+		m_Core.m_Jumped = 1;
+		m_Core.m_jump_count++;
+	}else if (m_Core.m_max_jumps == 1){
+		m_Core.m_Jumped = 2; //1 Jump
+	}else if (m_Core.m_max_jumps == 0){
+		m_Core.m_Jumped = 1; //0 Jumps
+	}
+
+}
+

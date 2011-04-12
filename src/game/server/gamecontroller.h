@@ -87,7 +87,7 @@ public:
 	/*
 	
 	*/	
-	virtual bool CanBeMovedOnBalance(int ClientID);
+	virtual bool CanBeMovedOnBalance(int ClientID);;
 
 	virtual void Tick();
 	

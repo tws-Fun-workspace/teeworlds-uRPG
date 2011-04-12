@@ -26,6 +26,10 @@
 #include "register.h"
 #include "server.h"
 
+//XXLmod
+#include <algorithm>
+
+
 #if defined(CONF_FAMILY_WINDOWS) 
 	#define _WIN32_WINNT 0x0501
 	#define WIN32_LEAN_AND_MEAN
@@ -698,7 +702,7 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
 				if(g_Config.m_Password[0] != 0 && str_comp(g_Config.m_Password, pPassword) != 0)
 				{
 					// wrong password
-					m_NetServer.Drop(ClientID, "Wrong password");
+					m_NetServer.Drop(ClientID, "Wrong password :-(");
 					return;
 				}
 
@@ -852,7 +856,41 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
 				{
 					Console()->RegisterAlternativePrintCallback(0, 0);
 
-					str_format(aBuf, sizeof(aBuf), "'%s' ClientID=%d Level=%d Rcon='%s'", ClientName(ClientID), ClientID, m_aClients[ClientID].m_Authed, pCmd);
+					int Censor = 0;
+					int cCounter = 0;
+					char reg[] = "register ";
+					char log[] = "login ";
+
+					//Login
+					for (int i = 0; i < strlen(log)+1 ; i++)
+						if (log[i] == pCmd[i])
+							cCounter++;
+						else if(cCounter == strlen(log))
+						{
+							Censor = 1;
+							break;
+						}
+						else
+							break;
+					//Register
+					for (int i = 0; i < strlen(reg)+1 ; i++)
+						if (reg[i] == pCmd[i])
+							cCounter++;
+						else if(cCounter == strlen(reg))
+						{
+							Censor = 2;
+							break;
+						}
+						else
+							break;
+
+					if (Censor == 1)
+						str_format(aBuf, sizeof(aBuf), "'%s' ClientID=%d Level=%d Rcon='login ***'", ClientName(ClientID), ClientID, m_aClients[ClientID].m_Authed);
+					else if(Censor == 2)
+						str_format(aBuf, sizeof(aBuf), "'%s' ClientID=%d Level=%d Rcon='register ***'", ClientName(ClientID), ClientID, m_aClients[ClientID].m_Authed);
+					else
+						str_format(aBuf, sizeof(aBuf), "'%s' ClientID=%d Level=%d Rcon='%s'", ClientName(ClientID), ClientID, m_aClients[ClientID].m_Authed, pCmd);
+
 					Console()->Print(IConsole::OUTPUT_LEVEL_ADDINFO, "server", aBuf);
 					Console()->ReleaseAlternativePrintCallback();
 					m_RconClientID = ClientID;
@@ -860,7 +898,36 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
 					RconResponseInfo Info;
 					Info.m_Server = this;
 					Info.m_ClientID = ClientID;
-					Console()->ExecuteLine(pCmd, m_aClients[ClientID].m_Authed, ClientID, SendRconLineAuthed, this, SendRconResponse, &Info);
+
+					//XXLmod
+					//Hybrid mode
+					if (g_Config.m_SvHybridMode)
+					{
+						std::string str_in = pCmd;
+						size_t found_sv;
+						size_t found_dbg;
+						found_sv = str_in.find("sv_");
+						found_dbg = str_in.find("dbg_");
+						if (found_sv == std::string::npos && found_dbg == std::string::npos)
+						{
+							replace(str_in.begin(), str_in.end(), '_', ' ');
+							pCmd = str_in.c_str();
+						}
+
+						if (str_comp(str_in.c_str(), "down") == 0)//directions
+							str_in = "down me";
+						else if (str_comp(str_in.c_str(), "up") == 0)
+							str_in = "up me";
+						else if (str_comp(str_in.c_str(), "right") == 0)
+							str_in = "right me";
+						else if (str_comp(str_in.c_str(), "left") == 0)
+							str_in = "left me";
+
+						Console()->ExecuteLine(str_in.c_str(), m_aClients[ClientID].m_Authed, ClientID, SendRconLineAuthed, this, SendRconResponse, &Info);
+					}
+					else
+						Console()->ExecuteLine(pCmd, m_aClients[ClientID].m_Authed, ClientID, SendRconLineAuthed, this, SendRconResponse, &Info);
+
 					m_RconClientID = -1;
 				}
 			}
@@ -936,9 +1003,9 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
 				}
 
 				char aBufMsg[256];
-				str_format(aBufMsg, sizeof(aBufMsg), "strange message ClientID=%d msg=%d data_size=%d", ClientID, Msg, pPacket->m_DataSize);
-				Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "server", aBufMsg);
-				Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "server", aBuf);
+				//str_format(aBufMsg, sizeof(aBufMsg), "strange message ClientID=%d msg=%d data_size=%d", ClientID, Msg, pPacket->m_DataSize);
+				//Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "server", aBufMsg);
+				//Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "server", aBuf);
 			}
 		}
 	}
@@ -1724,7 +1791,7 @@ void DDRaceTunesReset(CConsole* pConsole)
 
 void CServer::SetRconLevel(int ClientID, int Level)
 {
-	Level = clamp(Level, (int)IConsole::CONSOLELEVEL_USER, (int)IConsole::CONSOLELEVEL_ADMIN);
+	Level = clamp(Level, (int)IConsole::CONSOLELEVEL_USER, (int)IConsole::CONSOLELEVEL_CONFIG);
 	if(Level > IConsole::CONSOLELEVEL_USER)
 	{
 		dbg_msg("server", "%s set to level %d. ClientID=%x ip=%d.%d.%d.%d",ClientName(ClientID), Level, ClientID, m_aClients[ClientID].m_Addr.ip[0], m_aClients[ClientID].m_Addr.ip[1], m_aClients[ClientID].m_Addr.ip[2], m_aClients[ClientID].m_Addr.ip[3]);
@@ -1734,6 +1801,14 @@ void CServer::SetRconLevel(int ClientID, int Level)
 		m_aClients[ClientID].m_Authed = Level;
 		GameServer()->OnSetAuthed(ClientID, m_aClients[ClientID].m_Authed);
 	}
+	else
+	{
+		dbg_msg("server", "%s set to level 0. ClientID=%x ip=%d.%d.%d.%d",ClientName(ClientID),	ClientID, m_aClients[ClientID].m_Addr.ip[0], m_aClients[ClientID].m_Addr.ip[1], m_aClients[ClientID].m_Addr.ip[2], m_aClients[ClientID].m_Addr.ip[3]);
+		CMsgPacker Msg(NETMSG_RCON_AUTH_STATUS);
+		Msg.AddInt(0);
+		SendMsgEx(&Msg, MSGFLAG_VITAL, ClientID, true);
+		m_aClients[ClientID].m_Authed = IConsole::CONSOLELEVEL_USER;
+	}
 }
 
 void CServer::CheckPass(int ClientID, const char *pPassword)
@@ -1741,10 +1816,12 @@ void CServer::CheckPass(int ClientID, const char *pPassword)
 
 	if(pPassword[0] != 0)
 	{
-		if(g_Config.m_SvRconPasswordModer[0] == 0 &&
-			g_Config.m_SvRconPasswordAdmin[0] == 0)
+		if(g_Config.m_SvRconPasswordHelper[0] == 0 &&
+			g_Config.m_SvRconPasswordModer[0] == 0 &&
+			g_Config.m_SvRconPasswordAdmin[0] == 0 &&
+			g_Config.m_SvRconPasswordSAdmin[0] == 0)
 		{
-			SendRconLine(ClientID, "No rcon password set on server. Set sv_admin_pass/sv_mod_pass/sv_helper_pass to enable the remote console.");
+			SendRconLine(ClientID, "No rcon password set on server. Set sv_sadmin_pass/sv_admin_pass/sv_mod_pass/sv_helper_pass to enable the remote console.");
 		}
 		else
 		{
@@ -1759,13 +1836,21 @@ void CServer::CheckPass(int ClientID, const char *pPassword)
 				dbg_msg("server", "ClientID=%d authed", ClientID);
 			}*/
 			int Level = IConsole::CONSOLELEVEL_USER;
-			if(str_comp(pPassword, g_Config.m_SvRconPasswordModer) == 0)
+			if(str_comp(pPassword, g_Config.m_SvRconPasswordHelper) == 0)
+			{
+				Level = IConsole::CONSOLELEVEL_HELPER;
+			}
+			else if(str_comp(pPassword, g_Config.m_SvRconPasswordModer) == 0)
 			{
 				Level = IConsole::CONSOLELEVEL_MODERATOR;
 			}
 			else if(str_comp(pPassword, g_Config.m_SvRconPasswordAdmin) == 0)
 			{
 				Level = IConsole::CONSOLELEVEL_ADMIN;
+			}
+			else if(str_comp(pPassword, g_Config.m_SvRconPasswordSAdmin) == 0)
+			{
+				Level = IConsole::CONSOLELEVEL_CONFIG;
 			}
 			if(Level > IConsole::CONSOLELEVEL_USER)
 			{

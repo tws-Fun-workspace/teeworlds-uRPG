@@ -1017,4 +1017,10 @@ void CMenus::RenderSettingsDDRace(CUIRect MainView)
 	{
 		g_Config.m_ClPredictOldHookthrough ^= 1;
 	}
+
+	MainView.HSplitTop(20.0f, &Button, &MainView);
+	if(DoButton_CheckBox(&g_Config.m_GfxMiniTees, Localize("Cute!!! Minitees"), g_Config.m_GfxMiniTees, &Button))
+	{
+		g_Config.m_GfxMiniTees ^= 1;
+	}
 }

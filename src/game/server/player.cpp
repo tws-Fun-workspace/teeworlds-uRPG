@@ -4,13 +4,13 @@
 #include <engine/shared/config.h>
 #include "player.h"
 
+
 #include <engine/server.h>
 #include <engine/server/server.h>
 #include "gamecontext.h"
 #include <game/gamecore.h>
 #include "gamemodes/DDRace.h"
 #include <stdio.h>
-
 
 MACRO_ALLOC_POOL_ID_IMPL(CPlayer, MAX_CLIENTS)
 
@@ -47,6 +47,13 @@ CPlayer::CPlayer(CGameContext *pGameServer, int ClientID, int Team)
 	// Variable initialized:
 	m_Last_Pause = 0;
 	m_Last_Team = 0;
+
+	//XXLmod
+ 	m_IsMember = false;
+ 	m_IsLoggedIn = false;
+	m_rainbow = RAINBOW_NONE;
+	m_last_rainbow = 0;
+	m_Helped = 0;
 }
 
 CPlayer::~CPlayer()
@@ -67,6 +74,10 @@ void CPlayer::Tick()
 		m_ChatScore--;
 
 	Server()->SetClientScore(m_ClientID, m_Score);
+
+	//XXLmod
+	if(m_Helped > 0)
+		m_Helped--;
 
 	// do latency stuff
 	{
@@ -340,6 +351,16 @@ void CPlayer::LoadCharacter()
 	Character->m_EndlessHook = m_PauseInfo.m_EndlessHook;
 	CGameControllerDDRace* Controller = (CGameControllerDDRace*)GameServer()->m_pController;
 	Controller->m_Teams.m_Core.Team(GetCID(), m_PauseInfo.m_Team);
+	//XXLDDRace
+	Character->m_Bloody = m_PauseInfo.m_Bloody;
+	Character->m_ReloadMultiplier = m_PauseInfo.m_ReloadMultiplier;
+	Character->m_FastReload = m_PauseInfo.m_FastReload;
+	Character->m_LastIndexTile = m_PauseInfo.m_LastIndexTile;
+	Character->m_LastIndexFrontTile = m_PauseInfo.m_LastIndexFrontTile;
+	Character->m_Bloody = m_PauseInfo.m_Bloody;
+	Character->m_RescuePos = m_PauseInfo.m_RescuePos;
+	Character->m_LastRescue = m_PauseInfo.m_LastRescue;
+	Character->m_LastRescueSave = m_PauseInfo.m_LastRescueSave;
 	m_PauseInfo.m_Respawn = false;
 	m_InfoSaved = false;
 }
@@ -367,6 +388,16 @@ void CPlayer::SaveCharacter()
 	m_PauseInfo.m_Team = Controller->m_Teams.m_Core.Team(GetCID());
 	m_PauseInfo.m_PauseTime = Server()->Tick();
 	//m_PauseInfo.m_RefreshTime = Character->m_RefreshTime;
+	//XXLDDrace
+	m_PauseInfo.m_Bloody = Character->m_Bloody;
+	m_PauseInfo.m_ReloadMultiplier = Character->m_ReloadMultiplier;
+	m_PauseInfo.m_FastReload = Character->m_FastReload;
+	m_PauseInfo.m_LastIndexTile = Character->m_LastIndexTile;
+	m_PauseInfo.m_LastIndexFrontTile = Character->m_LastIndexFrontTile;
+	m_PauseInfo.m_Bloody = Character->m_Bloody;
+	m_PauseInfo.m_RescuePos = Character->m_RescuePos;
+	m_PauseInfo.m_LastRescue = Character->m_LastRescue;
+	m_PauseInfo.m_LastRescueSave = Character->m_LastRescueSave;
 }
 
 void CPlayer::AfkTimer(int new_target_x, int new_target_y)

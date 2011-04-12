@@ -186,7 +186,7 @@ void CRenderTools::RenderTee(CAnimState *pAnim, CTeeRenderInfo *pInfo, int Emote
 		for(int f = 0; f < 2; f++)
 		{
 			float AnimScale = pInfo->m_Size * 1.0f/64.0f;
-			float BaseSize = pInfo->m_Size;
+			float BaseSize = pInfo->m_Size / (g_Config.m_GfxMiniTees + 1);
 			if(f == 1)
 			{
 				Graphics()->QuadsSetRotation(pAnim->GetBody()->m_Angle*pi*2);

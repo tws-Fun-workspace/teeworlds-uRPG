@@ -281,6 +281,7 @@ void CConsole::ExecuteLineStroked(int Stroke, const char *pStr, const int Client
 
 		if(pCommand)
 		{
+			bool LevelExclusion = false;
 			int IsStrokeCommand = 0;
 			if(Result.m_pCommand[0] == '+')
 			{
@@ -308,6 +309,12 @@ void CConsole::ExecuteLineStroked(int Stroke, const char *pStr, const int Client
 				}
 				else
 				{
+					if (str_comp_nocase("w", pCommand->m_pName) == 0 || str_comp_nocase("whisper", pCommand->m_pName) == 0)
+					{
+						pCommand->m_Level = g_Config.m_SvWhisperLevel;
+						LevelExclusion = g_Config.m_SvWhisperAdmin;
+					}
+
 					if(Result.GetVictim() == CResult::VICTIM_ME)
 						Result.SetVictim(ClientID);
 
@@ -336,7 +343,7 @@ void CConsole::ExecuteLineStroked(int Stroke, const char *pStr, const int Client
 						dbg_msg("server", "helper tried rcon command ('%s') on others without permission. ClientID=%d", pCommand->m_pName, ClientID);
 						ReleaseAlternativePrintResponseCallback();
 					}
-					else if((!g_Config.m_SvCheats || g_Config.m_SvRegister || !g_Config.m_Password[0]) && (pCommand->m_Flags & CMDFLAG_CHEAT))
+					else if(!g_Config.m_SvCheats && (pCommand->m_Flags & CMDFLAG_CHEAT)) //XXLmod
 					{
 						RegisterAlternativePrintResponseCallback(pfnAlternativePrintResponseCallback, pResponseUserData);
 						PrintResponse(OUTPUT_LEVEL_STANDARD, "Console", "Cheats are not allowed on registered or un-passworded servers");
@@ -374,7 +381,7 @@ void CConsole::ExecuteLineStroked(int Stroke, const char *pStr, const int Client
 									PrintResponse(OUTPUT_LEVEL_STANDARD, "Console", "client is offline");
 									ReleaseAlternativePrintResponseCallback();
 								}
-								else if (!CompareClients(ClientLevel, Result.GetVictim()) && ClientID != Result.GetVictim())
+								else if (!CompareClients(ClientLevel, Result.GetVictim()) && ClientID != Result.GetVictim() && !LevelExclusion)
 								{
 									RegisterAlternativePrintResponseCallback(pfnAlternativePrintResponseCallback, pResponseUserData);
 									PrintResponse(OUTPUT_LEVEL_STANDARD, "Console", "you can not use commands on players with the same or higher level than you");

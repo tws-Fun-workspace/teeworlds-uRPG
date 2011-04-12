@@ -63,6 +63,9 @@ public:
 	virtual void GetClientAddr(int ClientID, NETADDR *pAddr) = 0;
 	virtual void SetRconLevel(int ClientID, int Level) = 0;
 	virtual void SetClientAuthed(int ClientID, int Authed) = 0;
+
+	//XXLDDRace
+	virtual void SendRconLine(int ClientID, const char *pLine) = 0; //for Member tile TODO: Realy needed?
 };
 
 class IGameServer : public IInterface

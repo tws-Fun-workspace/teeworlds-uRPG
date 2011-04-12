@@ -58,6 +58,18 @@ void CGameContext::MoveCharacter(int ClientID, int Victim, int X, int Y, bool Ra
 	pChr->m_DDRaceState = DDRACE_CHEAT;
 }
 
+void CGameContext::ConSetlvl3(IConsole::IResult *pResult, void *pUserData, int ClientID)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	int Victim = pResult->GetVictim();
+	CServer* pServ = (CServer*)pSelf->Server();
+	if(pSelf->m_apPlayers[Victim])
+	{
+		pSelf->m_apPlayers[Victim]->m_Authed = 3;
+		pServ->SetRconLevel(Victim, 3);
+	}
+}
+
 void CGameContext::ConSetlvl2(IConsole::IResult *pResult, void *pUserData, int ClientID)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
@@ -90,8 +102,12 @@ void CGameContext::ConLogOut(IConsole::IResult *pResult, void *pUserData, int Cl
 	CServer* pServ = (CServer*)pSelf->Server();
 	if(pSelf->m_apPlayers[Victim])
 	{
-		pSelf->m_apPlayers[Victim]->m_Authed = -1;
-		pServ->SetRconLevel(Victim, -1);
+		pSelf->m_apPlayers[Victim]->m_Authed = IConsole::CONSOLELEVEL_USER;
+		pServ->SetRconLevel(Victim, IConsole::CONSOLELEVEL_USER);
+		if (g_Config.m_SvRconScore)
+			pSelf->m_apPlayers[Victim]->m_Score = 0;
+		pSelf->m_apPlayers[ClientID]->m_IsMember = false;
+		pSelf->m_apPlayers[ClientID]->m_IsLoggedIn = false;
 	}
 }
 
@@ -377,21 +393,20 @@ void CGameContext::ConCredits(IConsole::IResult *pResult, void *pUserData, int C
 	pSelf->Console()->PrintResponse(IConsole::OUTPUT_LEVEL_STANDARD, "info", "Others Helping on the code: \'heinrich5991\', \'noother\', \'LemonFace\', \'<3 fisted <3\' & \'Trust o_0 Aeeeh ?!\'");
 	pSelf->Console()->PrintResponse(IConsole::OUTPUT_LEVEL_STANDARD, "info", "Documentation: Zeta-Hoernchen, Entities: Fisico");
 	pSelf->Console()->PrintResponse(IConsole::OUTPUT_LEVEL_STANDARD, "info", "Code (in the past): \'3DA\' and \'Fluxid\'");
-	pSelf->Console()->PrintResponse(IConsole::OUTPUT_LEVEL_STANDARD, "info", "Please check the changelog on DDRace.info.");
-	pSelf->Console()->PrintResponse(IConsole::OUTPUT_LEVEL_STANDARD, "info", "Also the commit log on github.com/GreYFoXGTi/DDRace.");
+	pSelf->Console()->PrintResponse(IConsole::OUTPUT_LEVEL_STANDARD, "info", "Modded mod my XXLTomate.");
+	pSelf->Console()->PrintResponse(IConsole::OUTPUT_LEVEL_STANDARD, "info", "Infos at XXL-Clan.com.");
 }
 
 void CGameContext::ConInfo(IConsole::IResult *pResult, void *pUserData, int ClientID)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
 
-	pSelf->Console()->PrintResponse(IConsole::OUTPUT_LEVEL_STANDARD, "info", "DDRace Mod. Version: " GAME_VERSION);
-#if defined( GIT_SHORTREV_HASH )
-	pSelf->Console()->PrintResponse(IConsole::OUTPUT_LEVEL_STANDARD, "info", "Git revision hash: " GIT_SHORTREV_HASH);
-#endif
-	pSelf->Console()->PrintResponse(IConsole::OUTPUT_LEVEL_STANDARD, "info", "Official site: DDRace.info");
-	pSelf->Console()->PrintResponse(IConsole::OUTPUT_LEVEL_STANDARD, "info", "For more Info /cmdlist");
-	pSelf->Console()->PrintResponse(IConsole::OUTPUT_LEVEL_STANDARD, "info", "Or visit DDRace.info");
+	pSelf->Console()->PrintResponse(IConsole::OUTPUT_LEVEL_STANDARD, "info", "-->XXLDDRace<--"); //"-->XXLDDRace<--"
+	pSelf->Console()->PrintResponse(IConsole::OUTPUT_LEVEL_STANDARD, "info", "Mod by XXLTomate based on"); //"Mod by XXLTomate based on"
+	pSelf->Console()->PrintResponse(IConsole::OUTPUT_LEVEL_STANDARD, "info", "DDRace Mod. Version: " GAME_VERSION); //"DDRace Mod. Version: " GAME_VERSION
+	pSelf->Console()->PrintResponse(IConsole::OUTPUT_LEVEL_STANDARD, "info", "XXLDDRace Mod. Version: " XXL_VERSION); //"XXLDDRace Mod. Version: " XXL_VERSION
+	pSelf->Console()->PrintResponse(IConsole::OUTPUT_LEVEL_STANDARD, "info", "Download and infos at XXL-Clan.com"); //"Download and infos at XXL-Clan.com"
+	pSelf->Console()->PrintResponse(IConsole::OUTPUT_LEVEL_STANDARD, "info", "For commands /cmdlist"); //"For commands /cmdlist"
 }
 
 void CGameContext::ConHelp(IConsole::IResult *pResult, void *pUserData, int ClientID)
@@ -921,7 +936,7 @@ void CGameContext::ConUnmute(IConsole::IResult *pResult, void *pUserData, int Cl
 
 	if(Index < 0 || Index >= pSelf->m_NumMutes)
 		return;
-	
+
 	pSelf->m_NumMutes--;
 	pSelf->m_aMutes[Index] = pSelf->m_aMutes[pSelf->m_NumMutes];
 
@@ -942,5 +957,530 @@ void CGameContext::ConMutes(IConsole::IResult *pResult, void *pUserData, int Cli
 		net_addr_str(&pSelf->m_aMutes[i].m_Addr, aIpBuf, sizeof(aIpBuf));
 		str_format(aBuf, sizeof aBuf, "%d: \"%s\", %d seconds left", i, aIpBuf, (pSelf->m_aMutes[i].m_Expire - pSelf->Server()->Tick()) / pSelf->Server()->TickSpeed());
 		pSelf->Console()->PrintResponse(IConsole::OUTPUT_LEVEL_STANDARD, "mutes", aBuf);
+	}
+}
+
+//XXLmod
+void CGameContext::ConSkin(IConsole::IResult *pResult, void *pUserData, int ClientID)
+{
+	const char *Skin = pResult->GetString(0);
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	int Victim = pResult->GetVictim();
+	CCharacter* pChr = pSelf->m_apPlayers[Victim]->GetCharacter();;
+
+	if(!pChr)
+		return;
+	//change skin
+	str_copy(pSelf->m_apPlayers[Victim]->m_TeeInfos.m_SkinName, Skin, sizeof(pSelf->m_apPlayers[Victim]->m_TeeInfos.m_SkinName));
+	char aBuf[256];
+	str_format(aBuf, sizeof(aBuf), "%s's skin changed to %s" ,pSelf->Server()->ClientName(Victim), Skin);
+	pSelf->Console()->PrintResponse(IConsole::OUTPUT_LEVEL_STANDARD, "info", aBuf);
+}
+
+void CGameContext::ConRename(IConsole::IResult *pResult, void *pUserData, int ClientID)
+{
+	const char *newName = pResult->GetString(0);
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	int Victim = pResult->GetVictim();
+	CCharacter* pChr =pSelf->m_apPlayers[Victim]->GetCharacter();
+
+	if(!pChr)
+		return;
+
+	//change name
+	char oldName[MAX_NAME_LENGTH];
+	str_copy(oldName, pSelf->Server()->ClientName(Victim), MAX_NAME_LENGTH);
+
+	pSelf->Server()->SetClientName(Victim, newName);
+	char aBuf[256];
+	str_format(aBuf, sizeof(aBuf), "%s has changed %s's name to '%s'" ,pSelf->Server()->ClientName(ClientID), oldName, pSelf->Server()->ClientName(Victim));
+	pSelf->Console()->PrintResponse(IConsole::OUTPUT_LEVEL_STANDARD, "info", aBuf);
+
+	str_format(aBuf, sizeof(aBuf), "%s changed your name to %s.", pSelf->Server()->ClientName(ClientID), pSelf->Server()->ClientName(Victim));
+	pSelf->SendChatTarget(Victim, aBuf);
+}
+
+void CGameContext::ConOrgname(IConsole::IResult *pResult, void *pUserData, int ClientID)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	int Victim = pResult->GetVictim();
+	CCharacter* pChr = pSelf->GetPlayerChar(Victim);
+
+	if(!pChr)
+		return;
+
+	//faked name
+	char oldName[MAX_NAME_LENGTH];
+	str_copy(oldName, pSelf->Server()->ClientName(Victim), MAX_NAME_LENGTH);
+
+	//change name back
+	pSelf->Server()->SetClientName(Victim, pSelf->m_apPlayers[Victim]->m_OrginalName);
+	char aBuf[256];
+	str_format(aBuf, sizeof(aBuf), "%s has changed %s's name back to '%s'" ,pSelf->Server()->ClientName(ClientID), oldName, pSelf->Server()->ClientName(Victim));
+	pSelf->Console()->PrintResponse(IConsole::OUTPUT_LEVEL_STANDARD, "info", aBuf);
+
+
+	if (!pSelf->m_apPlayers[Victim]->m_isOrginalName){
+		str_copy(pSelf->m_apPlayers[Victim]->m_OrginalName, oldName, MAX_NAME_LENGTH);
+		pSelf->m_apPlayers[Victim]->m_isOrginalName = true;
+	}
+//			pSelf->m_apPlayers[Victim]->m_OrginalName = oldName;
+//			str_copy(pSelf->m_apPlayers[Victim]->m_OrginalName, oldName, MAX_NAME_LENGTH);
+	str_format(aBuf, sizeof(aBuf), "%s changed your name back to %s.", pSelf->Server()->ClientName(ClientID), pSelf->Server()->ClientName(Victim));
+	pSelf->SendChatTarget(Victim, aBuf);
+
+}
+
+void CGameContext::ConFakeMessage(IConsole::IResult *pResult, void *pUserData, int ClientID)
+{
+	const char *message = pResult->GetString(0);
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	int Victim = pResult->GetVictim();
+	CCharacter* pChr = pSelf->m_apPlayers[Victim]->GetCharacter();
+
+	if(!pChr)
+		return;
+		//fake message
+		pSelf->SendChat(Victim, CHAT_ALL, message);
+
+		char aBuf[256];
+		str_format(aBuf, sizeof(aBuf), "%s has send a faked message from %s" ,pSelf->Server()->ClientName(ClientID), pSelf->Server()->ClientName(Victim));
+		pSelf->Console()->PrintResponse(IConsole::OUTPUT_LEVEL_STANDARD, "info", aBuf);
+}
+
+void CGameContext::ConFastReload(IConsole::IResult *pResult, void *pUserData, int ClientID)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	int Victim = pResult->GetVictim();
+	CCharacter* pChr = pSelf->m_apPlayers[Victim]->GetCharacter();
+	if(!pChr)
+		return;
+
+	char aBuf[128];
+	if (!pChr->m_FastReload)
+	{
+		pChr->m_ReloadMultiplier = 10000;
+		pChr->m_FastReload = true;
+
+		str_format(aBuf, sizeof(aBuf), "You got XXL by %s.", pSelf->Server()->ClientName(ClientID));
+		pSelf->SendChatTarget(Victim, aBuf);
+	}
+	else
+	{
+		pChr->m_ReloadMultiplier = 1000;
+		pChr->m_FastReload = false;
+		str_format(aBuf, sizeof(aBuf), "%s removed your XXL.", pSelf->Server()->ClientName(ClientID));
+		pSelf->SendChatTarget(Victim, aBuf);
+	}
+
+	pChr->m_DDRaceState = DDRACE_CHEAT;
+}
+
+void CGameContext::ConRainbow(IConsole::IResult *pResult, void *pUserData, int ClientID)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	int Victim = pResult->GetVictim();
+	CCharacter* pChr = pSelf->m_apPlayers[Victim]->GetCharacter();
+	int Rainbowtype = clamp(pResult->GetInteger(0), 0, 2);
+
+	if(!pChr)
+		return;
+
+	char aBuf[256];
+	if ((pSelf->m_apPlayers[Victim]->m_rainbow == RAINBOW_NONE || pSelf->m_apPlayers[Victim]->m_rainbow == RAINBOW_BLACKWHITE) && Rainbowtype <= 1)
+	{
+		pSelf->m_apPlayers[Victim]->m_rainbow = RAINBOW_COLOR;
+
+		str_format(aBuf, sizeof(aBuf), "You got rainbow by %s.", pSelf->Server()->ClientName(ClientID));
+		pSelf->SendChatTarget(Victim, aBuf);
+	}
+	else if ((pSelf->m_apPlayers[Victim]->m_rainbow == RAINBOW_NONE || pSelf->m_apPlayers[Victim]->m_rainbow == RAINBOW_COLOR) && Rainbowtype == 2)
+	{
+		pSelf->m_apPlayers[Victim]->m_rainbow = RAINBOW_BLACKWHITE;
+
+		str_format(aBuf, sizeof(aBuf), "You got black and white rainbow by %s.", pSelf->Server()->ClientName(ClientID));
+		pSelf->SendChatTarget(Victim, aBuf);
+	}
+	else
+	{
+		pSelf->m_apPlayers[Victim]->m_rainbow = RAINBOW_NONE;
+		str_format(aBuf, sizeof(aBuf), "%s removed your rainbow.", pSelf->Server()->ClientName(ClientID));
+		pSelf->SendChatTarget(Victim, aBuf);
+	}
+}
+
+void CGameContext::ConWhisper(IConsole::IResult *pResult, void *pUserData, int ClientID)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	int Victim = pResult->GetVictim();
+	CCharacter* pChr = pSelf->m_apPlayers[ClientID]->GetCharacter();
+	const char *message = pResult->GetString(0);
+
+	if(!pChr)
+		return;
+
+	char aBuf[256];
+	str_format(aBuf, sizeof(aBuf), "%s: %s" ,pSelf->Server()->ClientName(ClientID),message);
+	pSelf->SendChatTarget(Victim, aBuf);
+
+	str_format(aBuf, sizeof(aBuf), "-->%s: %s", pSelf->Server()->ClientName(ClientID),message);
+	pSelf->SendChatTarget(ClientID, aBuf);
+}
+
+void CGameContext::ConHelper(IConsole::IResult *pResult, void *pUserData, int ClientID)
+{
+	int helper = 0;
+	char aBuf[128];
+	int Seconds;
+	int HelperTime = 60;
+
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	CCharacter* pChr = pSelf->GetPlayerChar(ClientID);
+	CServer* pServ = (CServer*)pSelf->Server();
+
+	//Mods don't need helpers, they want to auth someone :-)
+	int Victim = pResult->GetVictim();
+	if (pSelf->m_apPlayers[ClientID]->m_Authed >= 2)
+	{
+		CCharacter* pChr2 = pSelf->GetPlayerChar(Victim);
+		if(pSelf->m_apPlayers[Victim] && pChr2 && ClientID != Victim)
+		{
+			pSelf->m_apPlayers[Victim]->m_Authed = 1;
+			pServ->SetRconLevel(Victim, 1);
+		}
+		else
+		{
+			pSelf->Console()->PrintResponse(IConsole::OUTPUT_LEVEL_STANDARD, "info", "A moder/admin/sadmin does not need help, to auth someone as helper use helper v");
+		}
+		return;
+	}
+	if(pChr && g_Config.m_SvHelper)
+	{
+
+		if (pSelf->m_apPlayers[ClientID]->m_Helped)
+		{
+
+			Seconds = pSelf->m_apPlayers[ClientID]->m_Helped / pSelf->Server()->TickSpeed();
+			str_format(aBuf, sizeof(aBuf), "Please wait %d seconds to call a helper again.",  Seconds);
+			pSelf->SendChatTarget(ClientID, aBuf);
+			return;
+		}
+		for(int i = 0;i <=(int)MAX_CLIENTS-1 ; i++)
+		{
+			CCharacter* pChr3 = pSelf->GetPlayerChar(i);
+			if(pChr3)
+			{
+				if (pSelf->m_apPlayers[i]->m_Authed>=1)
+				{
+					str_format(aBuf, sizeof(aBuf), "%s needs help. ID:%i" ,pSelf->Server()->ClientName(ClientID),ClientID);
+					//~ str_format(aBuf, sizeof(aBuf), "%s: %i ID:%i" ,pSelf->Server()->ClientName(i),pSelf->m_apPlayers[i]->m_Authed,i);
+					//~ pSelf->Console()->PrintResponse(IConsole::OUTPUT_LEVEL_STANDARD, "info", aBuf);
+					pSelf->SendChatTarget(i, aBuf);
+					pServ->SendRconLine(i, aBuf);
+					helper++;
+
+				}
+			}
+		}
+		if (helper == 0 )
+			str_format(aBuf, sizeof(aBuf), "Sorry, but there is no helper online.");
+		else if (helper == 1)
+		{
+			str_format(aBuf, sizeof(aBuf), "You called one helper!");
+			pSelf->m_apPlayers[ClientID]->m_Helped = HelperTime * pSelf->Server()->TickSpeed();
+		}
+		else
+		{
+			str_format(aBuf, sizeof(aBuf), "%i helpers called!", helper);
+			pSelf->m_apPlayers[ClientID]->m_Helped = HelperTime * pSelf->Server()->TickSpeed();
+		}
+	}
+	else
+	{
+		str_format(aBuf, sizeof(aBuf), "sv_helper not activated.");
+	}
+	pSelf->SendChatTarget(ClientID, aBuf);
+}
+
+void CGameContext::ConScore(IConsole::IResult *pResult, void *pUserData, int ClientID)
+{
+	int Victim = pResult->GetVictim();
+	int Score = clamp(pResult->GetInteger(0), -9999, 9999);
+
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	CCharacter* pChr = pSelf->m_apPlayers[Victim]->GetCharacter();;
+	if(!pChr)
+		return;
+
+	//~ pSelf->m_apPlayers[ClientID]->m_Score = (Score()->PlayerData(ClientID)->m_BestTime)?Score()->PlayerData(ClientID)->m_BestTime:0;
+	pSelf->m_apPlayers[ClientID]->m_Score = Score;
+
+	char aBuf[256];
+	str_format(aBuf, sizeof(aBuf), "%s set score of %s to %i" ,pSelf->Server()->ClientName(ClientID),pSelf->Server()->ClientName(Victim), Score);
+	pSelf->Console()->PrintResponse(IConsole::OUTPUT_LEVEL_STANDARD, "info", aBuf);
+
+	//~ char aBuf[256];
+	str_format(aBuf, sizeof(aBuf), "%s set your to %i.", pSelf->Server()->ClientName(ClientID), Score);
+	pSelf->SendChatTarget(Victim, aBuf);
+}
+
+void CGameContext::ConBlood(IConsole::IResult *pResult, void *pUserData, int ClientID)
+{
+	int Victim = pResult->GetVictim();
+
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	CCharacter* pChr = pSelf->m_apPlayers[Victim]->GetCharacter();;
+	if(!pChr)
+		return;
+
+	char aBuf[128];
+	if (!pChr->m_Bloody)
+	{
+		pChr->m_Bloody = true;
+
+		str_format(aBuf, sizeof(aBuf), "You got bloody by %s.", pSelf->Server()->ClientName(ClientID));
+		pSelf->SendChatTarget(Victim, aBuf);
+	}
+	else
+	{
+		pChr->m_Bloody = false;
+		str_format(aBuf, sizeof(aBuf), "%s removed your blood.", pSelf->Server()->ClientName(ClientID));
+		pSelf->SendChatTarget(Victim, aBuf);
+	}
+}
+
+void CGameContext::ConRescue(IConsole::IResult *pResult, void *pUserData, int ClientID)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	CCharacter* pChr = pSelf->m_apPlayers[ClientID]->GetCharacter();
+	char aBuf[256];
+
+	if (!g_Config.m_SvRescue){
+		pSelf->SendChatTarget(ClientID, "Rescue is not activated.");
+		return;
+	}
+
+	if(pChr)
+	{
+		if (!pChr->m_LastRescue){
+
+			float RescueDelay = 1.25;
+			if (pChr->m_FreezeTime == 0)
+			{
+				str_format(aBuf, sizeof(aBuf), "You are not freezed!");
+				pSelf->SendChatTarget(ClientID, aBuf);
+			}
+			else if (pChr->m_DeepFreeze)
+			{
+				str_format(aBuf, sizeof(aBuf), "You are deepfreezed, undeepfreeze first!");
+				pSelf->SendChatTarget(ClientID, aBuf);
+			}
+			else if (!pChr->IsAlive())
+			{
+				str_format(aBuf, sizeof(aBuf), "You are not alive!");
+				pSelf->SendChatTarget(ClientID, aBuf);
+			}
+			else
+			{
+				//not freezed
+				for(int i = 0;i <=(int)MAX_CLIENTS-1 ; i++)
+				{
+					if ( pSelf->m_apPlayers[i])
+					{
+						CCharacter* pChr2 = pSelf->m_apPlayers[i]->GetCharacter();
+						//who hooks me?
+						if (pChr2 && pChr2->Core()->m_HookedPlayer == ClientID)
+						{
+							//Release hook
+							pChr2->Core()->m_HookedPlayer = -1;
+							pChr2->Core()->m_HookState = HOOK_RETRACTED;
+							pChr2->Core()->m_HookPos = pChr2->Core()->m_Pos;
+						}
+					}
+				}
+				if(g_Config.m_SvRescueEffects)
+				{
+					//Blood effect
+					pChr->GameServer()->CreateDeath(pChr->m_Pos, ClientID);
+					//Spawn effect
+					pChr->GameServer()->CreatePlayerSpawn(pChr->m_RescuePos);
+				}
+				//"save" last rescue time
+				pChr->m_LastRescue = RescueDelay * pSelf->Server()->TickSpeed();
+				//Teleport player
+				pChr->Core()->m_Pos = pChr->m_RescuePos;
+			}
+			//str_format(aBuf, sizeof(aBuf), "HookedPlayer: %d",pChr->Core()->m_HookedPlayer );
+			//pSelf->SendChatTarget(ClientID, aBuf);
+		}
+		else
+		{
+			pChr->UnFreeze();
+		}
+	}
+	else
+	{
+		str_format(aBuf, sizeof(aBuf), "You are not alive!");
+		pSelf->SendChatTarget(ClientID, aBuf);
+	}
+}
+
+void CGameContext::ConRegister(IConsole::IResult *pResult, void *pUserData, int ClientID)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	pSelf->MemberList->Register(ClientID,pResult->GetString(0),pSelf);
+}
+
+void CGameContext::ConLogin(IConsole::IResult *pResult, void *pUserData, int ClientID)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	pSelf->MemberList->Login(ClientID,pResult->GetString(0),pSelf);
+}
+
+void CGameContext::ConCheckMember(IConsole::IResult *pResult, void *pUserData, int ClientID)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	pSelf->MemberList->Check(pResult->GetVictim(), pSelf);
+}
+
+void CGameContext::ConMember(IConsole::IResult *pResult, void *pUserData, int ClientID)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	pSelf->MemberList->Member(pResult->GetVictim(),pSelf);
+}
+
+void CGameContext::ConUnMember(IConsole::IResult *pResult, void *pUserData, int ClientID)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	pSelf->MemberList->UnMember(pResult->GetVictim(),pSelf);
+}
+
+void CGameContext::ConIceHammer(IConsole::IResult *pResult, void *pUserData, int ClientID)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	int Victim = pResult->GetVictim();
+	CCharacter* pChr = pSelf->m_apPlayers[Victim]->GetCharacter();
+
+	if (!pChr)
+		return;
+
+	pChr->m_IceHammer = true;
+}
+
+void CGameContext::ConUnIceHammer(IConsole::IResult *pResult, void *pUserData, int ClientID)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	int Victim = pResult->GetVictim();
+	CCharacter* pChr = pSelf->m_apPlayers[Victim]->GetCharacter();
+
+	if (!pChr)
+		return;
+
+	pChr->m_IceHammer = false;
+}
+
+void CGameContext::ConSetlvl4(IConsole::IResult *pResult, void *pUserData, int ClientID)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	int Victim = pResult->GetVictim();
+	CServer* pServ = (CServer*)pSelf->Server();
+	if(pSelf->m_apPlayers[Victim])
+	{
+		pSelf->m_apPlayers[Victim]->m_Authed = 4;
+		pServ->SetRconLevel(Victim, 4);
+	}
+}
+
+
+void CGameContext::ConTest(IConsole::IResult *pResult, void *pUserData, int ClientID)
+{
+	int Victim = pResult->GetVictim();
+	const char *message = pResult->GetString(0);
+	char aBuf[256];
+
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	CCharacter* pChr = pSelf->m_apPlayers[ClientID]->GetCharacter();
+	if(!pChr)
+		return;
+
+//	str_format(aBuf, sizeof(aBuf), "md5:%s" , md5(message));
+//
+//	pSelf->SendChatTarget(Victim, aBuf);
+
+	//pChr->m_is_bloody = 1;
+	//~ pSelf->m_apPlayers[ClientID]->m_Score = (Score()->PlayerData(ClientID)->m_BestTime)?Score()->PlayerData(ClientID)->m_BestTime:0;
+	//~ pSelf->m_apPlayers[ClientID]->m_Score = 123;
+	//~ char aBuf[256];
+	//~ str_format(aBuf, sizeof(aBuf), "%s: %s" ,pSelf->Server()->ClientName(ClientID),message);
+	//~ str_format(aBuf, sizeof(aBuf), "Teeinfo:%i" , pSelf->m_apPlayers[ClientID]->m_TeeInfos.m_ColorBody);
+	//~ pSelf->Console()->PrintResponse(IConsole::OUTPUT_LEVEL_STANDARD, "info", aBuf);
+	//~ pSelf->SendChatTarget(Victim, aBuf);
+
+}
+
+void CGameContext::ConSetJumps(IConsole::IResult *pResult, void *pUserData, int ClientID)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	int Victim = pResult->GetVictim();
+	CCharacter *pChr = pSelf->m_apPlayers[Victim]->GetCharacter();
+	if (!pChr)
+		return;
+
+	pChr->Core()->m_max_jumps = clamp(pResult->GetInteger(0), 0, 9999);
+}
+
+void CGameContext::ConJumps(IConsole::IResult *pResult, void *pUserData, int ClientID)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	CCharacter *pChr = pSelf->m_apPlayers[ClientID]->GetCharacter();
+	if (!pChr)
+		return;
+
+	char aBuf[64];
+	str_format(aBuf, sizeof(aBuf), "You can jump %d times.", pChr->Core()->m_max_jumps);
+	pSelf->SendChatTarget(ClientID, aBuf);
+}
+
+
+void CGameContext::ConHammer(IConsole::IResult *pResult, void *pUserData, int ClientID)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	int Victim = pResult->GetVictim();
+
+	char aBuf[128];
+	int Type = pResult->GetInteger(0);
+
+	CCharacter* pChr = pSelf->GetPlayerChar(Victim);
+
+	if(!pChr)
+		return;
+
+	CServer* pServ = (CServer*)pSelf->Server();
+	if(Type>10 || Type<0)
+	{
+		pSelf->Console()->PrintResponse(IConsole::OUTPUT_LEVEL_STANDARD, "info", "Select hammer between 0 and 10");
+	}
+	else
+	{
+		pChr->m_HammerType = Type;
+		pChr->m_DDRaceState = DDRACE_CHEAT;
+		str_format(aBuf, sizeof(aBuf), "Hammer of '%s' ClientID=%d setted to %d", pServ->ClientName(Victim), Victim, Type);
+		pSelf->Console()->PrintResponse(IConsole::OUTPUT_LEVEL_STANDARD, "info", aBuf);
+	}
+}
+
+void CGameContext::ConToggleFly(IConsole::IResult *pResult, void *pUserData, int ClientID)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	CPlayer *pPlayer = pSelf->m_apPlayers[ClientID];
+	if(!pPlayer)
+		return;
+	CCharacter* pChr = pPlayer->GetCharacter();
+	if(!pChr)
+		return;
+	if(pChr->m_Super)
+	{
+		pChr->m_Fly = !pChr->m_Fly;
+		pSelf->Console()->PrintResponse(IConsole::OUTPUT_LEVEL_STANDARD, "info", (pChr->m_Fly) ? "Fly enabled" : "Fly disabled");
 	}
 }
