@@ -857,6 +857,146 @@ void CGameContext::ConMutes(IConsole::IResult *pResult, void *pUserData, int Cli
 	}
 }
 
+//Restored
+void CGameContext::ConHammer(IConsole::IResult *pResult, void *pUserData, int ClientID)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	int Victim = pResult->GetVictim();
+
+	char aBuf[128];
+	int Type = pResult->GetInteger(0);
+
+	CCharacter* pChr = pSelf->GetPlayerChar(Victim);
+
+	if(!pChr)
+		return;
+
+	CServer* pServ = (CServer*)pSelf->Server();
+	if(Type>10 || Type<0)
+	{
+		pResult->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info", "Select hammer between 0 and 10");
+	}
+	else
+	{
+		pChr->m_HammerType = Type;
+		pChr->m_DDRaceState = DDRACE_CHEAT;
+		str_format(aBuf, sizeof(aBuf), "Hammer of '%s' ClientID=%d setted to %d", pServ->ClientName(Victim), Victim, Type);
+		pResult->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info", aBuf);
+	}
+}
+
+void CGameContext::ConToggleFly(IConsole::IResult *pResult, void *pUserData, int ClientID)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	CPlayer *pPlayer = pSelf->m_apPlayers[ClientID];
+	if(!pPlayer)
+		return;
+	CCharacter* pChr = pPlayer->GetCharacter();
+	if(!pChr)
+		return;
+	if(pChr->m_Super)
+	{
+		pChr->m_Fly = !pChr->m_Fly;
+		pResult->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info", (pChr->m_Fly) ? "Fly enabled" : "Fly disabled");
+	}
+}
+
+void CGameContext::ConFreeze(IConsole::IResult *pResult, void *pUserData, int ClientID)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	int Seconds = -1;
+	int Victim = pResult->GetVictim();
+
+	char aBuf[128];
+
+	if(pResult->NumArguments())
+		Seconds = clamp(pResult->GetInteger(0), -2, 9999);
+
+	CCharacter* pChr = pSelf->GetPlayerChar(Victim);
+	if(!pChr)
+		return;
+
+	if(pSelf->m_apPlayers[Victim])
+	{
+		pChr->Freeze(Seconds);
+		pChr->GetPlayer()->m_RconFreeze = Seconds != -2;
+		CServer* pServ = (CServer*)pSelf->Server();
+		if(Seconds >= 0)
+			str_format(aBuf, sizeof(aBuf), "'%s' ClientID=%d has been Frozen for %d.", pServ->ClientName(Victim), Victim, Seconds);
+		else if(Seconds == -2)
+		{
+			pChr->m_DeepFreeze = true;
+			str_format(aBuf, sizeof(aBuf), "'%s' ClientID=%d has been Deep Frozen.", pServ->ClientName(Victim), Victim);
+		}
+		else
+			str_format(aBuf, sizeof(aBuf), "'%s' ClientID=%d is Frozen until you unfreeze him.", pServ->ClientName(Victim), Victim);
+		pResult->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info", aBuf);
+	}
+
+}
+
+void CGameContext::ConUnFreeze(IConsole::IResult *pResult, void *pUserData, int ClientID)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	int Victim = pResult->GetVictim();
+	static bool Warning = false;
+	char aBuf[128];
+	CCharacter* pChr = pSelf->GetPlayerChar(Victim);
+	if(!pChr)
+		return;
+	if(pChr->m_DeepFreeze && !Warning)
+	{
+		pResult->Print(IConsole::OUTPUT_LEVEL_STANDARD, "warning", "This client is deeply frozen, repeat the command to defrost him.");
+		Warning = true;
+		return;
+	}
+	if(pChr->m_DeepFreeze && Warning)
+	{
+		pChr->m_DeepFreeze = false;
+		Warning = false;
+	}
+	pChr->m_FreezeTime = 2;
+	pChr->GetPlayer()->m_RconFreeze = false;
+	CServer* pServ = (CServer*)pSelf->Server();
+	str_format(aBuf, sizeof(aBuf), "'%s' ClientID=%d has been defrosted.", pServ->ClientName(Victim), Victim);
+	pResult->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info", aBuf);
+}
+
+void CGameContext::ConInvis(IConsole::IResult *pResult, void *pUserData, int ClientID)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	char aBuf[128];
+	int Victim = pResult->GetVictim();
+
+	if(!pSelf->m_apPlayers[ClientID])
+		return;
+
+	if(pSelf->m_apPlayers[Victim])
+	{
+		pSelf->m_apPlayers[Victim]->m_Invisible = true;
+		CServer* pServ = (CServer*)pSelf->Server();
+		str_format(aBuf, sizeof(aBuf), "'%s' ClientID=%d is now invisible.", pServ->ClientName(Victim), Victim);
+		pResult->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info", aBuf);
+	}
+}
+
+void CGameContext::ConVis(IConsole::IResult *pResult, void *pUserData, int ClientID)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	int Victim = pResult->GetVictim();
+
+	if(!pSelf->m_apPlayers[ClientID])
+		return;
+	char aBuf[128];
+	if(pSelf->m_apPlayers[Victim])
+	{
+		pSelf->m_apPlayers[Victim]->m_Invisible = false;
+		CServer* pServ = (CServer*)pSelf->Server();
+		str_format(aBuf, sizeof(aBuf), "'%s' ClientID=%d is visible.", pServ->ClientName(Victim), Victim);
+		pResult->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info", aBuf);
+	}
+}
+
 //XXLmod
 void CGameContext::ConSkin(IConsole::IResult *pResult, void *pUserData, int ClientID)
 {
@@ -1338,143 +1478,4 @@ void CGameContext::ConJumps(IConsole::IResult *pResult, void *pUserData, int Cli
 	pSelf->SendChatTarget(ClientID, aBuf);
 }
 
-
-void CGameContext::ConHammer(IConsole::IResult *pResult, void *pUserData, int ClientID)
-{
-	CGameContext *pSelf = (CGameContext *)pUserData;
-	int Victim = pResult->GetVictim();
-
-	char aBuf[128];
-	int Type = pResult->GetInteger(0);
-
-	CCharacter* pChr = pSelf->GetPlayerChar(Victim);
-
-	if(!pChr)
-		return;
-
-	CServer* pServ = (CServer*)pSelf->Server();
-	if(Type>10 || Type<0)
-	{
-		pResult->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info", "Select hammer between 0 and 10");
-	}
-	else
-	{
-		pChr->m_HammerType = Type;
-		pChr->m_DDRaceState = DDRACE_CHEAT;
-		str_format(aBuf, sizeof(aBuf), "Hammer of '%s' ClientID=%d setted to %d", pServ->ClientName(Victim), Victim, Type);
-		pResult->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info", aBuf);
-	}
-}
-
-void CGameContext::ConToggleFly(IConsole::IResult *pResult, void *pUserData, int ClientID)
-{
-	CGameContext *pSelf = (CGameContext *)pUserData;
-	CPlayer *pPlayer = pSelf->m_apPlayers[ClientID];
-	if(!pPlayer)
-		return;
-	CCharacter* pChr = pPlayer->GetCharacter();
-	if(!pChr)
-		return;
-	if(pChr->m_Super)
-	{
-		pChr->m_Fly = !pChr->m_Fly;
-		pResult->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info", (pChr->m_Fly) ? "Fly enabled" : "Fly disabled");
-	}
-}
-
-void CGameContext::ConFreeze(IConsole::IResult *pResult, void *pUserData, int ClientID)
-{
-	CGameContext *pSelf = (CGameContext *)pUserData;
-	int Seconds = -1;
-	int Victim = pResult->GetVictim();
-
-	char aBuf[128];
-
-	if(pResult->NumArguments())
-		Seconds = clamp(pResult->GetInteger(0), -2, 9999);
-
-	CCharacter* pChr = pSelf->GetPlayerChar(Victim);
-	if(!pChr)
-		return;
-
-	if(pSelf->m_apPlayers[Victim])
-	{
-		pChr->Freeze(Seconds);
-		pChr->GetPlayer()->m_RconFreeze = Seconds != -2;
-		CServer* pServ = (CServer*)pSelf->Server();
-		if(Seconds >= 0)
-			str_format(aBuf, sizeof(aBuf), "'%s' ClientID=%d has been Frozen for %d.", pServ->ClientName(Victim), Victim, Seconds);
-		else if(Seconds == -2)
-		{
-			pChr->m_DeepFreeze = true;
-			str_format(aBuf, sizeof(aBuf), "'%s' ClientID=%d has been Deep Frozen.", pServ->ClientName(Victim), Victim);
-		}
-		else
-			str_format(aBuf, sizeof(aBuf), "'%s' ClientID=%d is Frozen until you unfreeze him.", pServ->ClientName(Victim), Victim);
-		pResult->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info", aBuf);
-	}
-
-}
-
-void CGameContext::ConUnFreeze(IConsole::IResult *pResult, void *pUserData, int ClientID)
-{
-	CGameContext *pSelf = (CGameContext *)pUserData;
-	int Victim = pResult->GetVictim();
-	static bool Warning = false;
-	char aBuf[128];
-	CCharacter* pChr = pSelf->GetPlayerChar(Victim);
-	if(!pChr)
-		return;
-	if(pChr->m_DeepFreeze && !Warning)
-	{
-		pResult->Print(IConsole::OUTPUT_LEVEL_STANDARD, "warning", "This client is deeply frozen, repeat the command to defrost him.");
-		Warning = true;
-		return;
-	}
-	if(pChr->m_DeepFreeze && Warning)
-	{
-		pChr->m_DeepFreeze = false;
-		Warning = false;
-	}
-	pChr->m_FreezeTime = 2;
-	pChr->GetPlayer()->m_RconFreeze = false;
-	CServer* pServ = (CServer*)pSelf->Server();
-	str_format(aBuf, sizeof(aBuf), "'%s' ClientID=%d has been defrosted.", pServ->ClientName(Victim), Victim);
-	pResult->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info", aBuf);
-}
-
-void CGameContext::ConInvis(IConsole::IResult *pResult, void *pUserData, int ClientID)
-{
-	CGameContext *pSelf = (CGameContext *)pUserData;
-	char aBuf[128];
-	int Victim = pResult->GetVictim();
-
-	if(!pSelf->m_apPlayers[ClientID])
-		return;
-
-	if(pSelf->m_apPlayers[Victim])
-	{
-		pSelf->m_apPlayers[Victim]->m_Invisible = true;
-		CServer* pServ = (CServer*)pSelf->Server();
-		str_format(aBuf, sizeof(aBuf), "'%s' ClientID=%d is now invisible.", pServ->ClientName(Victim), Victim);
-		pResult->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info", aBuf);
-	}
-}
-
-void CGameContext::ConVis(IConsole::IResult *pResult, void *pUserData, int ClientID)
-{
-	CGameContext *pSelf = (CGameContext *)pUserData;
-	int Victim = pResult->GetVictim();
-
-	if(!pSelf->m_apPlayers[ClientID])
-		return;
-	char aBuf[128];
-	if(pSelf->m_apPlayers[Victim])
-	{
-		pSelf->m_apPlayers[Victim]->m_Invisible = false;
-		CServer* pServ = (CServer*)pSelf->Server();
-		str_format(aBuf, sizeof(aBuf), "'%s' ClientID=%d is visible.", pServ->ClientName(Victim), Victim);
-		pResult->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info", aBuf);
-	}
-}
 
