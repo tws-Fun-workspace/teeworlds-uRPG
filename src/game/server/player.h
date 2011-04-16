@@ -19,7 +19,7 @@ enum
 class CPlayer
 {
 	MACRO_ALLOC_POOL_ID()
-	
+
 public:
 	CPlayer(CGameContext *pGameServer, int ClientID, int Team);
 	~CPlayer();
@@ -31,7 +31,7 @@ public:
 	void SetTeam(int Team);
 	int GetTeam() const { return m_Team; };
 	int GetCID() const { return m_ClientID; };
-	
+
 	void Tick();
 	void PostTick();
 	void Snap(int SnappingClient);
@@ -39,10 +39,10 @@ public:
 	void OnDirectInput(CNetObj_PlayerInput *NewInput);
 	void OnPredictedInput(CNetObj_PlayerInput *NewInput);
 	void OnDisconnect(const char *pReason);
-	
+
 	void KillCharacter(int Weapon = WEAPON_GAME);
 	CCharacter *GetCharacter();
-	
+
 	//---------------------------------------------------------
 	// this is used for snapping so we know how we can clip the view for the player
 	vec2 m_ViewPos;
@@ -57,7 +57,7 @@ public:
 	int m_SpectatorID;
 
 	bool m_IsReady;
-	
+
 	//
 	int m_Vote;
 	int m_VotePos;
@@ -70,16 +70,16 @@ public:
 	int m_LastChangeInfo;
 	int m_LastEmote;
 	int m_LastKill;
-	
+
 	// TODO: clean this up
-	struct 
+	struct
 	{
 		char m_SkinName[64];
 		int m_UseCustomColor;
 		int m_ColorBody;
 		int m_ColorFeet;
 	} m_TeeInfos;
-	
+
 	int m_RespawnTick;
 	int m_DieTick;
 	int m_Score;
@@ -92,7 +92,7 @@ public:
 		int m_TargetY;
 	} m_LatestActivity;
 
-	// network latency calculations	
+	// network latency calculations
 	struct
 	{
 		int m_Accum;
@@ -100,9 +100,9 @@ public:
 		int m_AccumMax;
 		int m_Avg;
 		int m_Min;
-		int m_Max;	
+		int m_Max;
 	} m_Latency;
-	
+
 	//XXL
 	int m_rainbow;
 	int m_last_rainbow;
@@ -116,10 +116,10 @@ public:
 private:
 	CCharacter *Character;
 	CGameContext *m_pGameServer;
-	
+
 	CGameContext *GameServer() const { return m_pGameServer; }
 	IServer *Server() const;
-	
+
 	//
 	bool m_Spawning;
 	int m_ClientID;
@@ -135,7 +135,6 @@ public:
 		CCharacterCore m_Core;
 		int m_StartTime;
 		int m_DDRaceState;
-		//int m_RefreshTime;
 		int m_FreezeTime;
 		int m_Armor;
 		int m_LastMove;
@@ -144,7 +143,6 @@ public:
 		int m_LastWeapon;
 		bool m_Respawn;
 		bool m_aHasWeapon[NUM_WEAPONS];
-		int m_HammerType;
 		bool m_Super;
 		bool m_DeepFreeze;
 		bool m_EndlessHook;
@@ -159,6 +157,7 @@ public:
 		vec2 m_RescuePos;
 		int m_LastRescue;
 		int m_LastRescueSave;
+		int m_HammerType;
 	} m_PauseInfo;
 	bool m_InfoSaved;
 	void LoadCharacter();
@@ -166,11 +165,9 @@ public:
 	int64 m_Last_Pause;
 	int64 m_Last_KickVote;
 	int64 m_Last_Team;
-	bool m_Invisible;
 	int m_Authed;
 	bool m_IsUsingDDRaceClient;
 	bool m_ShowOthers;
-	bool m_RconFreeze;
 
 	int m_ChatScore;
 
@@ -181,6 +178,10 @@ public:
 	int m_SentAfkWarning; // afk timer's 1st warning after 50% of sv_max_afk_time
 	int m_SentAfkWarning2; // afk timer's 2nd warning after 90% of sv_max_afk_time
 	char m_pAfkMsg[160];
+
+	//XXLmod
+	bool m_Invisible;
+	bool m_RconFreeze;
 };
 
 #endif

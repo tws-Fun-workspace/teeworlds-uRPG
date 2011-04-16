@@ -213,7 +213,7 @@ void CMemberList::Register(int ClientID, const char* pPass, CGameContext *pSelf)
 	{
 		str_format(aBuf, sizeof(aBuf), "%s is already a registered name.", pSelf->Server()->ClientName(ClientID));
 	}
-	pSelf->Console()->PrintResponse(IConsole::OUTPUT_LEVEL_STANDARD, "member", aBuf);
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "member", aBuf);
 }
 
 void CMemberList::Login(int ClientID, const char* pPass, CGameContext *pSelf)
@@ -252,7 +252,7 @@ void CMemberList::Login(int ClientID, const char* pPass, CGameContext *pSelf)
 			str_format(aBuf, sizeof(aBuf), "Wrong password.");
 		}
 	}
-	pSelf->Console()->PrintResponse(IConsole::OUTPUT_LEVEL_STANDARD, "member", aBuf);
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "member", aBuf);
 }
 
 void CMemberList::Member(int ClientID, CGameContext *pSelf)
@@ -278,7 +278,7 @@ void CMemberList::Member(int ClientID, CGameContext *pSelf)
 			SaveList(ClientID, pPlayer->m_aPass , pSelf, false); //Save to file
 		}
 	}
-	pSelf->Console()->PrintResponse(IConsole::OUTPUT_LEVEL_STANDARD, "member", aBuf);
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "member", aBuf);
 }
 
 void CMemberList::UnMember(int ClientID, CGameContext *pSelf)
@@ -304,7 +304,7 @@ void CMemberList::UnMember(int ClientID, CGameContext *pSelf)
 			SaveList(ClientID, pPlayer->m_aPass , pSelf, true);
 		}
 	}
-	pSelf->Console()->PrintResponse(IConsole::OUTPUT_LEVEL_STANDARD, "member", aBuf);
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "member", aBuf);
 }
 
 void CMemberList::Check(int ClientID, CGameContext *pSelf)
@@ -319,5 +319,5 @@ void CMemberList::Check(int ClientID, CGameContext *pSelf)
 	{
 		str_format(aBuf, sizeof(aBuf), "%s: logged in=%d member=%d", pSelf->Server()->ClientName(ClientID), pSelf->m_apPlayers[ClientID]->m_IsLoggedIn, pSelf->m_apPlayers[ClientID]->m_IsMember);
 	}
-	pSelf->Console()->PrintResponse(IConsole::OUTPUT_LEVEL_STANDARD, "member", aBuf);
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "member", aBuf);
 }

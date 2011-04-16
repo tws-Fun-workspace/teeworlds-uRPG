@@ -27,7 +27,7 @@
 				Remove entities marked for deletion (GAMEWORLD::remove_entities)
 			Game Controller (GAMECONTROLLER::tick)
 			All players (CPlayer::tick)
-			
+
 
 	Snap
 		Game Context (CGameContext::snap)
@@ -75,27 +75,27 @@ public:
 
 	CGameContext();
 	~CGameContext();
-	
+
 	void Clear();
-	
+
 	CEventHandler m_Events;
 	CPlayer *m_apPlayers[MAX_CLIENTS];
 
 	IGameController *m_pController;
 	CGameWorld m_World;
-	
+
 	CMemberList *MemberList;
 
 	// helper functions
 	class CCharacter *GetPlayerChar(int ClientID);
-	
+
 	// voting
 	void StartVote(const char *pDesc, const char *pCommand, const char *pReason);
 	void EndVote();
 	void SendVoteSet(int ClientID);
 	void SendVoteStatus(int ClientID, int Total, int Yes, int No);
 	void AbortVoteKickOnDisconnect(int ClientID);
-	
+
 	int m_VoteCreator;
 	int64 m_VoteCloseTime;
 	bool m_VoteUpdate;
@@ -122,7 +122,7 @@ public:
 	void CreatePlayerSpawn(vec2 Pos, int Mask=-1);
 	void CreateDeath(vec2 Pos, int Who, int Mask=-1);
 	void CreateSound(vec2 Pos, int Sound, int Mask=-1);
-	void CreateSoundGlobal(int Sound, int Target=-1);	
+	void CreateSoundGlobal(int Sound, int Target=-1);
 
 
 	enum
@@ -139,22 +139,22 @@ public:
 	void SendEmoticon(int ClientID, int Emoticon);
 	void SendWeaponPickup(int ClientID, int Weapon);
 	void SendBroadcast(const char *pText, int ClientID);
-	
-	
+
+
 	//
 	void CheckPureTuning();
 	void SendTuningParams(int ClientID);
-	
+
 	// engine events
 	virtual void OnInit();
 	virtual void OnConsoleInit();
 	virtual void OnShutdown();
-	
+
 	virtual void OnTick();
 	virtual void OnPreSnap();
 	virtual void OnSnap(int ClientID);
 	virtual void OnPostSnap();
-	
+
 	virtual void OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID);
 
 	virtual void OnClientConnected(int ClientID);
@@ -205,23 +205,16 @@ private:
 	static void ConAddWeapon(IConsole::IResult *pResult, void *pUserData, int ClientID);
 	static void ConRemoveWeapon(IConsole::IResult *pResult, void *pUserData, int ClientID);
 
-	void ModifyWeapons(int ClientID, int Victim, int Weapon, bool Remove);
+	void ModifyWeapons(IConsole::IResult *pResult, int ClientID, int Victim, int Weapon, bool Remove);
 	void MoveCharacter(int ClientID, int Victim, int X, int Y, bool Raw = false);
-
-	static void ConTeleport(IConsole::IResult *pResult, void *pUserData, int ClientID);
-	static void ConPhook(IConsole::IResult *pResult, void *pUserData, int ClientID);
-
-	static void ConFreeze(IConsole::IResult *pResult, void *pUserData, int ClientID);
-	static void ConUnFreeze(IConsole::IResult *pResult, void *pUserData, int ClientID);
 	static void ConGoLeft(IConsole::IResult *pResult, void *pUserData, int ClientID);
 	static void ConGoRight(IConsole::IResult *pResult, void *pUserData, int ClientID);
 	static void ConGoUp(IConsole::IResult *pResult, void *pUserData, int ClientID);
 	static void ConGoDown(IConsole::IResult *pResult, void *pUserData, int ClientID);
-
 	static void ConMove(IConsole::IResult *pResult, void *pUserData, int ClientID);
 	static void ConMoveRaw(IConsole::IResult *pResult, void *pUserData, int ClientID);
-	static void ConInvis(IConsole::IResult *pResult, void *pUserData, int ClientID);
-	static void ConVis(IConsole::IResult *pResult, void *pUserData, int ClientID);
+
+	static void ConTeleport(IConsole::IResult *pResult, void *pUserData, int ClientID);
 
 	static void ConCredits(IConsole::IResult *pResult, void *pUserData, int ClientID);
 	static void ConInfo(IConsole::IResult *pResult, void *pUserData, int ClientID);
@@ -245,11 +238,6 @@ private:
 	static void ConEyeEmote(IConsole::IResult *pResult, void *pUserData, int ClientID);
 	static void ConShowOthers(IConsole::IResult *pResult, void *pUserData, int ClientID);
 
-	static void ConAsk(IConsole::IResult *pResult, void *pUserData, int ClientID);
-	static void ConYes(IConsole::IResult *pResult, void *pUserData, int ClientID);
-	static void ConNo(IConsole::IResult *pResult, void *pUserData, int ClientID);
-	static void ConInvite(IConsole::IResult *pResult, void *pUserData, int ClientID);
-	static void ConToggleStrict(IConsole::IResult *pResult, void *pUserData, int ClientID);
 	static void ConMute(IConsole::IResult *pResult, void *pUserData, int ClientID);
 	static void ConMuteID(IConsole::IResult *pResult, void *pUserData, int ClientID);
 	static void ConMuteIP(IConsole::IResult *pResult, void *pUserData, int ClientID);
@@ -282,6 +270,12 @@ private:
 	static void ConIceHammer(IConsole::IResult *pResult, void *pUserData, int ClientID);
 	static void ConUnIceHammer(IConsole::IResult *pResult, void *pUserData, int ClientID);
 
+	static void ConPhook(IConsole::IResult *pResult, void *pUserData, int ClientID);
+	static void ConFreeze(IConsole::IResult *pResult, void *pUserData, int ClientID);
+	static void ConUnFreeze(IConsole::IResult *pResult, void *pUserData, int ClientID);
+	static void ConVis(IConsole::IResult *pResult, void *pUserData, int ClientID);
+	static void ConInvis(IConsole::IResult *pResult, void *pUserData, int ClientID);
+
 	enum
 	{
 		MAX_MUTES=32,
@@ -294,7 +288,7 @@ private:
 
 	CMute m_aMutes[MAX_MUTES];
 	int m_NumMutes;
-	void Mute(NETADDR *Addr, int Secs, const char *pDisplayName);
+	void Mute(IConsole::IResult *pResult, NETADDR *Addr, int Secs, const char *pDisplayName);
 
 public:
 	CLayers *Layers() { return &m_Layers; }
