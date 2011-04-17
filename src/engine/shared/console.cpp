@@ -361,12 +361,12 @@ void CConsole::ExecuteLineStroked(int Stroke, const char *pStr, int ClientID, in
 					}*/
 					else
 					{
-						if(pCommand->m_Flags & CMDFLAG_TEST && !m_Cheated) //TODO: XXLTomate: save "cheated" for players not for whole server
+						/*if(pCommand->m_Flags & CMDFLAG_TEST && !m_Cheated) //save "cheated" for players not for whole server
 						{
 							m_Cheated = true;
 							Result.Print(OUTPUT_LEVEL_STANDARD, "Cheated", "You have cheated, no records will be saved until server shutdown");
 							str_format(g_Config.m_SvBroadcast, sizeof(g_Config.m_SvBroadcast), "Cheated: No records will be saved");
-						}
+						}*/
 						if (Result.HasVictim())
 						{
 							if(Result.GetVictim() == CResult::VICTIM_ALL)

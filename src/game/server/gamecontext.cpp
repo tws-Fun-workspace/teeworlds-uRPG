@@ -775,7 +775,8 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 					pMsg->m_pMessage);
 
 			//Same in server.cpp
-			//TODO: put this in a seperate file...
+			//TODO: XXLTomate: put this in a seperate file...
+			//TODO: XXLTomate: does not work anymore
 			int Censor = 0;
 			int cCounter = 0;
 			char reg[] = "register ";

@@ -202,6 +202,5 @@ MACRO_CONFIG_INT(SvSilentXXL, sv_silent_xxl, 0, 0, 1, CFGFLAG_SERVER, "Makes XXL
 MACRO_CONFIG_INT(SvRconScore, sv_rcon_score, 0, 0, 1, CFGFLAG_SERVER, "Shows the rcon lvl in scoreboard.", IConsole::CONSOLELEVEL_CONFIG)
 MACRO_CONFIG_INT(SvWhisperLevel, sv_whisper_lvl, 1, -1, 4, CFGFLAG_SERVER, "Sets the rcon lvl to whisper", IConsole::CONSOLELEVEL_CONFIG)
 MACRO_CONFIG_INT(SvWhisperAdmin, sv_whisper_allow_to_admin, 0, 0, 1, CFGFLAG_SERVER, "Allows to whisper to admins", IConsole::CONSOLELEVEL_CONFIG)
-MACRO_CONFIG_INT(SvShortGameType, sv_short_gametype, 0, 0, 1, CFGFLAG_SERVER, "Use xDDRace instead of XXLDDRace", IConsole::CONSOLELEVEL_CONFIG)
 
 #endif
