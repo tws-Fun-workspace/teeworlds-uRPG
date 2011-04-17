@@ -1633,7 +1633,7 @@ void CServer::RegisterCommands()
 	Console()->Register("ban", "s?ir", CFGFLAG_SERVER|CFGFLAG_STORE, ConBan, this, "", IConsole::CONSOLELEVEL_MODERATOR);
 	Console()->Register("unban", "s", CFGFLAG_SERVER|CFGFLAG_STORE, ConUnban, this, "", IConsole::CONSOLELEVEL_MODERATOR);
 	Console()->Register("bans", "", CFGFLAG_SERVER|CFGFLAG_STORE, ConBans, this, "", IConsole::CONSOLELEVEL_MODERATOR);
-	Console()->Register("status", "", CFGFLAG_SERVER, ConStatus, this, "", IConsole::CONSOLELEVEL_MODERATOR);
+	Console()->Register("status", "", CFGFLAG_SERVER, ConStatus, this, "", IConsole::CONSOLELEVEL_HELPER);
 	Console()->Register("shutdown", "", CFGFLAG_SERVER, ConShutdown, this, "", IConsole::CONSOLELEVEL_ADMIN);
 
 	Console()->Register("record", "?s", CFGFLAG_SERVER|CFGFLAG_STORE, ConRecord, this, "", IConsole::CONSOLELEVEL_ADMIN);

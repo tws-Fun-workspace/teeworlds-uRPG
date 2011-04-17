@@ -53,6 +53,7 @@ CPlayer::CPlayer(CGameContext *pGameServer, int ClientID, int Team)
 	m_rainbow = RAINBOW_NONE;
 	m_last_rainbow = 0;
 	m_Helped = 0;
+	m_Invisible = false;
 }
 
 CPlayer::~CPlayer()
@@ -395,6 +396,7 @@ void CPlayer::SaveCharacter()
 	m_PauseInfo.m_RescuePos = Character->m_RescuePos;
 	m_PauseInfo.m_LastRescue = Character->m_LastRescue;
 	m_PauseInfo.m_LastRescueSave = Character->m_LastRescueSave;
+	m_PauseInfo.m_HammerType = Character->m_HammerType;
 }
 
 void CPlayer::AfkTimer(int new_target_x, int new_target_y)

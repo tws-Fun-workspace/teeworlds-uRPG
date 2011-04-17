@@ -145,6 +145,7 @@ private:
 	//XXLmod
 	void XXLDDRaceInit();
 	void XXLDDRaceTick();
+	void XXLDDRacePostCoreTick();
 	void HandleRainbow();
 	void HandleBlood();
 	void HandleRescue();
