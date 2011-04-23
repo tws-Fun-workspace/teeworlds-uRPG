@@ -85,4 +85,7 @@ MACRO_CONFIG_INT(SvVoteKickBantime, sv_vote_kick_bantime, 5, 0, 1440, CFGFLAG_SE
 
 MACRO_CONFIG_INT(DbgFocus, dbg_focus, 0, 0, 1, CFGFLAG_CLIENT, "", IConsole::CONSOLELEVEL_USER)
 MACRO_CONFIG_INT(DbgTuning, dbg_tuning, 0, 0, 1, CFGFLAG_CLIENT, "", IConsole::CONSOLELEVEL_USER)
+
+//XXLmod
+MACRO_CONFIG_INT(SvInactiveLogoutTime, sv_inactivelogout_time, 0, 0, 1000, CFGFLAG_SERVER, "How many minutes to wait before logging players out of rcon", IConsole::CONSOLELEVEL_ADMIN)
 #endif

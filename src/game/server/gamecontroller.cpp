@@ -762,6 +762,29 @@ void IGameController::Tick()
 			}
 		}
 	}
+
+	// logout inactive players
+	if(g_Config.m_SvInactiveLogoutTime > 0)
+	{
+		for(int i = 0; i < MAX_CLIENTS; ++i)
+		{
+			if(GameServer()->m_apPlayers[i] && (Server()->IsAuthed(i) || GameServer()->m_apPlayers[i]->m_IsLoggedIn))
+			{
+				if(Server()->Tick() > GameServer()->m_apPlayers[i]->m_LastActionTick+g_Config.m_SvInactiveLogoutTime*Server()->TickSpeed()*60)
+				{
+					//Logout player from rcon and member tile (copy of "ConLogOut")
+					GameServer()->m_apPlayers[i]->m_Authed = IConsole::CONSOLELEVEL_USER;
+					Server()->SetRconLevel(i, IConsole::CONSOLELEVEL_USER);
+					if (g_Config.m_SvRconScore)
+						GameServer()->m_apPlayers[i]->m_Score = 0;
+					GameServer()->m_apPlayers[i]->m_IsMember = false;
+					GameServer()->m_apPlayers[i]->m_IsLoggedIn = false;
+					//Set player as acted (to prevent instant inactive kick)
+					GameServer()->m_apPlayers[i]->m_LastActionTick = Server()->Tick();
+				}
+			}
+		}
+	}
 }
 
 
