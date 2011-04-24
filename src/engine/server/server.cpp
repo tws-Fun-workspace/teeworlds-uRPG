@@ -28,6 +28,7 @@
 
 //XXLmod
 #include <algorithm>
+#include <string>
 
 
 #if defined(CONF_FAMILY_WINDOWS)
