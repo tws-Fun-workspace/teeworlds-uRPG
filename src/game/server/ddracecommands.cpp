@@ -149,7 +149,7 @@ void CGameContext::ConSuper(IConsole::IResult *pResult, void *pUserData, int Cli
 void CGameContext::ConUnSuper(IConsole::IResult *pResult, void *pUserData, int ClientID)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
-	CCharacter* pChr = pSelf->GetPlayerChar(ClientID);
+	CCharacter* pChr = pSelf->GetPlayerChar(pResult->GetVictim());
 	if(pChr && pChr->m_Super)
 	{
 		pChr->m_Super = false;
@@ -1252,7 +1252,7 @@ void CGameContext::ConScore(IConsole::IResult *pResult, void *pUserData, int Cli
 		return;
 
 	//~ pSelf->m_apPlayers[ClientID]->m_Score = (Score()->PlayerData(ClientID)->m_BestTime)?Score()->PlayerData(ClientID)->m_BestTime:0;
-	pSelf->m_apPlayers[ClientID]->m_Score = Score;
+	pSelf->m_apPlayers[Victim]->m_Score = Score;
 
 	char aBuf[256];
 	str_format(aBuf, sizeof(aBuf), "%s set score of %s to %i" ,pSelf->Server()->ClientName(ClientID),pSelf->Server()->ClientName(Victim), Score);
