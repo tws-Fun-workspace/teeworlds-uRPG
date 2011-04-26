@@ -978,6 +978,13 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 				return;
 			}
 
+			if(g_Config.m_SvMemberProtection && m_apPlayers[KickID]->m_IsMember)
+			{
+				SendChatTarget(ClientID, "You can't kick logged in members");
+				m_apPlayers[ClientID]->m_Last_KickVote = time_get();
+				return;
+			}
+
 			str_format(aChatmsg, sizeof(aChatmsg), "'%s' called for vote to kick '%s' (%s)", Server()->ClientName(ClientID), Server()->ClientName(KickID), pReason);
 			str_format(aDesc, sizeof(aDesc), "Kick '%s'", Server()->ClientName(KickID));
 			if (!g_Config.m_SvVoteKickBantime)

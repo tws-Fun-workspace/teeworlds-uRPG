@@ -88,4 +88,5 @@ MACRO_CONFIG_INT(DbgTuning, dbg_tuning, 0, 0, 1, CFGFLAG_CLIENT, "", IConsole::C
 
 //XXLmod
 MACRO_CONFIG_INT(SvInactiveLogoutTime, sv_inactivelogout_time, 0, 0, 1000, CFGFLAG_SERVER, "How many minutes to wait before logging players out of rcon", IConsole::CONSOLELEVEL_ADMIN)
+MACRO_CONFIG_INT(SvMemberProtection, sv_member_protection, 0, 0, 1, CFGFLAG_SERVER, "Protect logged in members against vote kick", IConsole::CONSOLELEVEL_ADMIN)
 #endif
