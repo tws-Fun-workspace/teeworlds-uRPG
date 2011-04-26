@@ -197,7 +197,7 @@ void CMemberList::SaveList(int ClientID, const char* pPass, CGameContext *pSelf,
 	UpdatePlayer(ClientID, pPass, SetAuthLvl);
 }
 
-void CMemberList::Register(int ClientID, const char* pPass, CGameContext *pSelf)
+void CMemberList::Register(IConsole::IResult *pResult, int ClientID, const char* pPass, CGameContext *pSelf)
 {
 	CPlayerMember *pPlayer = SearchList(ClientID, 0);
 	char aBuf[256];
@@ -213,10 +213,10 @@ void CMemberList::Register(int ClientID, const char* pPass, CGameContext *pSelf)
 	{
 		str_format(aBuf, sizeof(aBuf), "%s is already a registered name.", pSelf->Server()->ClientName(ClientID));
 	}
-	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "member", aBuf);
+	pResult->Print(IConsole::OUTPUT_LEVEL_STANDARD, "member", aBuf);
 }
 
-void CMemberList::Login(int ClientID, const char* pPass, CGameContext *pSelf)
+void CMemberList::Login(IConsole::IResult *pResult, int ClientID, const char* pPass, CGameContext *pSelf)
 {
 	CPlayerMember *pPlayer = SearchList(ClientID, 0);
 	char aBuf[256];
@@ -252,7 +252,7 @@ void CMemberList::Login(int ClientID, const char* pPass, CGameContext *pSelf)
 			str_format(aBuf, sizeof(aBuf), "Wrong password.");
 		}
 	}
-	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "member", aBuf);
+	pResult->Print(IConsole::OUTPUT_LEVEL_STANDARD, "member", aBuf);
 }
 
 void CMemberList::Member(int ClientID, CGameContext *pSelf)

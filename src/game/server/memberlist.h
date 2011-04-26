@@ -44,8 +44,8 @@ public:
 	CMemberList(CGameContext *pGameServer);
 	~CMemberList();
 
-	void Register(int ClientID, const char* pPass , CGameContext *pSelf);
-	void Login(int ClientID, const char* pPass , CGameContext *pSelf);
+	void Register(IConsole::IResult *pResult, int ClientID, const char* pPass , CGameContext *pSelf);
+	void Login(IConsole::IResult *pResult, int ClientID, const char* pPass , CGameContext *pSelf);
 	void Member(int ClientID, CGameContext *pSelf);
 	void UnMember(int ClientID, CGameContext *pSelf);
 	void Check(int ClientID, CGameContext *pSelf);

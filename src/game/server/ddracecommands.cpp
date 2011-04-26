@@ -1367,13 +1367,13 @@ void CGameContext::ConRescue(IConsole::IResult *pResult, void *pUserData, int Cl
 void CGameContext::ConRegister(IConsole::IResult *pResult, void *pUserData, int ClientID)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
-	pSelf->MemberList->Register(ClientID,pResult->GetString(0),pSelf);
+	pSelf->MemberList->Register(pResult, ClientID, pResult->GetString(0), pSelf);
 }
 
 void CGameContext::ConLogin(IConsole::IResult *pResult, void *pUserData, int ClientID)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
-	pSelf->MemberList->Login(ClientID,pResult->GetString(0),pSelf);
+	pSelf->MemberList->Login(pResult, ClientID, pResult->GetString(0), pSelf);
 }
 
 void CGameContext::ConCheckMember(IConsole::IResult *pResult, void *pUserData, int ClientID)
@@ -1385,13 +1385,13 @@ void CGameContext::ConCheckMember(IConsole::IResult *pResult, void *pUserData, i
 void CGameContext::ConMember(IConsole::IResult *pResult, void *pUserData, int ClientID)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
-	pSelf->MemberList->Member(pResult->GetVictim(),pSelf);
+	pSelf->MemberList->Member(pResult->GetVictim(), pSelf);
 }
 
 void CGameContext::ConUnMember(IConsole::IResult *pResult, void *pUserData, int ClientID)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
-	pSelf->MemberList->UnMember(pResult->GetVictim(),pSelf);
+	pSelf->MemberList->UnMember(pResult->GetVictim(), pSelf);
 }
 
 void CGameContext::ConIceHammer(IConsole::IResult *pResult, void *pUserData, int ClientID)
