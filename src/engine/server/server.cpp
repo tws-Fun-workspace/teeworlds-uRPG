@@ -902,24 +902,13 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
 					if (g_Config.m_SvHybridMode)
 					{
 						std::string str_in = pCmd;
-						size_t found_sv;
-						size_t found_dbg;
+						size_t found_sv, found_dbg, found_kill_pl;
 						found_sv = str_in.find("sv_");
 						found_dbg = str_in.find("dbg_");
-						if (found_sv == std::string::npos && found_dbg == std::string::npos)
-						{
-							replace(str_in.begin(), str_in.end(), '_', ' ');
-							pCmd = str_in.c_str();
-						}
+						found_kill_pl = str_in.find("kill_pl");
 
-						if (str_comp(str_in.c_str(), "down") == 0)//directions
-							str_in = "down me";
-						else if (str_comp(str_in.c_str(), "up") == 0)
-							str_in = "up me";
-						else if (str_comp(str_in.c_str(), "right") == 0)
-							str_in = "right me";
-						else if (str_comp(str_in.c_str(), "left") == 0)
-							str_in = "left me";
+						if (found_sv == std::string::npos && found_dbg == std::string::npos && found_kill_pl == std::string::npos)
+							replace(str_in.begin(), str_in.end(), '_', ' ');
 
 						Console()->ExecuteLine(str_in.c_str(), ClientID, m_aClients[ClientID].m_Authed, SendRconResponse, &Info);
 					}

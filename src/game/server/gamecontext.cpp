@@ -769,12 +769,11 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 			Console()->ExecuteLine(pMsg->m_pMessage + 1,
 					ClientID, ((CServer *) Server())->m_aClients[ClientID].m_Authed,
 					SendChatResponse, &Info);
-			Console()->Print(IConsole::OUTPUT_LEVEL_ADDINFO, "chat",
-					pMsg->m_pMessage);
+			/*Console()->Print(IConsole::OUTPUT_LEVEL_ADDINFO, "chat",
+					pMsg->m_pMessage);*/
 
 			//Same in server.cpp
 			//TODO: XXLTomate: put this in a seperate file...
-			//TODO: XXLTomate: does not work anymore
 			int Censor = 0;
 			int cCounter = 0;
 			char reg[] = "register ";
