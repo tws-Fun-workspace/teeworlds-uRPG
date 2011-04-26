@@ -672,7 +672,7 @@ void CMenus::RenderLoading()
 	Graphics()->QuadsEnd();
 
 
-	const char *pCaption = Localize("Loading DDRace Client");
+	const char *pCaption = Localize("Loading XXLDDRace Client");
 
 	tw = TextRender()->TextWidth(0, 48.0f, pCaption, -1);
 	CUIRect r;
