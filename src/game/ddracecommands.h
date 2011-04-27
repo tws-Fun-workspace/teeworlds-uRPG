@@ -58,18 +58,18 @@ CONSOLE_COMMAND("mutes", "", CFGFLAG_SERVER, ConMutes, this, "", IConsole::CONSO
 
 //jDDRace
 CONSOLE_COMMAND("jumps", "", CFGFLAG_SERVER, ConJumps, this, "Shows your jumps", IConsole::CONSOLELEVEL_USER)
-CONSOLE_COMMAND("setjumps", "vi", CFGFLAG_SERVER|CMDFLAG_TEST|CMDFLAG_HELPERCMD, ConSetJumps, this, "Gives player v i jumps", IConsole::CONSOLELEVEL_ADMIN)
-//XXLDDRace TODO: remove crap like score/renacme
-CONSOLE_COMMAND("skin", "vs", CFGFLAG_SERVER|CMDFLAG_TEST|CMDFLAG_HELPERCMD, ConSkin, this, "Changes the skin from i in s", IConsole::CONSOLELEVEL_CONFIG)
-CONSOLE_COMMAND("rename", "vr", CFGFLAG_SERVER|CMDFLAG_TEST|CMDFLAG_HELPERCMD, ConRename, this, "Renames i name to s", IConsole::CONSOLELEVEL_CONFIG)
+CONSOLE_COMMAND("setjumps", "vi", CFGFLAG_SERVER|CMDFLAG_TEST, ConSetJumps, this, "Gives player v i jumps", IConsole::CONSOLELEVEL_ADMIN)
+//XXLDDRace TODO: remove crap like score/rename
+CONSOLE_COMMAND("skin", "vs", CFGFLAG_SERVER|CMDFLAG_TEST, ConSkin, this, "Changes the skin from i in s", IConsole::CONSOLELEVEL_CONFIG)
+CONSOLE_COMMAND("rename", "vr", CFGFLAG_SERVER|CMDFLAG_TEST, ConRename, this, "Renames i name to s", IConsole::CONSOLELEVEL_CONFIG)
 //CONSOLE_COMMAND("orgname", "v", CFGFLAG_SERVER, ConOrgname, this, "Renames i back to his orginal name", IConsole::CONSOLELEVEL_CONFIG) //not working
 //CONSOLE_COMMAND("fake", "vr", CFGFLAG_SERVER, ConFakeMessage, this, "Sends a fake message s from i", IConsole::CONSOLELEVEL_CONFIG)
-CONSOLE_COMMAND("xxl", "v", CFGFLAG_SERVER|CMDFLAG_TEST|CMDFLAG_HELPERCMD, ConFastReload, this, "Fast reload :-)", IConsole::CONSOLELEVEL_CONFIG)
-CONSOLE_COMMAND("rainbow", "v?i", CFGFLAG_SERVER|CMDFLAG_TEST|CMDFLAG_HELPERCMD, ConRainbow, this, "Colorchange the tee i like a rainbow", IConsole::CONSOLELEVEL_ADMIN)
+CONSOLE_COMMAND("xxl", "v", CFGFLAG_SERVER|CMDFLAG_TEST, ConFastReload, this, "Fast reload :-)", IConsole::CONSOLELEVEL_CONFIG)
+CONSOLE_COMMAND("rainbow", "v?i", CFGFLAG_SERVER|CMDFLAG_TEST, ConRainbow, this, "Colorchange the tee i like a rainbow", IConsole::CONSOLELEVEL_ADMIN)
 CONSOLE_COMMAND("whisper", "vr", CFGFLAG_SERVER, ConWhisper, this, "Whispers r to player v", IConsole::CONSOLELEVEL_HELPER)
 CONSOLE_COMMAND("w", "vr", CFGFLAG_SERVER, ConWhisper, this, "Whispers r to player v", IConsole::CONSOLELEVEL_HELPER)
 CONSOLE_COMMAND("helper", "?v", CFGFLAG_SERVER, ConHelper, this, "Calls a helper./Authenticates player v to the level of 1", IConsole::CONSOLELEVEL_USER)
-CONSOLE_COMMAND("score", "vi", CFGFLAG_SERVER, ConScore, this, "Changes the score of i to i", IConsole::CONSOLELEVEL_CONFIG)
+CONSOLE_COMMAND("score", "vi", CFGFLAG_SERVER|CMDFLAG_TEST, ConScore, this, "Changes the score of i to i", IConsole::CONSOLELEVEL_CONFIG)
 CONSOLE_COMMAND("bloody", "v", CFGFLAG_SERVER|CMDFLAG_TEST, ConBlood, this, "BLOOD Ouch?!", IConsole::CONSOLELEVEL_CONFIG)
 //CONSOLE_COMMAND("test", "?vr", CFGFLAG_SERVER, ConTest, this, "TEST (Dont use this, it can crash your server!!!!!)", IConsole::CONSOLELEVEL_CONFIG)
 CONSOLE_COMMAND("rescue", "", CFGFLAG_SERVER, ConRescue, this, "Rescue from freeze", IConsole::CONSOLELEVEL_USER)
@@ -79,12 +79,12 @@ CONSOLE_COMMAND("login", "r", CFGFLAG_SERVER, ConLogin, this, "Rescue from freez
 CONSOLE_COMMAND("member", "v", CFGFLAG_SERVER, ConMember, this, "Sets v to member", IConsole::CONSOLELEVEL_ADMIN)
 CONSOLE_COMMAND("unmember", "v", CFGFLAG_SERVER, ConUnMember, this, "Unsets v to member", IConsole::CONSOLELEVEL_ADMIN)
 CONSOLE_COMMAND("checkmember", "v", CFGFLAG_SERVER, ConCheckMember, this, "Checks if v is a member", IConsole::CONSOLELEVEL_MODERATOR)
-CONSOLE_COMMAND("icehammer", "v", CFGFLAG_SERVER|CMDFLAG_TEST|CMDFLAG_HELPERCMD, ConIceHammer, this, "The hammer freezes a tee", IConsole::CONSOLELEVEL_ADMIN)
-CONSOLE_COMMAND("unicehammer", "v", CFGFLAG_SERVER|CMDFLAG_TEST|CMDFLAG_HELPERCMD, ConUnIceHammer, this, "The hammer gets normal, it unfreezes a tee", IConsole::CONSOLELEVEL_ADMIN)
+CONSOLE_COMMAND("icehammer", "v", CFGFLAG_SERVER|CMDFLAG_TEST, ConIceHammer, this, "The hammer freezes a tee", IConsole::CONSOLELEVEL_ADMIN)
+CONSOLE_COMMAND("unicehammer", "v", CFGFLAG_SERVER|CMDFLAG_TEST, ConUnIceHammer, this, "The hammer gets normal, it unfreezes a tee", IConsole::CONSOLELEVEL_ADMIN)
 CONSOLE_COMMAND("sadmin", "v", CFGFLAG_SERVER, ConSetlvl4, this, "Authenticates player v to the level of 4 (CAUTION: Irreversible, once he is a superadmin you can't remove his status)", IConsole::CONSOLELEVEL_CONFIG)
 CONSOLE_COMMAND("moder", "v", CFGFLAG_SERVER, ConSetlvl2, this, "Authenticates player v to the level of 2", IConsole::CONSOLELEVEL_ADMIN)
 CONSOLE_COMMAND("fly", "", CFGFLAG_SERVER, ConToggleFly, this, "Toggles super-fly (holding space) on/off", IConsole::CONSOLELEVEL_HELPER)
-CONSOLE_COMMAND("hammer", "vi", CFGFLAG_SERVER|CMDFLAG_TEST|CMDFLAG_HELPERCMD, ConHammer, this, "Sets the hammer power of player v to i", IConsole::CONSOLELEVEL_MODERATOR)
+CONSOLE_COMMAND("hammer", "vi", CFGFLAG_SERVER|CMDFLAG_TEST, ConHammer, this, "Sets the hammer power of player v to i", IConsole::CONSOLELEVEL_MODERATOR)
 
 #if defined(CONF_SQL)
 CONSOLE_COMMAND("times", "?s?i", CFGFLAG_SERVER, ConTimes, this, "/times ?s?i shows last 5 times of the server or of a player beginning with name s starting with time i (i = 1 by default)", IConsole::CONSOLELEVEL_USER)
