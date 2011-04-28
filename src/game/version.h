@@ -5,5 +5,5 @@
 #include "generated/nethash.c"
 #define GAME_VERSION "0.6 trunk, 1.075a"
 #define GAME_NETVERSION "0.6 626fce9a778df4d4"
-#define XXL_VERSION "1.6"
+#define XXL_VERSION "1.6a"
 #endif
