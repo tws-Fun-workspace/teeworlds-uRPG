@@ -812,7 +812,7 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 		else
 		{
 			if(!str_comp_nocase(pMsg->m_pMessage, "lol") && g_Config.m_SvLolFilter)
-				SendChat(ClientID, Team, "I like turtles.");
+				SendChat(ClientID, Team, "I like turtles.", ClientID);
 			else if(!str_comp_nocase(pMsg->m_pMessage, "help") && g_Config.m_SvHelper)
 			{
 				ChatResponseInfo Info;
