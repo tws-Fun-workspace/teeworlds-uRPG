@@ -276,7 +276,7 @@ void CGameContext::SendChat(int ChatterClientID, int Team, const char *pText, in
 	}
 	else
 		str_format(aBuf, sizeof(aBuf), "*** %s", aText);
-	Console()->Print(IConsole::OUTPUT_LEVEL_ADDINFO, "chat", aBuf);
+	Console()->Print(IConsole::OUTPUT_LEVEL_ADDINFO, Team!=CHAT_ALL?"teamchat":"chat", aBuf);
 
 	if(Team == CHAT_ALL)
 	{
@@ -1065,6 +1065,7 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 
 			if(pPlayer->GetTeam()==-1 && pPlayer->m_InfoSaved)
 				SendChatTarget(ClientID,"Use /pause first then you can kill");
+			else
 			{
 				pPlayer->m_LastSetTeam = Server()->Tick();
 				if(pPlayer->GetTeam() == TEAM_SPECTATORS || pMsg->m_Team == TEAM_SPECTATORS)
