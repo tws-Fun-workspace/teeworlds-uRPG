@@ -6,11 +6,11 @@
 //usage: GameServer()->CreateLoltext(...)
 //it will dispose itself after lifespan ended
 
-class CPlasma : public CEntity
+class CLolPlasma : public CEntity
 {
 public:
 	//position relative to pParent->m_Pos. if pParent is NULL, Pos is absolute. lifespan in ticks
-	CPlasma(CGameWorld *pGameWorld, CEntity *pParent, vec2 Pos, vec2 Vel, int Lifespan);
+	CLolPlasma(CGameWorld *pGameWorld, CEntity *pParent, vec2 Pos, vec2 Vel, int Lifespan);
 
 	virtual void Reset();
 	virtual void Tick();

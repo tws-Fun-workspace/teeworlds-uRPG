@@ -78,8 +78,6 @@ MACRO_CONFIG_INT(SvVoteKick, sv_vote_kick, 1, 0, 1, CFGFLAG_SERVER, "Allow votin
 MACRO_CONFIG_INT(SvVoteKickMin, sv_vote_kick_min, 0, 0, MAX_CLIENTS, CFGFLAG_SERVER, "Minimum number of players required to start a kick vote", IConsole::CONSOLELEVEL_ADMIN)
 MACRO_CONFIG_INT(SvVoteKickBantime, sv_vote_kick_bantime, 5, 0, 1440, CFGFLAG_SERVER, "The time to ban a player if kicked by vote. 0 makes it just use kick", IConsole::CONSOLELEVEL_ADMIN)
 
-MACRO_CONFIG_INT(SvLoltextHspace, sv_loltext_hspace, 14, 10, 25, CFGFLAG_SERVER, "horizontal offset between loltext 'pixels'")
-MACRO_CONFIG_INT(SvLoltextVspace, sv_loltext_vspace, 14, 10, 25, CFGFLAG_SERVER, "vertical offset between loltext 'pixels'")
 // debug
 #ifdef CONF_DEBUG // this one can crash the server if not used correctly
 	MACRO_CONFIG_INT(DbgDummies, dbg_dummies, 0, 0, 15, CFGFLAG_SERVER, "", IConsole::CONSOLELEVEL_ADMIN)
@@ -89,6 +87,8 @@ MACRO_CONFIG_INT(DbgFocus, dbg_focus, 0, 0, 1, CFGFLAG_CLIENT, "", IConsole::CON
 MACRO_CONFIG_INT(DbgTuning, dbg_tuning, 0, 0, 1, CFGFLAG_CLIENT, "", IConsole::CONSOLELEVEL_USER)
 
 //XXLmod
+MACRO_CONFIG_INT(SvLoltextHspace, sv_loltext_hspace, 14, 10, 25, CFGFLAG_SERVER, "horizontal offset between loltext 'pixels'", IConsole::CONSOLELEVEL_ADMIN)
+MACRO_CONFIG_INT(SvLoltextVspace, sv_loltext_vspace, 14, 10, 25, CFGFLAG_SERVER, "vertical offset between loltext 'pixels'", IConsole::CONSOLELEVEL_ADMIN)
 MACRO_CONFIG_INT(SvInactiveLogoutTime, sv_inactivelogout_time, 0, 0, 1000, CFGFLAG_SERVER, "How many minutes to wait before logging players out of rcon", IConsole::CONSOLELEVEL_ADMIN)
 MACRO_CONFIG_INT(SvMemberProtection, sv_member_protection, 0, 0, 1, CFGFLAG_SERVER, "Protect logged in members against vote kick", IConsole::CONSOLELEVEL_ADMIN)
 #endif
