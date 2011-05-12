@@ -997,7 +997,11 @@ void CCharacter::OnFinish()
 		if(g_Config.m_SvHideScore)
 			GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
 		else
+		{
 			GameServer()->SendChat(-1, CGameContext::CHAT_ALL, aBuf);
+			if(g_Config.m_SvLaserScore && (pData->m_BestTime == 0))
+				GameServer()->CreateLolText(this, false, vec2(0,0), vec2 (0,-1), 100, "Finish!");
+		}
 
 		if(time - pData->m_BestTime < 0)
 		{
@@ -1006,13 +1010,24 @@ void CCharacter::OnFinish()
 			if(g_Config.m_SvHideScore)
 				GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
 			else
+			{
 				GameServer()->SendChat(-1, CGameContext::CHAT_ALL, aBuf);
+
+				if(g_Config.m_SvLaserScore)
+				{
+					str_format(aBuf, sizeof(aBuf), "-%5.2f", fabs(time - pData->m_BestTime));
+					GameServer()->CreateLolText(this, false, vec2(0,0), vec2 (0,-1), 100, aBuf);
+				}
+			}
 		}
 		else if(pData->m_BestTime != 0) // tee has already finished?
 		{
 			if(fabs(time - pData->m_BestTime) <= 0.005)
 			{
 				GameServer()->SendChatTarget(m_pPlayer->GetCID(), "You finished with your best time.");
+
+				if(g_Config.m_SvLaserScore)
+					GameServer()->CreateLolText(this, false, vec2(0,0), vec2 (0,-1), 100, "+0");
 			}
 			else
 			{
@@ -1334,24 +1349,35 @@ void CCharacter::HandleTiles(int Index)
 		m_CpActive = cp;
 		m_CpCurrent[cp] = m_Time;
 		m_CpTick = Server()->Tick() + Server()->TickSpeed() * 2;
-		if(m_pPlayer->m_IsUsingDDRaceClient) {
-			CPlayerData *pData = GameServer()->Score()->PlayerData(m_pPlayer->GetCID());
-			CNetMsg_Sv_DDRaceTime Msg;
-			Msg.m_Time = (int)m_Time;
-			Msg.m_Check = 0;
-			Msg.m_Finish = 0;
 
-			if(m_CpActive != -1 && m_CpTick > Server()->Tick())
+		CPlayerData *pData = GameServer()->Score()->PlayerData(m_pPlayer->GetCID());
+		CNetMsg_Sv_DDRaceTime Msg;
+		Msg.m_Time = (int)m_Time;
+		Msg.m_Check = 0;
+		Msg.m_Finish = 0;
+
+		if(m_CpActive != -1 && m_CpTick > Server()->Tick())
+		{
+			if(pData->m_BestTime && pData->m_aBestCpTime[m_CpActive] != 0)
 			{
-				if(pData->m_BestTime && pData->m_aBestCpTime[m_CpActive] != 0)
+				float Diff = (m_CpCurrent[m_CpActive] - pData->m_aBestCpTime[m_CpActive])*100;
+				Msg.m_Check = (int)Diff;
+
+				if (g_Config.m_SvLaserScore)
 				{
-					float Diff = (m_CpCurrent[m_CpActive] - pData->m_aBestCpTime[m_CpActive])*100;
-					Msg.m_Check = (int)Diff;
+					char aBuf[64];
+					if (Diff >= 0)
+						str_format(aBuf, sizeof(aBuf), "+%5.2f", Diff/100);
+					else
+						str_format(aBuf, sizeof(aBuf), "%5.2f", Diff/100);
+
+					GameServer()->CreateLolText(this, false, vec2(0,0), vec2 (0,-1), 50, aBuf);
 				}
 			}
-
-			Server()->SendPackMsg(&Msg, MSGFLAG_VITAL, m_pPlayer->GetCID());
 		}
+
+		if(m_pPlayer->m_IsUsingDDRaceClient)
+			Server()->SendPackMsg(&Msg, MSGFLAG_VITAL, m_pPlayer->GetCID());
 	}
 	int cpf = GameServer()->Collision()->IsFCheckpoint(MapIndex);
 	if(cpf != -1 && m_DDRaceState == DDRACE_STARTED && cpf > m_CpActive)
@@ -1359,24 +1385,35 @@ void CCharacter::HandleTiles(int Index)
 		m_CpActive = cpf;
 		m_CpCurrent[cpf] = m_Time;
 		m_CpTick = Server()->Tick() + Server()->TickSpeed()*2;
-		if(m_pPlayer->m_IsUsingDDRaceClient) {
-			CPlayerData *pData = GameServer()->Score()->PlayerData(m_pPlayer->GetCID());
-			CNetMsg_Sv_DDRaceTime Msg;
-			Msg.m_Time = (int)m_Time;
-			Msg.m_Check = 0;
-			Msg.m_Finish = 0;
 
-			if(m_CpActive != -1 && m_CpTick > Server()->Tick())
+		CPlayerData *pData = GameServer()->Score()->PlayerData(m_pPlayer->GetCID());
+		CNetMsg_Sv_DDRaceTime Msg;
+		Msg.m_Time = (int)m_Time;
+		Msg.m_Check = 0;
+		Msg.m_Finish = 0;
+
+		if(m_CpActive != -1 && m_CpTick > Server()->Tick())
+		{
+			if(pData->m_BestTime && pData->m_aBestCpTime[m_CpActive] != 0)
 			{
-				if(pData->m_BestTime && pData->m_aBestCpTime[m_CpActive] != 0)
+				float Diff = (m_CpCurrent[m_CpActive] - pData->m_aBestCpTime[m_CpActive])*100;
+				Msg.m_Check = (int)Diff;
+
+				if (g_Config.m_SvLaserScore)
 				{
-					float Diff = (m_CpCurrent[m_CpActive] - pData->m_aBestCpTime[m_CpActive])*100;
-					Msg.m_Check = (int)Diff;
+					char aBuf[64];
+					if (Diff >= 0)
+						str_format(aBuf, sizeof(aBuf), "+%5.2f", Diff/100);
+					else
+						str_format(aBuf, sizeof(aBuf), "%5.2f", Diff/100);
+
+					GameServer()->CreateLolText(this, false, vec2(0,0), vec2 (0,-1), 50, aBuf);
 				}
 			}
-
-			Server()->SendPackMsg(&Msg, MSGFLAG_VITAL, m_pPlayer->GetCID());
 		}
+
+		if(m_pPlayer->m_IsUsingDDRaceClient)
+			Server()->SendPackMsg(&Msg, MSGFLAG_VITAL, m_pPlayer->GetCID());
 	}
 	if(((m_TileIndex == TILE_BEGIN) || (m_TileFIndex == TILE_BEGIN) || FTile1 == TILE_BEGIN || FTile2 == TILE_BEGIN || FTile3 == TILE_BEGIN || FTile4 == TILE_BEGIN || Tile1 == TILE_BEGIN || Tile2 == TILE_BEGIN || Tile3 == TILE_BEGIN || Tile4 == TILE_BEGIN) && (m_DDRaceState == DDRACE_NONE || m_DDRaceState == DDRACE_FINISHED || (m_DDRaceState == DDRACE_STARTED && !Team())))
 	{
