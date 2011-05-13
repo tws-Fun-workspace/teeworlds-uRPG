@@ -1000,7 +1000,7 @@ void CCharacter::OnFinish()
 		{
 			GameServer()->SendChat(-1, CGameContext::CHAT_ALL, aBuf);
 			if(g_Config.m_SvLaserScore && (pData->m_BestTime == 0))
-				GameServer()->CreateLolText(this, false, vec2(0,0), vec2 (0,-1), 100, "Finish!");
+				GameServer()->CreateLolText(this, false, vec2(0,-75), vec2 (0,-1), 100, "Finish!");
 		}
 
 		if(time - pData->m_BestTime < 0)
@@ -1016,7 +1016,7 @@ void CCharacter::OnFinish()
 				if(g_Config.m_SvLaserScore)
 				{
 					str_format(aBuf, sizeof(aBuf), "-%5.2f", fabs(time - pData->m_BestTime));
-					GameServer()->CreateLolText(this, false, vec2(0,0), vec2 (0,-1), 100, aBuf);
+					GameServer()->CreateLolText(this, false, vec2(0,-75), vec2 (0,-1), 100, aBuf);
 				}
 			}
 		}
@@ -1027,7 +1027,7 @@ void CCharacter::OnFinish()
 				GameServer()->SendChatTarget(m_pPlayer->GetCID(), "You finished with your best time.");
 
 				if(g_Config.m_SvLaserScore)
-					GameServer()->CreateLolText(this, false, vec2(0,0), vec2 (0,-1), 100, "+0");
+					GameServer()->CreateLolText(this, false, vec2(0,-75), vec2 (0,-1), 100, "+0");
 			}
 			else
 			{
@@ -1371,7 +1371,7 @@ void CCharacter::HandleTiles(int Index)
 					else
 						str_format(aBuf, sizeof(aBuf), "%5.2f", Diff/100);
 
-					GameServer()->CreateLolText(this, false, vec2(0,0), vec2 (0,-1), 50, aBuf);
+					GameServer()->CreateLolText(this, false, vec2(0,-75), vec2 (0,-1), 50, aBuf);
 				}
 			}
 		}
@@ -1407,7 +1407,7 @@ void CCharacter::HandleTiles(int Index)
 					else
 						str_format(aBuf, sizeof(aBuf), "%5.2f", Diff/100);
 
-					GameServer()->CreateLolText(this, false, vec2(0,0), vec2 (0,-1), 50, aBuf);
+					GameServer()->CreateLolText(this, false, vec2(0,-75), vec2 (0,-1), 50, aBuf);
 				}
 			}
 		}
