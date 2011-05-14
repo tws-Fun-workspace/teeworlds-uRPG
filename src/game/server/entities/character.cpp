@@ -83,6 +83,9 @@ bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
 	
 	m_DefEmote = EMOTE_NORMAL;
 	m_DefEmoteReset = -1;
+
+	m_HammerScore = 0;
+
 	return true;
 }
 
@@ -305,6 +308,7 @@ void CCharacter::FireWeapon()
 			int Hits = 0;
 			int Num = GameServer()->m_World.FindEntities(ProjStartPos, m_ProximityRadius*0.5f, (CEntity**)apEnts,
 														MAX_CLIENTS, CGameWorld::ENTTYPE_CHARACTER);
+			m_HammerScore += g_Config.m_SvHammerPenalty;
 
 			for (int i = 0; i < Num; ++i)
 			{
@@ -509,6 +513,8 @@ void CCharacter::TakeWeapon(int Weapon)
 				NewWeap = -1;
 		}
 		SetWeapon(NewWeap);
+		if (m_LastWeapon != -1 && !m_aWeapons[m_LastWeapon].m_Got)
+			m_LastWeapon = m_ActiveWeapon;
 	}
 }
 

@@ -9,6 +9,7 @@
 #include <engine/shared/protocol.h>
 #include <engine/shared/config.h>
 #include <game/server/gamecontext.h>
+
 #include <game/server/entities/character.h>
 
 CGameControllerMOD::CGameControllerMOD(class CGameContext *pGameServer)
@@ -47,6 +48,7 @@ void CGameControllerMOD::Tick()
 	}
 
 	static int LastBounceTick[MAX_CLIENTS] = {0};
+	static int RegainHammerTick[MAX_CLIENTS] = {0};
 	for(int i = 0; i < MAX_CLIENTS; i++)
 	{
 		CCharacter *pChr = GameServer()->GetPlayerChar(i);
@@ -58,6 +60,23 @@ void CGameControllerMOD::Tick()
 			GameServer()->CreateSound(pChr->m_Pos, SOUND_GRENADE_EXPLODE);
 			pChr->TakeDamage(vec2(g_Config.m_SvBounceXforce/10.0f, g_Config.m_SvBounceYforce/10.0f), 0, i, WEAPON_GRENADE);
 			LastBounceTick[i] = Server()->Tick();
+		}
+
+		if (pChr->GetHammerScore() > g_Config.m_SvHammerThreshold)
+		{
+			pChr->TakeWeapon(WEAPON_HAMMER);
+			pChr->SetHammerScore(0);
+			RegainHammerTick[i] = Server()->Tick() + g_Config.m_SvHammerPunishtime * Server()->TickSpeed();
+			char aBuf[128];
+			str_format(aBuf, sizeof aBuf, "WARNING: Your hammer has been taken away for %d seconds, because you are overusing it.", g_Config.m_SvHammerPunishtime);
+			GameServer()->SendChatTarget(i, aBuf);
+		}
+		if (RegainHammerTick[i] > 0 && RegainHammerTick[i] <= Server()->Tick())
+		{
+			RegainHammerTick[i] = 0;
+			pChr->GiveWeapon(WEAPON_HAMMER, -1);
+			pChr->SetWeapon(WEAPON_HAMMER); // XXX
+			GameServer()->SendChatTarget(i, "Here you got your hammer back, this time do not overuse it!");
 		}
 	}
 }
