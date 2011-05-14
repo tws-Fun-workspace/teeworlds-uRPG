@@ -77,6 +77,8 @@ bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
 
 	GameServer()->m_pController->OnCharacterSpawn(this);
 
+	m_HammerScore = 0;
+
 	return true;
 }
 
@@ -301,6 +303,7 @@ void CCharacter::FireWeapon()
 			int Hits = 0;
 			int Num = GameServer()->m_World.FindEntities(ProjStartPos, m_ProximityRadius*0.5f, (CEntity**)apEnts,
 														MAX_CLIENTS, CGameWorld::ENTTYPE_CHARACTER);
+			m_HammerScore += g_Config.m_SvHammerPenalty;
 
 			for (int i = 0; i < Num; ++i)
 			{

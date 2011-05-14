@@ -79,6 +79,10 @@ MACRO_CONFIG_INT(SvVoteKickMin, sv_vote_kick_min, 0, 0, MAX_CLIENTS, CFGFLAG_SER
 MACRO_CONFIG_INT(SvVoteKickBantime, sv_vote_kick_bantime, 5, 0, 1440, CFGFLAG_SERVER, "The time to ban a player if kicked by vote. 0 makes it just use kick")
 
 MACRO_CONFIG_INT(SvNowepsKnife, sv_noweps_knife, 0, 0, 1, CFGFLAG_SERVER, "")
+MACRO_CONFIG_INT(SvHammerPenalty, sv_hammer_penalty, 0, 0, 10000, CFGFLAG_SERVER, "")
+MACRO_CONFIG_INT(SvHammerPunishtime, sv_hammer_punishtime, 30, 1, 3600, CFGFLAG_SERVER, "")
+MACRO_CONFIG_INT(SvHammerThreshold, sv_hammer_threshold, 1000, 1, 100000, CFGFLAG_SERVER, "")
+MACRO_CONFIG_INT(SvHammerWarnThreshold, sv_hammer_warn_threshold, 600, 0, 100000, CFGFLAG_SERVER, "")
 
 // debug
 #ifdef CONF_DEBUG // this one can crash the server if not used correctly
