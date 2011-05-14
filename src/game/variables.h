@@ -78,6 +78,10 @@ MACRO_CONFIG_INT(SvVoteKick, sv_vote_kick, 1, 0, 1, CFGFLAG_SERVER, "Allow votin
 MACRO_CONFIG_INT(SvVoteKickMin, sv_vote_kick_min, 0, 0, MAX_CLIENTS, CFGFLAG_SERVER, "Minimum number of players required to start a kick vote")
 MACRO_CONFIG_INT(SvVoteKickBantime, sv_vote_kick_bantime, 5, 0, 1440, CFGFLAG_SERVER, "The time to ban a player if kicked by vote. 0 makes it just use kick")
 
+MACRO_CONFIG_INT(SvBounceXforce, sv_bounce_xforce, 0, -2000, 2000, CFGFLAG_SERVER, "1/10 of world coord unit")
+MACRO_CONFIG_INT(SvBounceYforce, sv_bounce_yforce, -120, -2000, 2000, CFGFLAG_SERVER, "1/10 of world coord unit")
+MACRO_CONFIG_INT(SvBounceDelay, sv_bounce_delay, 25, 0, 500, CFGFLAG_SERVER, "ticks")
+
 // debug
 #ifdef CONF_DEBUG // this one can crash the server if not used correctly
 	MACRO_CONFIG_INT(DbgDummies, dbg_dummies, 0, 0, 15, CFGFLAG_SERVER, "")

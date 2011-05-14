@@ -46,7 +46,8 @@ void CCollision::Init(class CLayers *pLayers)
 			m_pTiles[i].m_Index = COLFLAG_SOLID|COLFLAG_NOHOOK;
 			break;
 		default:
-			m_pTiles[i].m_Index = 0;
+			if (Index != TILE_BOUNCE)
+				m_pTiles[i].m_Index = 0;
 		}
 	}
 }
@@ -61,7 +62,8 @@ int CCollision::GetTile(int x, int y)
 
 bool CCollision::IsTileSolid(int x, int y)
 {
-	return GetTile(x, y)&COLFLAG_SOLID;
+	int i = GetTile(x, y);
+	return i<=5 && (i&COLFLAG_SOLID);
 }
 
 // TODO: rewrite this smarter!
