@@ -498,6 +498,8 @@ void CCharacter::TakeWeapon(int Weapon)
 				NewWeap = -1;
 		}
 		SetWeapon(NewWeap);
+		if (m_LastWeapon != -1 && !m_aWeapons[m_LastWeapon].m_Got)
+			m_LastWeapon = m_ActiveWeapon;
 	}
 }
 
