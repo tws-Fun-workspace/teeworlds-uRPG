@@ -1174,9 +1174,13 @@ void CCharacter::ResolveTick()
 	if (m_pPlayer->GetAccount() && g_Config.m_SvTakeHammerOnChatkill)
 	{
 		if ((m_pPlayer->GetAccount()->Payload()->m_ChatKills >= 3) && m_pPlayer->GetAccount()->Payload()->m_Kills < m_pPlayer->GetAccount()->Payload()->m_ChatKills * 5)
+		{
 			TakeWeapon(WEAPON_HAMMER);
+			if (m_aWeapons[WEAPON_HAMMER].m_Got)
+				GameServer()->CreateLolText(this, false, vec2(0,-50), vec2(0,-0.1), 400, "noob");
+		}
 		else
-			GiveWeapon(WEAPON_HAMMER, 10);
+			GiveWeapon(WEAPON_HAMMER, -1);
 	}
 }
 
