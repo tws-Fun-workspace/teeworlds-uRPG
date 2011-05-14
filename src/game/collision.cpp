@@ -52,7 +52,7 @@ void CCollision::Init(class CLayers *pLayers)
 		case TILE_END:
 			break;
 		default:
-			if (Index < TILE_COLFRZ_FIRST || Index > TILE_COLFRZ_LAST)
+			if ((Index < TILE_COLFRZ_FIRST || Index > TILE_COLFRZ_LAST) && Index != TILE_BOUNCE)
 				m_pTiles[i].m_Index = 0;
 		}
 	}

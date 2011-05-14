@@ -128,6 +128,9 @@ MACRO_CONFIG_INT(SvLoltextVspace, sv_loltext_vspace, 14, 10, 25, CFGFLAG_SERVER,
 
 MACRO_CONFIG_INT(SvNowepsKnife, sv_noweps_knife, 0, 0, 1, CFGFLAG_SERVER, "")
 MACRO_CONFIG_INT(SvTakeHammerOnChatkill, sv_take_hammer_on_chatkill, 0, 0, 1, CFGFLAG_SERVER, "")
+MACRO_CONFIG_INT(SvBounceXforce, sv_bounce_xforce, 0, -2000, 2000, CFGFLAG_SERVER, "1/10 of world coord unit")
+MACRO_CONFIG_INT(SvBounceYforce, sv_bounce_yforce, -120, -2000, 2000, CFGFLAG_SERVER, "1/10 of world coord unit")
+MACRO_CONFIG_INT(SvBounceDelay, sv_bounce_delay, 25, 0, 500, CFGFLAG_SERVER, "ticks")
 
 // debug
 #ifdef CONF_DEBUG // this one can crash the server if not used correctly
