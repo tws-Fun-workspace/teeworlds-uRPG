@@ -6,7 +6,7 @@
 CGameControllerMOD::CGameControllerMOD(class CGameContext *pGameServer)
 : IGameController(pGameServer)
 {
-	m_pGameType = "OpenFNG";
+	m_pGameType = "openfng";
 	m_GameFlags = GAMEFLAG_TEAMS;
 }
 
