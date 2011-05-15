@@ -64,8 +64,9 @@ public:
 	bool IsAlive() const { return m_Alive; }
 	class CPlayer *GetPlayer() { return m_pPlayer; }
 
-	void Freeze(int Ticks);
+	void Freeze(int Ticks, int By = -1);
 	int GetFreezeTicks();
+	int WasFrozenBy() { return m_FrozenBy; };
 private:
 	// player controlling this character
 	class CPlayer *m_pPlayer;
@@ -132,6 +133,7 @@ private:
 	CCharacterCore m_SendCore; // core that we should send
 	CCharacterCore m_ReckoningCore; // the dead reckoning core
 
+	int m_FrozenBy;
 };
 
 #endif

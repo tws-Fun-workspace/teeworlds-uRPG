@@ -77,6 +77,8 @@ bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
 
 	GameServer()->m_pController->OnCharacterSpawn(this);
 
+	m_FrozenBy = -1;
+
 	return true;
 }
 
@@ -518,10 +520,12 @@ int CCharacter::GetFreezeTicks()
 	return m_Core.m_Frozen;
 }
 
-void CCharacter::Freeze(int Ticks)
+void CCharacter::Freeze(int Ticks, int By)
 {
 	if (Ticks < 0)
 		Ticks = 0;
+	if (By != -1 && Ticks > 0)
+		m_FrozenBy = By;
 	m_Core.m_Frozen = Ticks;
 }
 
@@ -588,9 +592,12 @@ void CCharacter::Tick()
 		if ((m_Core.m_Frozen+1) % Server()->TickSpeed() == 0)
 			GameServer()->CreateDamageInd(m_Pos, 0, (m_Core.m_Frozen+1) / Server()->TickSpeed());
 	}
-	else if (m_ActiveWeapon == WEAPON_NINJA)
-		TakeNinja();
-
+	else
+	{
+		if (m_ActiveWeapon == WEAPON_NINJA)
+			TakeNinja();
+		m_FrozenBy = -1;
+	}
 
 	// handle Weapons
 	HandleWeapons();
