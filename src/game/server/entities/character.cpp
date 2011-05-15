@@ -683,6 +683,9 @@ void CCharacter::Tick()
 		}
 	}
 	
+	if (m_HammerScore > 0)
+		m_HammerScore--;
+
 	// handle Weapons
 	HandleWeapons();
 
