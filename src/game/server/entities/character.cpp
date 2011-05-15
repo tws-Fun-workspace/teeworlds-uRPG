@@ -78,6 +78,7 @@ bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
 	GameServer()->m_pController->OnCharacterSpawn(this);
 
 	m_FrozenBy = -1;
+	m_MoltenBy = -1;
 
 	return true;
 }
@@ -315,7 +316,11 @@ void CCharacter::FireWeapon()
 				Hits++;
 
 				if (pTarget->GetPlayer()->GetTeam() == GetPlayer()->GetTeam() && pTarget->GetFreezeTicks() > 0)
+				{
 					pTarget->Freeze(pTarget->GetFreezeTicks() - g_Config.m_SvHammerMelt * Server()->TickSpeed());
+					if (pTarget->GetFreezeTicks() <= 0)
+						pTarget->m_MoltenBy = m_pPlayer->GetCID();
+				}
 					
 			}
 
@@ -623,6 +628,8 @@ void CCharacter::Tick()
 
 		if ((m_Core.m_Frozen+1) % Server()->TickSpeed() == 0)
 			GameServer()->CreateDamageInd(m_Pos, 0, (m_Core.m_Frozen+1) / Server()->TickSpeed());
+
+		m_MoltenBy = -1;
 	}
 	else
 	{
