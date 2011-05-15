@@ -509,6 +509,11 @@ void CCharacter::SetEmote(int Emote, int Tick)
 	m_EmoteStop = Tick;
 }
 
+int CCharacter::GetFreezeTicks()
+{
+	return m_Core.m_Frozen;
+}
+
 void CCharacter::Freeze(int Ticks)
 {
 	if (Ticks < 0)
