@@ -587,6 +587,9 @@ void CCharacter::Tick()
 		Die(m_pPlayer->GetCID(), WEAPON_WORLD);
 	}
 
+	if (m_HammerScore > 0)
+		m_HammerScore--;
+
 	// handle Weapons
 	HandleWeapons();
 
