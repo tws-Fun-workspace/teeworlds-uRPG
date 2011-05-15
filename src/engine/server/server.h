@@ -123,6 +123,7 @@ public:
 		int m_AuthTries;
 
 		const IConsole::CCommandInfo *m_pRconCmdToSend;
+		bool m_CustClt;
 
 		void Reset();
 	};

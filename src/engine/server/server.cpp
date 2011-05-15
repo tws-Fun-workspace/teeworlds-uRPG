@@ -464,6 +464,7 @@ int CServer::GetClientInfo(int ClientID, CClientInfo *pInfo)
 	{
 		pInfo->m_pName = m_aClients[ClientID].m_aName;
 		pInfo->m_Latency = m_aClients[ClientID].m_Latency;
+		pInfo->m_CustClt = m_aClients[ClientID].m_CustClt;
 		return 1;
 	}
 	return 0;
@@ -831,12 +832,15 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
 		{
 			if(m_aClients[ClientID].m_State == CClient::STATE_AUTH)
 			{
-				const char *pVersion = Unpacker.GetString(CUnpacker::SANITIZE_CC);
-				if(str_comp(pVersion, GameServer()->NetVersion()) != 0)
+				char aVersion[64];
+				str_copy(aVersion, Unpacker.GetString(CUnpacker::SANITIZE_CC), 64);
+				bool CustClt = str_comp(aVersion, GameServer()->NetVersionCust()) == 0;
+				dbg_msg("es", "%s client connected!", CustClt?"cust":"vanilla");
+				if(!CustClt && str_comp(aVersion, GameServer()->NetVersion()) != 0)
 				{
 					// wrong version
 					char aReason[256];
-					str_format(aReason, sizeof(aReason), "Wrong version. Server is running '%s' and client '%s'", GameServer()->NetVersion(), pVersion);
+					str_format(aReason, sizeof(aReason), "Wrong version. Server is running '%s' and client '%s'", GameServer()->NetVersion(), aVersion);
 					m_NetServer.Drop(ClientID, aReason);
 					return;
 				}
@@ -850,6 +854,7 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
 				}
 
 				m_aClients[ClientID].m_State = CClient::STATE_CONNECTING;
+				m_aClients[ClientID].m_CustClt = CustClt;
 				SendMap(ClientID);
 			}
 		}

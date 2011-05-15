@@ -815,25 +815,39 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon)
 
 void CCharacter::Snap(int SnappingClient)
 {
+	CNetObj_Character Measure; // used only for measuring the offset between vanilla and extended core
 	if(NetworkClipped(SnappingClient))
 		return;
 
-	CNetObj_Character *pCharacter = static_cast<CNetObj_Character *>(Server()->SnapNewItem(NETOBJTYPE_CHARACTER, m_pPlayer->GetCID(), sizeof(CNetObj_Character)));
+	IServer::CClientInfo CltInfo;
+	Server()->GetClientInfo(SnappingClient, &CltInfo);
+
+	// measure distance between start and and first vanilla field
+	size_t Offset = (char*)(&Measure.m_Tick) - (char*)(&Measure);
+
+	// vanilla size for vanilla clients, extended for custom client
+	size_t Sz = sizeof (CNetObj_Character) - (CltInfo.m_CustClt?0:Offset);
+
+	// create a snap item of the size the client expects
+	CNetObj_Character *pCharacter = static_cast<CNetObj_Character *>(Server()->SnapNewItem(NETOBJTYPE_CHARACTER, m_pPlayer->GetCID(), Sz));
 	if(!pCharacter)
 		return;
+
+	// for vanilla clients, make pCharacter point before the start our snap item start, so that the vanilla core
+	// aligns with the snap item. we may not access the extended fields then, since they are out of bounds (to the left)
+	if (!CltInfo.m_CustClt)
+		pCharacter = (CNetObj_Character*)(((char*)pCharacter)-Offset); // moar cookies.
 
 	// write down the m_Core
 	if(!m_ReckoningTick || GameServer()->m_World.m_Paused)
 	{
-		// no dead reckoning when paused because the client doesn't know
-		// how far to perform the reckoning
 		pCharacter->m_Tick = 0;
-		m_Core.Write(pCharacter);
+		m_Core.Write(pCharacter, !CltInfo.m_CustClt);
 	}
 	else
 	{
 		pCharacter->m_Tick = m_ReckoningTick;
-		m_SendCore.Write(pCharacter);
+		m_SendCore.Write(pCharacter, !CltInfo.m_CustClt);
 	}
 
 	// set emote
