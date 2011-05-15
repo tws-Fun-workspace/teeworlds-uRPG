@@ -485,6 +485,38 @@ bool CCharacter::GiveWeapon(int Weapon, int Ammo)
 	return false;
 }
 
+bool CCharacter::TakeWeapon(int Weapon)
+{
+	int NumWeps = 0;
+	for(int i = 0; i < NUM_WEAPONS; i++)
+		if (m_aWeapons[i].m_Got)
+			NumWeps++;
+
+	if (Weapon < 0 || Weapon >= NUM_WEAPONS || NumWeps <= 1 || !m_aWeapons[Weapon].m_Got)
+		return false;
+
+	m_aWeapons[Weapon].m_Got = false;
+
+	if (m_ActiveWeapon == Weapon)
+	{
+		int NewWeap = 0;
+		if (m_LastWeapon != -1 && m_LastWeapon != Weapon && m_aWeapons[m_LastWeapon].m_Got)
+			NewWeap = m_LastWeapon;
+		else
+			for(; NewWeap < NUM_WEAPONS && !m_aWeapons[NewWeap].m_Got; NewWeap++);
+
+		SetWeapon(NewWeap);
+	}
+
+	if (m_LastWeapon != -1 && !m_aWeapons[m_LastWeapon].m_Got)
+		m_LastWeapon = m_ActiveWeapon;
+
+	if (m_QueuedWeapon != -1 && !m_aWeapons[m_QueuedWeapon].m_Got)
+		m_QueuedWeapon = -1;
+	
+	return true;
+}
+
 void CCharacter::GiveNinja(bool Silent)
 {
 	m_Ninja.m_ActivationTick = Server()->Tick();
@@ -494,7 +526,7 @@ void CCharacter::GiveNinja(bool Silent)
 	m_ActiveWeapon = WEAPON_NINJA;
 
 	if (!Silent)
-	GameServer()->CreateSound(m_Pos, SOUND_PICKUP_NINJA);
+		GameServer()->CreateSound(m_Pos, SOUND_PICKUP_NINJA);
 }
 
 void CCharacter::TakeNinja()
