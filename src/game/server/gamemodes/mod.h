@@ -4,18 +4,25 @@
 
 #ifndef GAME_SERVER_GAMEMODES_MOD_H
 #define GAME_SERVER_GAMEMODES_MOD_H
+
 #include <game/server/gamecontroller.h>
+
+#define MAX_BROADCAST 256
 
 class CGameControllerMOD : public IGameController
 {
 private:
 	int m_aFrozenBy[MAX_CLIENTS];
 	int m_aMoltenBy[MAX_CLIENTS];
+	char m_aBroadcast[MAX_BROADCAST];
+	int m_NextBroadcast;
 
 	void SendFreezeKill(int Killer, int Victim, int Weapon);
 	void HandleFreeze(int Killer, int Victim);
 	void HandleMelt(int Melter, int Meltee);
 	void HandleSacr(int Killer, int Victim);
+
+	void Broadcast(const char *pMsg);
 public:
 	CGameControllerMOD(class CGameContext *pGameServer);
 	virtual ~CGameControllerMOD();
