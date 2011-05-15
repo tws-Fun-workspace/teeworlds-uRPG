@@ -170,7 +170,7 @@ int CGameControllerMOD::OnCharacterDeath(class CCharacter *pVictim,
 	if (Weapon != WEAPON_WORLD || pVictim->GetFreezeTicks() <= 0)
 		return 0;
 	
-	HandleSacr(pVictim->GetPlayer()->GetCID(), pVictim->WasFrozenBy());
+	HandleSacr(pVictim->WasFrozenBy(), pVictim->GetPlayer()->GetCID());
 	return 0;
 }
 
