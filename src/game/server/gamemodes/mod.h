@@ -12,7 +12,7 @@ private:
 	int m_aFrozenBy[MAX_CLIENTS];
 	int m_aMoltenBy[MAX_CLIENTS];
 
-	void SendFreezeKill(int Killer, int Victim);
+	void SendFreezeKill(int Killer, int Victim, int Weapon);
 	void HandleFreeze(int Killer, int Victim);
 	void HandleMelt(int Melter, int Meltee);
 	void HandleSacr(int Killer, int Victim);
