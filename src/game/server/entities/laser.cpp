@@ -30,7 +30,15 @@ bool CLaser::HitCharacter(vec2 From, vec2 To)
 	m_Pos = At;
 	m_Energy = -1;
 	//Hit->TakeDamage(vec2(0.f, 0.f), GameServer()->Tuning()->m_LaserDamage, m_Owner, WEAPON_RIFLE);
-	Hit->Freeze(GameServer()->Tuning()->m_LaserDamage * Server()->TickSpeed());
+
+	CCharacter *pOwn = GameServer()->GetPlayerChar(m_Owner);
+	if (pOwn && pOwn->GetPlayer()->GetTeam() != Hit->GetPlayer()->GetTeam())
+	{
+		if (Hit->GetFreezeTicks() <= 0)
+			Hit->Freeze(GameServer()->Tuning()->m_LaserDamage * Server()->TickSpeed());
+	}
+
+
 	return true;
 }
 
