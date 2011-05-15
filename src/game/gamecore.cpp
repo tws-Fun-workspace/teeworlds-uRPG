@@ -72,6 +72,7 @@ void CCharacterCore::Reset()
 	m_HookedPlayer = -1;
 	m_Jumped = 0;
 	m_TriggeredEvents = 0;
+	m_Frozen = 0;
 }
 
 void CCharacterCore::Tick(bool UseInput)
@@ -86,6 +87,9 @@ void CCharacterCore::Tick(bool UseInput)
 	if(m_pCollision->CheckPoint(m_Pos.x-PhysSize/2, m_Pos.y+PhysSize/2+5))
 		Grounded = true;
 
+	if (m_Frozen > 0)
+		m_Frozen--;
+
 	vec2 TargetDirection = normalize(vec2(m_Input.m_TargetX, m_Input.m_TargetY));
 
 	m_Vel.y += m_pWorld->m_Tuning.m_Gravity;
@@ -93,6 +97,8 @@ void CCharacterCore::Tick(bool UseInput)
 	float MaxSpeed = Grounded ? m_pWorld->m_Tuning.m_GroundControlSpeed : m_pWorld->m_Tuning.m_AirControlSpeed;
 	float Accel = Grounded ? m_pWorld->m_Tuning.m_GroundControlAccel : m_pWorld->m_Tuning.m_AirControlAccel;
 	float Friction = Grounded ? m_pWorld->m_Tuning.m_GroundFriction : m_pWorld->m_Tuning.m_AirFriction;
+
+	float YVelBackup = m_Vel.y; //backup because jumping directly affects vel
 
 	// handle input
 	if(UseInput)
@@ -154,12 +160,22 @@ void CCharacterCore::Tick(bool UseInput)
 		}
 	}
 
+	if (m_Frozen > 0)
+	{
+		m_Jumped &= ~1;
+		m_HookedPlayer = -1;
+		m_Vel.y = YVelBackup;
+		m_HookState = HOOK_IDLE;
+		m_HookPos = m_Pos;
+		m_TriggeredEvents &= ~(COREEVENT_AIR_JUMP | COREEVENT_GROUND_JUMP | COREEVENT_HOOK_LAUNCH);
+	}
+
 	// add the speed modification according to players wanted direction
-	if(m_Direction < 0)
+	if(!m_Frozen && m_Direction < 0)
 		m_Vel.x = SaturatedAdd(-MaxSpeed, MaxSpeed, m_Vel.x, -Accel);
-	if(m_Direction > 0)
+	if(!m_Frozen && m_Direction > 0)
 		m_Vel.x = SaturatedAdd(-MaxSpeed, MaxSpeed, m_Vel.x, Accel);
-	if(m_Direction == 0)
+	if(m_Frozen || m_Direction == 0)
 		m_Vel.x *= Friction;
 
 	// handle jumping
@@ -415,7 +431,7 @@ void CCharacterCore::Write(CNetObj_CharacterCore *pObjCore, bool VanillaOnly)
 	pObjCore->m_Direction = m_Direction;
 	pObjCore->m_Angle = m_Angle;
 	if (!VanillaOnly)
-		{}//copy extended core members here, if any
+		pObjCore->m_Frz = m_Frozen;
 }
 
 void CCharacterCore::Read(const CNetObj_CharacterCore *pObjCore)
@@ -434,7 +450,7 @@ void CCharacterCore::Read(const CNetObj_CharacterCore *pObjCore)
 	m_Jumped = pObjCore->m_Jumped;
 	m_Direction = pObjCore->m_Direction;
 	m_Angle = pObjCore->m_Angle;
-	//copy extended core members here, if any
+	m_Frozen = pObjCore->m_Frz;
 }
 
 void CCharacterCore::Quantize()
