@@ -118,12 +118,7 @@ void CCharacter::HandleNinja()
 	if ((Server()->Tick() - m_Ninja.m_ActivationTick) > (g_pData->m_Weapons.m_Ninja.m_Duration * Server()->TickSpeed() / 1000))
 	{
 		// time's up, return
-		m_aWeapons[WEAPON_NINJA].m_Got = false;
-		m_ActiveWeapon = m_LastWeapon;
-		if(m_ActiveWeapon == WEAPON_NINJA)
-			m_ActiveWeapon = WEAPON_GUN;
-
-		SetWeapon(m_ActiveWeapon);
+		TakeNinja();
 		return;
 	}
 
@@ -481,7 +476,7 @@ bool CCharacter::GiveWeapon(int Weapon, int Ammo)
 	return false;
 }
 
-void CCharacter::GiveNinja()
+void CCharacter::GiveNinja(bool Silent)
 {
 	m_Ninja.m_ActivationTick = Server()->Tick();
 	m_aWeapons[WEAPON_NINJA].m_Got = true;
@@ -489,7 +484,20 @@ void CCharacter::GiveNinja()
 	m_LastWeapon = m_ActiveWeapon;
 	m_ActiveWeapon = WEAPON_NINJA;
 
+	if (!Silent)
 	GameServer()->CreateSound(m_Pos, SOUND_PICKUP_NINJA);
+}
+
+void CCharacter::TakeNinja()
+{
+	if (m_ActiveWeapon != WEAPON_NINJA)
+		return;
+
+	m_aWeapons[WEAPON_NINJA].m_Got = false;
+	m_ActiveWeapon = m_LastWeapon;
+	if(m_ActiveWeapon == WEAPON_NINJA)
+		m_ActiveWeapon = WEAPON_HAMMER;
+	//SetWeapon(m_ActiveWeapon); //has no effect
 }
 
 void CCharacter::SetEmote(int Emote, int Tick)
