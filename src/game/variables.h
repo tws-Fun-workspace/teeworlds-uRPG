@@ -82,7 +82,7 @@ MACRO_CONFIG_INT(SvDamage, sv_damage, 0, 0, 1, CFGFLAG_SERVER, "allow damage")
 MACRO_CONFIG_INT(SvUnlimitedAmmo, sv_unlimited_ammo, 1, 0, 1, CFGFLAG_SERVER, "guess what")
 MACRO_CONFIG_INT(SvNinja, sv_ninja, 0, 0, 1, CFGFLAG_SERVER, "allow ninja")
 
-MACRO_CONFIG_INT(SvHammerMelt, sv_hammer_melt, 3, 0, 60, CFGFLAG_SERVER, "how many seconds to subtract from freezetime, when hammering frozen teammates")
+MACRO_CONFIG_INT(SvHammerMelt, sv_hammer_melt, 3, 0, 60, CFGFLAG_SERVER, "how many ticks to subtract from freezetime, when hammering frozen teammates")
 MACRO_CONFIG_INT(SvMeltSafeticks, sv_melt_safeticks, 20, 0, 300, CFGFLAG_SERVER, "how many seconds to be unfreezable after melting (not when being molten per hammer)")
 
 MACRO_CONFIG_INT(SvFreezeScore, sv_freeze_score, 1, 0, 10, CFGFLAG_SERVER, "player score for freezing")
