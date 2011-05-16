@@ -220,6 +220,8 @@ int CGameControllerMOD::OnCharacterDeath(class CCharacter *pVictim,
 
 void CGameControllerMOD::PostReset()
 {
+	IGameController::PostReset();
+
 	for(int i = 0; i < MAX_CLIENTS; i++)
 		m_aFrozenBy[i] = m_aMoltenBy[i] = -1;
 
