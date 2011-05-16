@@ -99,6 +99,7 @@ void CCharacterCore::Tick(bool UseInput)
 	float Friction = Grounded ? m_pWorld->m_Tuning.m_GroundFriction : m_pWorld->m_Tuning.m_AirFriction;
 
 	float YVelBackup = m_Vel.y; //backup because jumping directly affects vel
+	int JumpBackup = m_Jumped; //backup jumped state to not have airjump indicator wrongly be displayed
 
 	// handle input
 	if(UseInput)
@@ -162,7 +163,7 @@ void CCharacterCore::Tick(bool UseInput)
 
 	if (m_Frozen > 0)
 	{
-		m_Jumped &= ~1;
+		m_Jumped = JumpBackup;
 		m_HookedPlayer = -1;
 		m_Vel.y = YVelBackup;
 		m_HookState = HOOK_IDLE;
