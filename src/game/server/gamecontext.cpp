@@ -949,7 +949,12 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 			return;
 
 		pPlayer->m_LastKill = Server()->Tick();
-		pPlayer->KillCharacter(WEAPON_SELF);
+
+		//openfng disallows killing while frozen
+		if (pPlayer->GetCharacter() && pPlayer->GetCharacter()->GetFreezeTicks() > 0)
+			SendChatTarget(pPlayer->GetCID(), "You cannot commit suicide while being frozen!");
+		else
+			pPlayer->KillCharacter(WEAPON_SELF);
 	}
 }
 
