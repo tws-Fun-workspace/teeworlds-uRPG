@@ -69,6 +69,7 @@ public:
 	int GetFreezeTicks();
 	int WasFrozenBy() { return m_FrozenBy; };
 	int WasMoltenBy() { return m_MoltenBy; };
+	int GetMeltTick() { return m_MoltenAt; }
 private:
 	// player controlling this character
 	class CPlayer *m_pPlayer;
@@ -137,6 +138,7 @@ private:
 
 	int m_FrozenBy;
 	int m_MoltenBy;
+	int m_MoltenAt;
 };
 
 #endif
