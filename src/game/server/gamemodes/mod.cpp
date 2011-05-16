@@ -236,3 +236,14 @@ void CGameControllerMOD::PostReset()
 	m_BroadcastStop = 0;
 	m_aBroadcast[0] = '\0';
 }
+
+bool CGameControllerMOD::CanJoinTeam(int Team, int NotThisID)
+{
+	int Can = IGameController::CanJoinTeam(Team, NotThisID);
+	if (!Can)
+		return false;
+
+	CCharacter *pChr = CHAR(NotThisID);
+
+	return !pChr || pChr->GetFreezeTicks() <= 0;
+}
