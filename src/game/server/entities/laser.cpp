@@ -24,7 +24,7 @@ bool CLaser::HitCharacter(vec2 From, vec2 To)
 	vec2 At;
 	CCharacter *OwnerChar = GameServer()->GetPlayerChar(m_Owner);
 	CCharacter *Hit = GameServer()->m_World.IntersectCharacter(m_Pos, To, 0.f, At, OwnerChar);
-	if(!Hit)
+	if(!Hit || (g_Config.m_SvLaserSkipFrozen && Hit->GetFreezeTicks() > 0))
 		return false;
 
 	m_From = From;
