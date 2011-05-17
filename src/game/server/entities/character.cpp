@@ -630,18 +630,18 @@ void CCharacter::Tick()
 	m_Core.m_Input = m_Input;
 	m_Core.Tick(true);
 
-	bool Clipped = false;
-	// handle death-tiles and leaving gamelayer
-	if(GameServer()->Collision()->GetCollisionAt(m_Pos.x+m_ProximityRadius/3.f, m_Pos.y-m_ProximityRadius/3.f)&CCollision::COLFLAG_DEATH ||
-		GameServer()->Collision()->GetCollisionAt(m_Pos.x+m_ProximityRadius/3.f, m_Pos.y+m_ProximityRadius/3.f)&CCollision::COLFLAG_DEATH ||
-		GameServer()->Collision()->GetCollisionAt(m_Pos.x-m_ProximityRadius/3.f, m_Pos.y-m_ProximityRadius/3.f)&CCollision::COLFLAG_DEATH ||
-		GameServer()->Collision()->GetCollisionAt(m_Pos.x-m_ProximityRadius/3.f, m_Pos.y+m_ProximityRadius/3.f)&CCollision::COLFLAG_DEATH ||
-		(Clipped = GameLayerClipped(m_Pos)))
+	bool Shrine = false, Clipped = false;
+	// handle shrine-tiles, death-tiles (if allowed) and leaving the gamelayer
+	if ((Shrine = GameServer()->Collision()->GetCollisionAt(m_Pos.x, m_Pos.y) == TILE_SHRINE) ||
+			GameServer()->Collision()->GetCollisionAt(m_Pos.x+m_ProximityRadius/3.f, m_Pos.y-m_ProximityRadius/3.f)&CCollision::COLFLAG_DEATH ||
+			GameServer()->Collision()->GetCollisionAt(m_Pos.x+m_ProximityRadius/3.f, m_Pos.y+m_ProximityRadius/3.f)&CCollision::COLFLAG_DEATH ||
+			GameServer()->Collision()->GetCollisionAt(m_Pos.x-m_ProximityRadius/3.f, m_Pos.y-m_ProximityRadius/3.f)&CCollision::COLFLAG_DEATH ||
+			GameServer()->Collision()->GetCollisionAt(m_Pos.x-m_ProximityRadius/3.f, m_Pos.y+m_ProximityRadius/3.f)&CCollision::COLFLAG_DEATH ||
+			(Clipped = GameLayerClipped(m_Pos)))
 	{
-		//we just unfreeze before killing, when we leave the game layer
-		if (Clipped)
+		//we just unfreeze before killing, when we leave the game layer or sacrificing where not allowed to
+		if (Clipped || (g_Config.m_SvForceShrine && !Shrine))
 			m_Core.m_Frozen = 0;
-
 		Die(m_pPlayer->GetCID(), WEAPON_WORLD);
 	}
 

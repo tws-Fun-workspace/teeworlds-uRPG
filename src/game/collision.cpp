@@ -45,6 +45,8 @@ void CCollision::Init(class CLayers *pLayers)
 		case TILE_NOHOOK:
 			m_pTiles[i].m_Index = COLFLAG_SOLID|COLFLAG_NOHOOK;
 			break;
+		case TILE_SHRINE:
+			break;// don't touch shrine
 		default:
 			m_pTiles[i].m_Index = 0;
 		}
@@ -61,7 +63,8 @@ int CCollision::GetTile(int x, int y)
 
 bool CCollision::IsTileSolid(int x, int y)
 {
-	return GetTile(x, y)&COLFLAG_SOLID;
+	int Tile = GetTile(x, y);
+	return (Tile&COLFLAG_SOLID) && Tile <= 5;
 }
 
 // TODO: rewrite this smarter!
