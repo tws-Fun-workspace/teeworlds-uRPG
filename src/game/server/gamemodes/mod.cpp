@@ -179,6 +179,13 @@ void CGameControllerMOD::HandleFreeze(int Killer, int Victim)
 
 	pKiller->GetPlayer()->m_Score += CFG(FreezeScore);
 	SendFreezeKill(Killer, Victim, WEAPON_RIFLE);
+
+	if (CFG(FreezeLoltext) && CFG(FreezeScore))
+	{
+		char aBuf[64];
+		str_format(aBuf, sizeof aBuf, "%+d", CFG(FreezeScore));
+		GS->CreateLolText(pKiller, false, vec2(0.f, -50.f), vec2(0.f, -0.5f), 50, aBuf);
+	}
 }
 
 void CGameControllerMOD::HandleMelt(int Melter, int Meltee)
@@ -192,6 +199,13 @@ void CGameControllerMOD::HandleMelt(int Melter, int Meltee)
 		return;
 
 	pMelter->GetPlayer()->m_Score += CFG(MeltScore);
+
+	if (CFG(MeltLoltext) && CFG(MeltScore))
+	{
+		char aBuf[64];
+		str_format(aBuf, sizeof aBuf, "%+d", CFG(MeltScore));
+		GS->CreateLolText(pMelter, false, vec2(0.f, -50.f), vec2(0.f, -0.5f), 50, aBuf);
+	}
 }
 
 void CGameControllerMOD::HandleSacr(int Killer, int Victim)
@@ -217,11 +231,11 @@ void CGameControllerMOD::HandleSacr(int Killer, int Victim)
 	pKiller->GetPlayer()->m_Score += CFG(SacrScore);
 	SendFreezeKill(Killer, Victim, WEAPON_NINJA);
 
-	if (CFG(SacrLoltext) && CFG(SacrTeamscore))
+	if (CFG(SacrLoltext) && CFG(SacrScore))
 	{
 		char aBuf[64];
-		str_format(aBuf, sizeof aBuf, "%+d", CFG(SacrTeamscore));
-		GS->CreateLolText(pKiller, false, vec2(0.f, -50.f), vec2(0.f, -0.5f), 75, aBuf);
+		str_format(aBuf, sizeof aBuf, "%+d", CFG(SacrScore));
+		GS->CreateLolText(pKiller, false, vec2(0.f, -50.f), vec2(0.f, -0.5f), 50, aBuf);
 	}
 }
 

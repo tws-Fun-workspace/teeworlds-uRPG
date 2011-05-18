@@ -112,7 +112,9 @@ MACRO_CONFIG_INT(SvMeltHammerScaleY, sv_melt_hammer_scale_y, 50, 1, 1000, CFGFLA
 MACRO_CONFIG_INT(SvLoltextHspace, sv_loltext_hspace, 14, 10, 25, CFGFLAG_SERVER, "horizontal offset between loltext 'pixels'")
 MACRO_CONFIG_INT(SvLoltextVspace, sv_loltext_vspace, 14, 10, 25, CFGFLAG_SERVER, "vertical offset between loltext 'pixels'")
 
-MACRO_CONFIG_INT(SvSacrLoltext, sv_sacr_loltext, 1, 0, 1, CFGFLAG_SERVER, "display a loltext when sacrificing")
+MACRO_CONFIG_INT(SvSacrLoltext, sv_sacr_loltext, 0, 0, 1, CFGFLAG_SERVER, "display a loltext when sacrificing")
+MACRO_CONFIG_INT(SvFreezeLoltext, sv_freeze_loltext, 0, 0, 1, CFGFLAG_SERVER, "display a loltext when freezing")
+MACRO_CONFIG_INT(SvMeltLoltext, sv_melt_loltext, 0, 0, 1, CFGFLAG_SERVER, "display a loltext when melting")
 
 MACRO_CONFIG_INT(SvEmoticonDelay, sv_emoticon_delay, 2, 0, 5, CFGFLAG_SERVER, "be careful with 0 as it allows for emoticon spam")
 
