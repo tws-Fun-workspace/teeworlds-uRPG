@@ -82,6 +82,8 @@ void CGameControllerMOD::Tick()
 
 	if (Empty)
 		m_aTeamscore[0] = m_aTeamscore[1] = 0;
+	else
+		DoScoreDisplays();
 
 	if (m_BroadcastStop >= 0 && m_BroadcastStop < TICK)
 	{
@@ -95,6 +97,29 @@ void CGameControllerMOD::Tick()
 			if (CHAR(i))
 				GS->SendBroadcast(m_aBroadcast, i);
 		m_NextBroadcast = TICK + TS;
+	}
+}
+
+void CGameControllerMOD::DoScoreDisplays()
+{
+	if (!m_aScoreDisplayCount[0] && !m_aScoreDisplayCount[1])
+		return;
+
+	for(int i = 0; i < 2; i++)
+	{
+		if (m_aScoreDisplayValue[i] != m_aTeamscore[i])
+		{
+			char aBuf[16];
+			str_format(aBuf, sizeof aBuf, "%d", m_aTeamscore[i]);
+			D("i: %d, dv: %d, ts: %d, dc: %d",i, m_aScoreDisplayValue[i], m_aTeamscore[i], m_aScoreDisplayCount[i]);
+			m_aScoreDisplayValue[i] = m_aTeamscore[i];
+			for(int j = 0; j < m_aScoreDisplayCount[i]; j++)
+			{
+				if (m_aScoreDisplayTextIDs[i][j] >= 0)
+					GS->DestroyLolText(m_aScoreDisplayTextIDs[i][j]);
+				m_aScoreDisplayTextIDs[i][j] = GS->CreateLolText(0, false, m_aScoreDisplays[i][j], vec2(0.f, 0.f), 3600 * TS, aBuf);
+			}
+		}
 	}
 }
 
@@ -293,6 +318,35 @@ void CGameControllerMOD::PostReset()
 	m_NextBroadcast = 0;
 	m_BroadcastStop = 0;
 	m_aBroadcast[0] = '\0';
+
+	m_aScoreDisplayCount[0] = m_aScoreDisplayCount[1] = 0;
+	m_aScoreDisplayValue[0] = m_aScoreDisplayValue[1] = -1;
+	
+	for(int i = 0; i < MAX_SCOREDISPLAYS; i++)
+		m_aScoreDisplayTextIDs[0][i] = m_aScoreDisplayTextIDs[1][i] = -1;
+
+	InitScoreMarkers();
+}
+
+void CGameControllerMOD::InitScoreMarkers()
+{
+	m_aScoreDisplayCount[0] = m_aScoreDisplayCount[1] = 0;
+	CMapItemLayerTilemap *pTMap = GS->Collision()->Layers()->GameLayer();
+	CTile *pTiles = (CTile *)GS->Collision()->Layers()->Map()->GetData(pTMap->m_Data);
+	for(int y = 0; y < pTMap->m_Height; y++)
+		for(int x = 0; x < pTMap->m_Width; x++)
+		{
+			int Index = pTiles[y * pTMap->m_Width + x].m_Index;
+			if (Index == TILE_REDSCORE || Index == TILE_BLUESCORE)
+			{
+				int Team = Index - TILE_REDSCORE;
+				if (m_aScoreDisplayCount[Team] < MAX_SCOREDISPLAYS)
+					m_aScoreDisplays[Team][m_aScoreDisplayCount[Team]++] = vec2(x*32.f, y*32.f);
+				else
+					dbg_msg("mod", "warning, too many score displays on map, ignoring this one.");
+			}
+				
+		}
 }
 
 bool CGameControllerMOD::CanJoinTeam(int Team, int NotThisID)
