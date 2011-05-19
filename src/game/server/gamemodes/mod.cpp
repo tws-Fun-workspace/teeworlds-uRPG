@@ -148,6 +148,10 @@ void CGameControllerMOD::DoHookers()
 			continue;
 		
 		int Hooking = pChr->GetHookedPlayer();
+
+		if (Hooking >= 0 && pChr->GetHookTick() < CFG(HookRegisterDelay))
+			Hooking = -1;
+
 		int HammeredBy = pChr->LastHammeredBy();
 		pChr->ClearLastHammeredBy();
 
