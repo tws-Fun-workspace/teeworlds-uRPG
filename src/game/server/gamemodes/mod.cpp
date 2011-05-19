@@ -388,7 +388,14 @@ void CGameControllerMOD::PostReset()
 	m_aScoreDisplayValue[0] = m_aScoreDisplayValue[1] = -1;
 	
 	for(int i = 0; i < MAX_SCOREDISPLAYS; i++)
+	{
+		if (m_aScoreDisplayTextIDs[0][i] != -1)
+			GS->DestroyLolText(m_aScoreDisplayTextIDs[0][i]);
+		if (m_aScoreDisplayTextIDs[1][i] != -1)
+			GS->DestroyLolText(m_aScoreDisplayTextIDs[1][i]);
+
 		m_aScoreDisplayTextIDs[0][i] = m_aScoreDisplayTextIDs[1][i] = -1;
+	}
 
 	InitScoreMarkers();
 }
