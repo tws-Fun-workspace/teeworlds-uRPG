@@ -132,7 +132,6 @@ void CGameControllerMOD::DoScoreDisplays()
 		{
 			char aBuf[16];
 			str_format(aBuf, sizeof aBuf, "%d", m_aTeamscore[i]);
-			D("i: %d, dv: %d, ts: %d, dc: %d",i, m_aScoreDisplayValue[i], m_aTeamscore[i], m_aScoreDisplayCount[i]);
 			m_aScoreDisplayValue[i] = m_aTeamscore[i];
 			for(int j = 0; j < m_aScoreDisplayCount[i]; j++)
 			{
@@ -172,11 +171,8 @@ void CGameControllerMOD::DoHookers()
 
 		if (HammeredBy >= 0)
 		{	
-			D("%d was hammered by %d", i, HammeredBy);
 			CCharacter *pHam = CHAR(HammeredBy);
 			bool SameTeam = pChr->GetPlayer()->GetTeam() == pHam->GetPlayer()->GetTeam();
-			if (SameTeam)
-				D("same team, bitch");
 			m_aLastInteraction[i] = SameTeam ? -1 : HammeredBy;
 		}
 	}
