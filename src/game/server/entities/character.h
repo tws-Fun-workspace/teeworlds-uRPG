@@ -48,6 +48,8 @@ public:
 	void Die(int Killer, int Weapon);
 	bool TakeDamage(vec2 Force, int Dmg, int From, int Weapon);
 
+	void Bleed(int Ticks);
+
 	bool Spawn(class CPlayer *pPlayer, vec2 Pos);
 	bool Remove();
 
@@ -145,6 +147,8 @@ private:
 	int m_MoltenAt;
 
 	int m_HammeredBy;
+
+	int m_BloodTicks;
 };
 
 #endif

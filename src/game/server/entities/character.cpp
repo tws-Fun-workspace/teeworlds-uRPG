@@ -83,6 +83,8 @@ bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
 
 	m_HammeredBy = -1;
 
+	m_BloodTicks = 0;
+
 	return true;
 }
 
@@ -673,6 +675,13 @@ void CCharacter::Tick()
 		m_FrozenBy = -1;
 	}
 
+	if (m_BloodTicks > 0)
+	{
+		if (m_BloodTicks % g_Config.m_SvBloodInterval == 0)
+			GameServer()->CreateDeath(m_Core.m_Pos, m_pPlayer->GetCID());
+		--m_BloodTicks;
+	}
+
 	// handle Weapons
 	HandleWeapons();
 
@@ -904,6 +913,11 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon)
 	m_EmoteStop = Server()->Tick() + 500 * Server()->TickSpeed() / 1000;
 
 	return true;
+}
+
+void CCharacter::Bleed(int Ticks)
+{
+	m_BloodTicks = Ticks;
 }
 
 void CCharacter::Snap(int SnappingClient)
