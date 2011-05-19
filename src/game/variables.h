@@ -116,6 +116,10 @@ MACRO_CONFIG_INT(SvSacrLoltext, sv_sacr_loltext, 0, 0, 1, CFGFLAG_SERVER, "displ
 MACRO_CONFIG_INT(SvFreezeLoltext, sv_freeze_loltext, 0, 0, 1, CFGFLAG_SERVER, "display a loltext when freezing")
 MACRO_CONFIG_INT(SvMeltLoltext, sv_melt_loltext, 0, 0, 1, CFGFLAG_SERVER, "display a loltext when melting")
 
+MACRO_CONFIG_INT(SvSacrBroadcast, sv_sacr_broadcast, 1, 0, 1, CFGFLAG_SERVER, "display a broadcast when sacrificing")
+MACRO_CONFIG_INT(SvFreezeBroadcast, sv_freeze_broadcast, 0, 0, 1, CFGFLAG_SERVER, "display a broadcast when freezing")
+MACRO_CONFIG_INT(SvMeltBroadcast, sv_melt_broadcast, 0, 0, 1, CFGFLAG_SERVER, "display a broadcast when melting by hammer")
+
 MACRO_CONFIG_INT(SvEmoticonDelay, sv_emoticon_delay, 2, 0, 5, CFGFLAG_SERVER, "be careful with 0 as it allows for emoticon spam")
 
 MACRO_CONFIG_INT(SvLaserSkipFrozen, sv_laser_skip_frozen, 0, 0, 1, CFGFLAG_SERVER, "allow/disallow shooting through frozen tees")
