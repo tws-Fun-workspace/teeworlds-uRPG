@@ -28,6 +28,10 @@ CGameControllerMOD::CGameControllerMOD(class CGameContext *pGameServer)
 	m_pGameType = "openfng";
 	m_GameFlags = GAMEFLAG_TEAMS;
 	m_aCltMask[0] = m_aCltMask[1] = 0;
+
+	for(int i = 0; i < MAX_SCOREDISPLAYS; i++) //becoz PostReset will destroy existing loltexts
+		m_aScoreDisplayTextIDs[0][i] = m_aScoreDisplayTextIDs[1][i] = -1; 
+
 	PostReset();
 }
 
