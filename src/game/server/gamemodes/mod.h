@@ -36,7 +36,9 @@ private:
 	void Broadcast(const char *pMsg, int Ticks);
 
 	void DoHookers(); //:P
+	void DoBroadcasts(bool ForceSend = false);
 	void DoScoreDisplays();
+	void DoAYB();
 	void InitScoreMarkers();
 public:
 	CGameControllerMOD(class CGameContext *pGameServer);

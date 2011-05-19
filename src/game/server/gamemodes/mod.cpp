@@ -85,13 +85,29 @@ void CGameControllerMOD::Tick()
 	else
 		DoScoreDisplays();
 
+	DoBroadcasts();
+	DoAYB();
+}
+
+void CGameControllerMOD::DoAYB()
+{
+	if (m_GameOverTick != -1 || !CFG(AllYourBase))
+		return;
+
+	if (max(m_aTeamscore[0], m_aTeamscore[1]) + CFG(AllYourBase) >= CFG(Scorelimit))
+		Broadcast("ALL YOUR BASE ARE BELONG TO US.", TS);
+
+}
+
+void CGameControllerMOD::DoBroadcasts(bool ForceSend)
+{
 	if (m_BroadcastStop >= 0 && m_BroadcastStop < TICK)
 	{
 		m_aBroadcast[0] = ' '; m_aBroadcast[1] = '\0';
 		m_BroadcastStop = -1;
 	}
 
-	if (m_NextBroadcast < TICK && *m_aBroadcast && CFG(Broadcasts))
+	if ((ForceSend || m_NextBroadcast < TICK) && *m_aBroadcast && CFG(Broadcasts))
 	{
 		for(int i = 0; i < MAX_CLIENTS; i++)
 			if (CHAR(i))
