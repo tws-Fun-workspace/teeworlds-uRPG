@@ -16,6 +16,8 @@
 
 #define GS GameServer()
 #define CHAR(C) (((C) < 0 || (C) >= MAX_CLIENTS) ? 0 : GS->GetPlayerChar(C))
+#define PLAYER(C) (((C) < 0 || (C) >= MAX_CLIENTS) ? 0 : GS->m_apPlayers[C])
+#define TPLAYER(C) (((C) < 0 || (C) >= MAX_CLIENTS) ? 0 : (GS->IsClientReady(C) && GS->IsClientPlayer(C)) ? GS->m_apPlayers[C] : 0)
 #define CFG(A) g_Config.m_Sv ## A
 #define D(F, ARGS...) dbg_msg("mod", "%s:%i:%s(): " F, __FILE__, __LINE__, \
                                                             __func__,##ARGS)
@@ -44,7 +46,7 @@ void CGameControllerMOD::Tick()
 
 	for(int i = 0; i < MAX_CLIENTS; i++)
 	{
-		if (Empty && GS->IsClientReady(i) && GS->IsClientPlayer(i))
+		if (Empty && TPLAYER(i))
 			Empty = false;
 
 		CCharacter *pChr = CHAR(i);
@@ -110,7 +112,7 @@ void CGameControllerMOD::DoBroadcasts(bool ForceSend)
 	if ((ForceSend || m_NextBroadcast < TICK) && *m_aBroadcast && CFG(Broadcasts))
 	{
 		for(int i = 0; i < MAX_CLIENTS; i++)
-			if (CHAR(i))
+			if (TPLAYER(i))
 				GS->SendBroadcast(m_aBroadcast, i);
 		m_NextBroadcast = TICK + TS;
 	}
@@ -189,22 +191,22 @@ void CGameControllerMOD::HandleFreeze(int Killer, int Victim)
 	int FailTeam = pVictim->GetPlayer()->GetTeam() & 1;
 	m_aTeamscore[1 - FailTeam] += CFG(FreezeTeamscore);
 
-	CCharacter *pKiller = CHAR(Killer);
+	CPlayer *pPlKiller = TPLAYER(Killer);
 
-	//freezing counts as a hostile interaction
-	m_aLastInteraction[pVictim->GetPlayer()->GetCID()] = pKiller ? pKiller->GetPlayer()->GetCID() : -1;
-
-	if (!pKiller)
+	if (!pPlKiller)
 		return;
 
-	pKiller->GetPlayer()->m_Score += CFG(FreezeScore);
+	//freezing counts as a hostile interaction
+	m_aLastInteraction[pVictim->GetPlayer()->GetCID()] = pPlKiller->GetCID();
+
+	pPlKiller->m_Score += CFG(FreezeScore);
 	SendFreezeKill(Killer, Victim, WEAPON_RIFLE);
 
-	if (CFG(FreezeLoltext) && CFG(FreezeScore))
+	if (pPlKiller->GetCharacter() && CFG(FreezeLoltext) && CFG(FreezeScore))
 	{
 		char aBuf[64];
 		str_format(aBuf, sizeof aBuf, "%+d", CFG(FreezeScore));
-		GS->CreateLolText(pKiller, false, vec2(0.f, -50.f), vec2(0.f, 0.f), 50, aBuf);
+		GS->CreateLolText(pPlKiller->GetCharacter(), false, vec2(0.f, -50.f), vec2(0.f, 0.f), 50, aBuf);
 	}
 }
 
@@ -214,48 +216,53 @@ void CGameControllerMOD::HandleMelt(int Melter, int Meltee)
 	int MeltTeam = pMeltee->GetPlayer()->GetTeam()&1;
 	m_aTeamscore[MeltTeam] += CFG(MeltTeamscore);
 
-	CCharacter *pMelter = CHAR(Melter);
-	if (!pMelter)
+	CPlayer *pPlMelter = TPLAYER(Melter);
+
+	if (!pPlMelter)
 		return;
 
-	pMelter->GetPlayer()->m_Score += CFG(MeltScore);
+	pPlMelter->m_Score += CFG(MeltScore);
+	SendFreezeKill(Melter, Meltee, WEAPON_HAMMER);
 
-	if (CFG(MeltLoltext) && CFG(MeltScore))
+	if (pPlMelter->GetCharacter() && CFG(MeltLoltext) && CFG(MeltScore))
 	{
 		char aBuf[64];
 		str_format(aBuf, sizeof aBuf, "%+d", CFG(MeltScore));
-		GS->CreateLolText(pMelter, false, vec2(0.f, -50.f), vec2(0.f, 0.f), 50, aBuf);
+		GS->CreateLolText(pPlMelter->GetCharacter(), false, vec2(0.f, -50.f), vec2(0.f, 0.f), 50, aBuf);
 	}
 }
 
 void CGameControllerMOD::HandleSacr(int Killer, int Victim)
 {
 	CCharacter *pVictim = CHAR(Victim);
-	if (CFG(SacrTeamscore) &&  Killer >= 0)
+
+	int FailTeam = pVictim->GetPlayer()->GetTeam()&1;
+	m_aTeamscore[1-FailTeam] += CFG(SacrTeamscore);
+
+	if (CFG(SacrSound) == 1)
+		GameServer()->CreateSoundGlobal(SOUND_CTF_CAPTURE);
+	else if (CFG(SacrSound) == 2)
+		GameServer()->CreateSound(pVictim->m_Pos, SOUND_CTF_CAPTURE);
+
+	if (CFG(SacrTeamscore))
 	{
-		int FailTeam = pVictim->GetPlayer()->GetTeam()&1;
-		m_aTeamscore[1-FailTeam] += CFG(SacrTeamscore);
 		char aBuf[64];
 		str_format(aBuf, sizeof aBuf, "%s scored (%+d)", GetTeamName(1-FailTeam), CFG(SacrTeamscore));
 		Broadcast(aBuf, CFG(BroadcastTime) * TS);
-		if (CFG(SacrSound) == 1)
-			GameServer()->CreateSoundGlobal(SOUND_CTF_CAPTURE);
-		else if (CFG(SacrSound) == 2)
-			GameServer()->CreateSound(pVictim->m_Pos, SOUND_CTF_CAPTURE);
 	}
 
-	CCharacter* pKiller = CHAR(Killer);
-	if (!pKiller)
+	CPlayer *pPlKiller = TPLAYER(Killer);
+	if (!pPlKiller)
 		return;
 
-	pKiller->GetPlayer()->m_Score += CFG(SacrScore);
+	pPlKiller->m_Score += CFG(SacrScore);
 	SendFreezeKill(Killer, Victim, WEAPON_NINJA);
 
-	if (CFG(SacrLoltext) && CFG(SacrScore))
+	if (pPlKiller->GetCharacter() && CFG(SacrLoltext) && CFG(SacrScore))
 	{
 		char aBuf[64];
 		str_format(aBuf, sizeof aBuf, "%+d", CFG(SacrScore));
-		GS->CreateLolText(pKiller, false, vec2(0.f, -50.f), vec2(0.f, 0.f), 50, aBuf);
+		GS->CreateLolText(pPlKiller->GetCharacter(), false, vec2(0.f, -50.f), vec2(0.f, 0.f), 50, aBuf);
 	}
 }
 
@@ -304,6 +311,11 @@ void CGameControllerMOD::OnCharacterSpawn(class CCharacter *pVictim)
 	pVictim->GiveWeapon(WEAPON_RIFLE, -1);
 	pVictim->SetWeapon(WEAPON_RIFLE);
 
+	int Cid = pVictim->GetPlayer()->GetCID();
+	for(int i = 0; i < MAX_CLIENTS; ++i)
+		if (m_aLastInteraction[i] == Cid)
+			m_aLastInteraction[i] = -1;
+
 	m_aLastInteraction[pVictim->GetPlayer()->GetCID()] = -1;
 }
 
@@ -332,12 +344,8 @@ int CGameControllerMOD::OnCharacterDeath(class CCharacter *pVictim,
 	//IGameController::OnCharacterDeath(pVictim, pKiller, Weapon);
 
 	int Cid = pVictim->GetPlayer()->GetCID();
-	if (Weapon == WEAPON_WORLD && pVictim->GetFreezeTicks() > 0)
+	if (Weapon == WEAPON_WORLD && pVictim->GetFreezeTicks() > 0 && m_aLastInteraction[Cid] != -1)
 		HandleSacr(m_aLastInteraction[Cid], Cid);
-
-	for(int i = 0; i < MAX_CLIENTS; ++i)
-		if (m_aLastInteraction[i] == Cid)
-			m_aLastInteraction[i] = -1;
 
 	return 0;
 }
