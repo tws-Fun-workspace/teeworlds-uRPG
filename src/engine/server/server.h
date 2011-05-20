@@ -3,7 +3,26 @@
 #ifndef ENGINE_SERVER_SERVER_H
 #define ENGINE_SERVER_SERVER_H
 
+#include <engine/shared/protocol.h>
 #include <engine/server.h>
+#include <engine/shared/snapshot.h>
+#include <engine/shared/demo.h>
+#include <engine/masterserver.h>
+#include <engine/server/register.h>
+#include <engine/shared/network.h>
+#include <engine/console.h>
+#include <engine/shared/mapchecker.h>
+//not sure why it worked without all of these. it is required for being able to include CServer in mod gamectl, for adding bans from there:S
+class CRegister;
+class CMapChecker;
+class CDemoRecorder;
+class CSnapshotStorage;
+class CSnapshotDelta;
+class CSnapshotBuilder;
+class CNetServer;
+class CNetChunk;
+class IEngineMasterServer;
+class IEngineMap;
 
 class CSnapIDPool
 {
