@@ -33,7 +33,7 @@ private:
 	void SendFreezeKill(int Killer, int Victim, int Weapon);
 	void HandleFreeze(int Killer, int Victim);
 	void HandleMelt(int Melter, int Meltee);
-	void HandleSacr(int Killer, int Victim);
+	void HandleSacr(int Killer, int Victim, int ShrineTeam);
 
 	void Broadcast(const char *pMsg, int Ticks);
 

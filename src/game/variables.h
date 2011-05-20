@@ -96,6 +96,8 @@ MACRO_CONFIG_INT(SvFreezeScore, sv_freeze_score, 1, 0, 10, CFGFLAG_SERVER, "play
 MACRO_CONFIG_INT(SvFreezeTeamscore, sv_freeze_teamscore, 1, 0, 10, CFGFLAG_SERVER, "team score for freezing")
 MACRO_CONFIG_INT(SvSacrScore, sv_sacr_score, 3, 0, 10, CFGFLAG_SERVER, "player score for sacrificing")
 MACRO_CONFIG_INT(SvSacrTeamscore, sv_sacr_teamscore, 10, 0, 10, CFGFLAG_SERVER, "team score for sacrificing")
+MACRO_CONFIG_INT(SvWrongSacrScore, sv_wrong_sacr_score, -5, -10, 0, CFGFLAG_SERVER, "player score for sacrificing in wrong shrine")
+MACRO_CONFIG_INT(SvWrongSacrTeamscore, sv_wrong_sacr_teamscore, -1, -10, 0, CFGFLAG_SERVER, "team score for sacrificing in wrong shrine")
 MACRO_CONFIG_INT(SvMeltScore, sv_melt_score, 1, 0, 10, CFGFLAG_SERVER, "player score for melting")
 MACRO_CONFIG_INT(SvMeltTeamscore, sv_melt_teamscore, 0, 0, 10, CFGFLAG_SERVER, "team score for melting")
 
@@ -134,6 +136,7 @@ MACRO_CONFIG_INT(SvBloodInterval, sv_blood_interval, 1, 1, 300, CFGFLAG_SERVER, 
 MACRO_CONFIG_INT(SvBleedOnFreeze, sv_bleed_on_freeze, 1, 0, 1, CFGFLAG_SERVER, "'blood' splash + sound on freezing someone")
 
 MACRO_CONFIG_INT(SvPunishRagequit, sv_punish_ragequit, 30, 0, 120, CFGFLAG_SERVER, "number of seconds to ban for forcefully leaving the game while frozen. 0 = off.")
+MACRO_CONFIG_INT(SvPunishWrongSacr, sv_punish_wrong_sacr, 6, 0, 30, CFGFLAG_SERVER, "number of seconds to freeze who is sacrificing in a wrong-colored shrine.")
 
 // debug
 #ifdef CONF_DEBUG // this one can crash the server if not used correctly
