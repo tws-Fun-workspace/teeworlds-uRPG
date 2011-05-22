@@ -10,7 +10,7 @@
 #include <game/server/gamecontext.h>
 #include <game/server/entities/character.h>
 
-#include "mod.h"
+#include "openfng.h"
 
 #define TS Server()->TickSpeed()
 #define TICK Server()->Tick()
@@ -22,15 +22,15 @@
 #define FORTEAMS(T) for(int T = TEAM_RED; T != -1; T = (T==TEAM_RED?TEAM_BLUE:-1))
 
 #if defined(CONF_FAMILY_WINDOWS)
- #define D(F, ...) dbg_msg("MOD", "%s:%i:%s(): " F, __FILE__, __LINE__, \
+ #define D(F, ...) dbg_msg("OpenFNG", "%s:%i:%s(): " F, __FILE__, __LINE__, \
                                                             __FUNCTION__, __VA_ARGS__)
 #elif defined(CONF_FAMILY_UNIX)
- #define D(F, ARGS...) dbg_msg("MOD", "%s:%i:%s(): " F, __FILE__, __LINE__, \
+ #define D(F, ARGS...) dbg_msg("OpenFNG", "%s:%i:%s(): " F, __FILE__, __LINE__, \
                                                             __func__,##ARGS)
 #endif
 
 
-CGameControllerMOD::CGameControllerMOD(class CGameContext *pGameServer)
+CGameControllerOpenFNG::CGameControllerOpenFNG(class CGameContext *pGameServer)
 : IGameController(pGameServer), m_ScoreDisplay(pGameServer), m_Broadcast(pGameServer)
 {
 	m_pGameType = "openfng";
@@ -40,12 +40,12 @@ CGameControllerMOD::CGameControllerMOD(class CGameContext *pGameServer)
 	Reset();
 }
 
-CGameControllerMOD::~CGameControllerMOD()
+CGameControllerOpenFNG::~CGameControllerOpenFNG()
 {
 	Reset(true);
 }
 
-void CGameControllerMOD::Reset(bool Destruct)
+void CGameControllerOpenFNG::Reset(bool Destruct)
 {
 	for(int i = 0; i < MAX_CLIENTS; i++)
 		m_aFrozenBy[i] = m_aMoltenBy[i] = m_aLastInteraction[i] = -1;
@@ -58,7 +58,7 @@ void CGameControllerMOD::Reset(bool Destruct)
 	m_aCltMask[0] = m_aCltMask[1] = 0;
 }
 
-void CGameControllerMOD::Tick()
+void CGameControllerOpenFNG::Tick()
 {
 	DoTeamScoreWincheck();
 	IGameController::Tick();
@@ -78,7 +78,7 @@ void CGameControllerMOD::Tick()
 	DoRagequit();
 }
 
-bool CGameControllerMOD::DoEmpty()
+bool CGameControllerOpenFNG::DoEmpty()
 {
 	bool Empty = true;
 
@@ -92,7 +92,7 @@ bool CGameControllerMOD::DoEmpty()
 	return Empty;
 }
 
-void CGameControllerMOD::DoHookers()
+void CGameControllerOpenFNG::DoHookers()
 {
 	for(int i = 0; i < MAX_CLIENTS; i++)
 	{
@@ -136,7 +136,7 @@ void CGameControllerMOD::DoHookers()
 	}
 }
 
-void CGameControllerMOD::DoInteractions()
+void CGameControllerOpenFNG::DoInteractions()
 {
 	DoHookers();
 
@@ -207,7 +207,7 @@ void CGameControllerMOD::DoInteractions()
 	}
 }
 
-void CGameControllerMOD::DoScoreDisplays()
+void CGameControllerOpenFNG::DoScoreDisplays()
 {
 	FORTEAMS(i)
 		m_ScoreDisplay.Update(i, m_aTeamscore[i]);
@@ -215,7 +215,7 @@ void CGameControllerMOD::DoScoreDisplays()
 	m_ScoreDisplay.Operate();
 }
 
-void CGameControllerMOD::DoBroadcasts(bool ForceSend)
+void CGameControllerOpenFNG::DoBroadcasts(bool ForceSend)
 {
 	if (m_GameOverTick != -1)
 		return;
@@ -228,7 +228,7 @@ void CGameControllerMOD::DoBroadcasts(bool ForceSend)
 	m_Broadcast.Operate();
 }
 
-void CGameControllerMOD::DoRagequit()
+void CGameControllerOpenFNG::DoRagequit()
 {
 	if (*m_aRagequitAddr)
 	{
@@ -242,7 +242,7 @@ void CGameControllerMOD::DoRagequit()
 	}
 }
 
-void CGameControllerMOD::HandleFreeze(int Killer, int Victim)
+void CGameControllerOpenFNG::HandleFreeze(int Killer, int Victim)
 {
 	CCharacter *pVictim = CHAR(Victim);
 	if (CFG(BleedOnFreeze))
@@ -284,7 +284,7 @@ void CGameControllerMOD::HandleFreeze(int Killer, int Victim)
 	}
 }
 
-void CGameControllerMOD::HandleMelt(int Melter, int Meltee)
+void CGameControllerOpenFNG::HandleMelt(int Melter, int Meltee)
 {
 	CCharacter *pMeltee = CHAR(Meltee);
 	int MeltTeam = pMeltee->GetPlayer()->GetTeam()&1;
@@ -313,7 +313,7 @@ void CGameControllerMOD::HandleMelt(int Melter, int Meltee)
 	}
 }
 
-void CGameControllerMOD::HandleSacr(int Killer, int Victim, int ShrineTeam)
+void CGameControllerOpenFNG::HandleSacr(int Killer, int Victim, int ShrineTeam)
 {//assertion: Killer >= 0, victim anyways
 	CCharacter *pVictim = CHAR(Victim);
 
@@ -363,7 +363,7 @@ void CGameControllerMOD::HandleSacr(int Killer, int Victim, int ShrineTeam)
 	}
 }
 
-void CGameControllerMOD::SendFreezeKill(int Killer, int Victim, int Weapon)
+void CGameControllerOpenFNG::SendFreezeKill(int Killer, int Victim, int Weapon)
 {
 	char aBuf[256];
 	str_format(aBuf, sizeof(aBuf), "frzkill k:%d:'%s' v:%d:'%s' w:%d",
@@ -381,7 +381,7 @@ void CGameControllerMOD::SendFreezeKill(int Killer, int Victim, int Weapon)
 	Server()->SendPackMsg(&Msg, MSGFLAG_VITAL, -1);
 }
 
-int CGameControllerMOD::OnCharacterDeath(class CCharacter *pVictim, class CPlayer *pUnusedKiller, int Weapon)
+int CGameControllerOpenFNG::OnCharacterDeath(class CCharacter *pVictim, class CPlayer *pUnusedKiller, int Weapon)
 {
 	m_aCltMask[pVictim->GetPlayer()->GetTeam()&1] &= ~(1<<pVictim->GetPlayer()->GetCID());
 
@@ -395,7 +395,7 @@ int CGameControllerMOD::OnCharacterDeath(class CCharacter *pVictim, class CPlaye
 }
 
 
-void CGameControllerMOD::OnCharacterSpawn(class CCharacter *pChr)
+void CGameControllerOpenFNG::OnCharacterSpawn(class CCharacter *pChr)
 {
 	m_aCltMask[pChr->GetPlayer()->GetTeam()&1] |= (1<<pChr->GetPlayer()->GetCID());
 	
@@ -413,13 +413,13 @@ void CGameControllerMOD::OnCharacterSpawn(class CCharacter *pChr)
 	m_aLastInteraction[pChr->GetPlayer()->GetCID()] = -1;
 }
 
-void CGameControllerMOD::PostReset()
+void CGameControllerOpenFNG::PostReset()
 {
 	IGameController::PostReset();
 	Reset();
 }
 
-void CGameControllerMOD::Snap(int SnappingClient)
+void CGameControllerOpenFNG::Snap(int SnappingClient)
 {
 	IGameController::Snap(SnappingClient);
 
@@ -436,7 +436,7 @@ void CGameControllerMOD::Snap(int SnappingClient)
 	pGameDataObj->m_FlagCarrierBlue = 0;
 }
 
-bool CGameControllerMOD::OnEntity(int Index, vec2 Pos)
+bool CGameControllerOpenFNG::OnEntity(int Index, vec2 Pos)
 {
 	switch(Index)
 	{
@@ -453,7 +453,7 @@ bool CGameControllerMOD::OnEntity(int Index, vec2 Pos)
 	return false;
 }
 
-bool CGameControllerMOD::CanJoinTeam(int Team, int NotThisID)
+bool CGameControllerOpenFNG::CanJoinTeam(int Team, int NotThisID)
 {
 	int Can = IGameController::CanJoinTeam(Team, NotThisID);
 	if (!Can)
