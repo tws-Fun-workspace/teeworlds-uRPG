@@ -19,7 +19,7 @@ apparently written by some "TOM".
 However, OpenFNG does not contain any of the original FNG source, neither
 was it used as a template for writing this.
 Whoever modifies the OpenFNG code (that is, mainly
-srg/game/server/gamemodes/mod.cpp), is required to make his changes
+src/game/server/gamemodes/openfng.cpp), is required to make his changes
 to the source code available to others, when distributing modified
 versions of OpenFNG. This shall (not only) avoid the situation out of
 which OpenFNG was born in the first place.
