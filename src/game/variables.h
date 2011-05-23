@@ -62,7 +62,7 @@ MACRO_CONFIG_INT(SvRoundsPerMap, sv_rounds_per_map, 1, 1, 100, CFGFLAG_SERVER, "
 MACRO_CONFIG_INT(SvPowerups, sv_powerups, 1, 0, 1, CFGFLAG_SERVER, "Allow powerups like ninja")
 MACRO_CONFIG_INT(SvScorelimit, sv_scorelimit, 1000, 0, 1000, CFGFLAG_SERVER, "Score limit (0 disables)")
 MACRO_CONFIG_INT(SvTimelimit, sv_timelimit, 0, 0, 1000, CFGFLAG_SERVER, "Time limit in minutes (0 disables)")
-MACRO_CONFIG_STR(SvGametype, sv_gametype, 32, "mod", CFGFLAG_SERVER, "Game type (dm, tdm, ctf)")
+MACRO_CONFIG_STR(SvGametype, sv_gametype, 32, "openfng", CFGFLAG_SERVER, "Game type (dm, tdm, ctf)")
 MACRO_CONFIG_INT(SvTournamentMode, sv_tournament_mode, 0, 0, 1, CFGFLAG_SERVER, "Tournament mode. When enabled, players joins the server as spectator")
 MACRO_CONFIG_INT(SvSpamprotection, sv_spamprotection, 1, 0, 1, CFGFLAG_SERVER, "Spam protection")
 
@@ -95,12 +95,17 @@ MACRO_CONFIG_INT(SvMeltSafeticks, sv_melt_safeticks, 20, 0, 300, CFGFLAG_SERVER,
 MACRO_CONFIG_INT(SvFreezeScore, sv_freeze_score, 1, 0, 10, CFGFLAG_SERVER, "player score for freezing")
 MACRO_CONFIG_INT(SvFreezeTeamscore, sv_freeze_teamscore, 1, 0, 10, CFGFLAG_SERVER, "team score for freezing")
 MACRO_CONFIG_INT(SvSacrScore, sv_sacr_score, 3, 0, 10, CFGFLAG_SERVER, "player score for sacrificing")
-MACRO_CONFIG_INT(SvSacrTeamscore, sv_sacr_teamscore, 10, 0, 10, CFGFLAG_SERVER, "team score for sacrificing")
+MACRO_CONFIG_INT(SvSacrTeamscore, sv_sacr_teamscore, 5, 0, 10, CFGFLAG_SERVER, "team score for sacrificing")
+MACRO_CONFIG_INT(SvWrongSacrScore, sv_wrong_sacr_score, -5, -10, 0, CFGFLAG_SERVER, "player score for sacrificing in wrong shrine")
+MACRO_CONFIG_INT(SvWrongSacrTeamscore, sv_wrong_sacr_teamscore, -1, -10, 0, CFGFLAG_SERVER, "team score for sacrificing in wrong shrine")
+MACRO_CONFIG_INT(SvRightSacrScore, sv_right_sacr_score, 5, 0, 20, CFGFLAG_SERVER, "player score for sacrificing in wrong shrine")
+MACRO_CONFIG_INT(SvRightSacrTeamscore, sv_right_sacr_teamscore, 10, 0, 20, CFGFLAG_SERVER, "team score for sacrificing in wrong shrine")
 MACRO_CONFIG_INT(SvMeltScore, sv_melt_score, 1, 0, 10, CFGFLAG_SERVER, "player score for melting")
 MACRO_CONFIG_INT(SvMeltTeamscore, sv_melt_teamscore, 0, 0, 10, CFGFLAG_SERVER, "team score for melting")
 
 MACRO_CONFIG_INT(SvSuppressEntities, sv_suppress_entities, 1, 0, 1, CFGFLAG_SERVER, "for non fng maps, disables spawning of pickups")
 MACRO_CONFIG_INT(SvBroadcasts, sv_broadcasts, 1, 0, 1, CFGFLAG_SERVER, "allow broadcasts")
+MACRO_CONFIG_STR(SvDefBroadcast, sv_def_broadcast, 128, "", CFGFLAG_SERVER, "default broadcast to display")
 MACRO_CONFIG_INT(SvBroadcastTime, sv_broadcast_time, 3, 1, 10, CFGFLAG_SERVER, "default time for broadcasts to appear")
 
 MACRO_CONFIG_INT(SvHammerScaleX, sv_hammer_scale_x, 320, 1, 1000, CFGFLAG_SERVER, "linearly scale up hammer x power, percentage, for hammering enemies and unfrozen teammates")
@@ -123,6 +128,7 @@ MACRO_CONFIG_INT(SvMeltBroadcast, sv_melt_broadcast, 0, 0, 1, CFGFLAG_SERVER, "d
 MACRO_CONFIG_INT(SvEmoticonDelay, sv_emoticon_delay, 2, 0, 5, CFGFLAG_SERVER, "be careful with 0 as it allows for emoticon spam")
 
 MACRO_CONFIG_INT(SvLaserSkipFrozen, sv_laser_skip_frozen, 0, 0, 1, CFGFLAG_SERVER, "allow/disallow shooting through frozen tees")
+MACRO_CONFIG_INT(SvLaserSkipTeammates, sv_laser_skip_teammates, 0, 0, 1, CFGFLAG_SERVER, "allow/disallow shooting through teammates")
 
 MACRO_CONFIG_INT(SvSacrSound, sv_sacr_sound, 1, 0, 2, CFGFLAG_SERVER, "play ctf capture sound on sacrification (0 = off, 1 = global, 2 = local")
 
@@ -132,6 +138,15 @@ MACRO_CONFIG_INT(SvHookRegisterDelay, sv_hook_register_delay, 10, 0, 100, CFGFLA
 
 MACRO_CONFIG_INT(SvBloodInterval, sv_blood_interval, 1, 1, 300, CFGFLAG_SERVER, "should stay at 1 for openfng (as we bleed for only 1 tick)")
 MACRO_CONFIG_INT(SvBleedOnFreeze, sv_bleed_on_freeze, 1, 0, 1, CFGFLAG_SERVER, "'blood' splash + sound on freezing someone")
+
+MACRO_CONFIG_INT(SvPunishRagequit, sv_punish_ragequit, 30, 0, 120, CFGFLAG_SERVER, "number of seconds to ban for forcefully leaving the game while frozen. 0 = off.")
+MACRO_CONFIG_INT(SvPunishWrongSacr, sv_punish_wrong_sacr, 6, 0, 30, CFGFLAG_SERVER, "number of seconds to freeze who is sacrificing in a wrong-colored shrine.")
+
+MACRO_CONFIG_INT(SvHammerFreeze, sv_hammer_freeze, 0, 0, 10, CFGFLAG_SERVER, "number of seconds to freeze when hit with a hammer")
+
+MACRO_CONFIG_INT(SvEndvoteTime, sv_endvote_time, 60, 0, 180, CFGFLAG_SERVER, "cause vote on extending the map as soon as there are this many seconds left to hit the timelimit")
+MACRO_CONFIG_INT(SvEndvoteScore, sv_endvote_score, 50, 0, 100, CFGFLAG_SERVER, "cause vote on extending the map as soon as there is this much score left to hit the scorelimit")
+MACRO_CONFIG_INT(SvExtend, sv_extend, 0, 0, 0, CFGFLAG_SERVER, "when set to 1 before round ends, another round on the same map is enforced and this is reset to 0")
 
 // debug
 #ifdef CONF_DEBUG // this one can crash the server if not used correctly

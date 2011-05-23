@@ -45,6 +45,8 @@ protected:
 	void CycleMap();
 	void ResetGame();
 
+	void AutoVote();
+
 	char m_aMapWish[128];
 
 
@@ -60,6 +62,8 @@ protected:
 	int m_GameFlags;
 	int m_UnbalancedTick;
 	bool m_ForceBalanced;
+
+	bool m_AutoVoteCaused;
 
 public:
 	const char *m_pGameType;
