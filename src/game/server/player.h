@@ -95,6 +95,8 @@ public:
 		int m_Max;
 	} m_Latency;
 
+	int m_LagLevel, m_LagAnnounce;       
+
 private:
 	CCharacter *m_pCharacter;
 	CGameContext *m_pGameServer;

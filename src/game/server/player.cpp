@@ -50,12 +50,29 @@ void CPlayer::Tick()
 		// each second
 		if(Server()->Tick()%Server()->TickSpeed() == 0)
 		{
+			char abuf[256];
+			int LagLevel = 0;
 			m_Latency.m_Avg = m_Latency.m_Accum/Server()->TickSpeed();
 			m_Latency.m_Max = m_Latency.m_AccumMax;
 			m_Latency.m_Min = m_Latency.m_AccumMin;
 			m_Latency.m_Accum = 0;
 			m_Latency.m_AccumMin = 1000;
 			m_Latency.m_AccumMax = 0;
+                        if (m_Latency.m_Avg > 1000) {
+                                str_format(abuf,sizeof abuf, "massive lag @ '%s' (AVG: %dms, PEAK: %dms)", Server()->ClientName(m_ClientID),m_Latency.m_Avg, m_Latency.m_Max);
+                                LagLevel = 3;
+                        } else if (m_Latency.m_Avg > 600) {
+                                str_format(abuf,sizeof abuf, "serious lag @ '%s' (AVG: %dms, PEAK: %dms)", Server()->ClientName(m_ClientID), m_Latency.m_Avg, m_Latency.m_Max);
+                                LagLevel = 2;
+                        }
+                        if (m_Latency.m_Avg > 600) {
+                                if (m_LagAnnounce + 10 * Server()->TickSpeed() < Server()->Tick() || LagLevel > m_LagLevel) {
+                                        m_LagLevel = LagLevel;
+                                        GameServer()->SendChat(-1,CGameContext::CHAT_ALL,abuf);
+                                        m_LagAnnounce = Server()->Tick();
+                                }
+                        }
+
 		}
 	}
 
