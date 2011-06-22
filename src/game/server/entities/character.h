@@ -159,7 +159,6 @@ public:
 	bool UnFreeze();
 	void GiveAllWeapons();
 	int m_DDRaceState;
-	void OnFinish();
 	int Team();
 	bool CanCollide(int ClientID);
 	bool SameTeam(int ClientID);
@@ -176,6 +175,7 @@ public:
 	int m_StartTime;
 	int m_RefreshTime;
 	vec2 m_PrevPos;
+	int m_TeleCheckpoint;
 	int m_CpTick;
 	int m_CpActive;
 	float m_CpCurrent[25];

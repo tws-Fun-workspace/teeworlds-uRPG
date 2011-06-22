@@ -225,6 +225,7 @@ private:
 	static void ConRules(IConsole::IResult *pResult, void *pUserData, int ClientID);
 	static void ConKill(IConsole::IResult *pResult, void *pUserData, int ClientID);
 	static void ConTogglePause(IConsole::IResult *pResult, void *pUserData, int ClientID);
+	static void ConForcePause(IConsole::IResult *pResult, void *pUserData, int ClientID);
 	static void ConTop5(IConsole::IResult *pResult, void *pUserData, int ClientID);
 	#if defined(CONF_SQL)
 	static void ConTimes(IConsole::IResult *pResult, void *pUserData, int ClientID);
@@ -312,6 +313,8 @@ public:
 	virtual void OnSetAuthed(int ClientID,int Level);
 	virtual bool PlayerCollision();
 	virtual bool PlayerHooking();
+
+	void ResetTuning();
 };
 
 inline int CmaskAll() { return -1; }

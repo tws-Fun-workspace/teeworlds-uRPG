@@ -55,16 +55,6 @@ void CGameContext::Construct(int Resetting)
 		m_pScore = 0;
 		m_NumMutes = 0;
 	}
-
-	// DDRace Tunes
-	Tuning()->Set("gun_speed", 1400);
-	Tuning()->Set("gun_curvature", 0);
-	Tuning()->Set("shotgun_speed", 500);
-	Tuning()->Set("shotgun_speeddiff", 0);
-	Tuning()->Set("shotgun_curvature", 0);
-	g_Config.m_SvHit = 1;
-	g_Config.m_SvEndlessDrag = 0;
-	g_Config.m_SvOldLaser = 0;
 }
 
 CGameContext::CGameContext(int Resetting)
@@ -122,7 +112,7 @@ void CGameContext::CreateDamageInd(vec2 Pos, float Angle, int Amount, int Mask)
 	for(int i = 0; i < Amount; i++)
 	{
 		float f = mix(s, e, float(i+1)/float(Amount+2));
-		NETEVENT_DAMAGEIND *pEvent = (NETEVENT_DAMAGEIND *)m_Events.Create(NETEVENTTYPE_DAMAGEIND, sizeof(NETEVENT_DAMAGEIND), Mask);
+		CNetEvent_DamageInd *pEvent = (CNetEvent_DamageInd *)m_Events.Create(NETEVENTTYPE_DAMAGEIND, sizeof(CNetEvent_DamageInd), Mask);
 		if(pEvent)
 		{
 			pEvent->m_X = (int)Pos.x;
@@ -135,7 +125,7 @@ void CGameContext::CreateDamageInd(vec2 Pos, float Angle, int Amount, int Mask)
 void CGameContext::CreateHammerHit(vec2 Pos, int Mask)
 {
 	// create the event
-	NETEVENT_HAMMERHIT *pEvent = (NETEVENT_HAMMERHIT *)m_Events.Create(NETEVENTTYPE_HAMMERHIT, sizeof(NETEVENT_HAMMERHIT), Mask);
+	CNetEvent_HammerHit *pEvent = (CNetEvent_HammerHit *)m_Events.Create(NETEVENTTYPE_HAMMERHIT, sizeof(CNetEvent_HammerHit), Mask);
 	if(pEvent)
 	{
 		pEvent->m_X = (int)Pos.x;
@@ -147,7 +137,7 @@ void CGameContext::CreateHammerHit(vec2 Pos, int Mask)
 void CGameContext::CreateExplosion(vec2 Pos, int Owner, int Weapon, bool NoDamage, int ActivatedTeam, int Mask)
 {
 	// create the event
-	NETEVENT_EXPLOSION *pEvent = (NETEVENT_EXPLOSION *)m_Events.Create(NETEVENTTYPE_EXPLOSION, sizeof(NETEVENT_EXPLOSION), Mask);
+	CNetEvent_Explosion *pEvent = (CNetEvent_Explosion *)m_Events.Create(NETEVENTTYPE_EXPLOSION, sizeof(CNetEvent_Explosion), Mask);
 	if(pEvent)
 	{
 		pEvent->m_X = (int)Pos.x;
@@ -198,7 +188,7 @@ void create_smoke(vec2 Pos)
 void CGameContext::CreatePlayerSpawn(vec2 Pos, int Mask)
 {
 	// create the event
-	NETEVENT_SPAWN *ev = (NETEVENT_SPAWN *)m_Events.Create(NETEVENTTYPE_SPAWN, sizeof(NETEVENT_SPAWN), Mask);
+	CNetEvent_Spawn *ev = (CNetEvent_Spawn *)m_Events.Create(NETEVENTTYPE_SPAWN, sizeof(CNetEvent_Spawn), Mask);
 	if(ev)
 	{
 		ev->m_X = (int)Pos.x;
@@ -209,7 +199,7 @@ void CGameContext::CreatePlayerSpawn(vec2 Pos, int Mask)
 void CGameContext::CreateDeath(vec2 Pos, int ClientID, int Mask)
 {
 	// create the event
-	NETEVENT_DEATH *pEvent = (NETEVENT_DEATH *)m_Events.Create(NETEVENTTYPE_DEATH, sizeof(NETEVENT_DEATH), Mask);
+	CNetEvent_Death *pEvent = (CNetEvent_Death *)m_Events.Create(NETEVENTTYPE_DEATH, sizeof(CNetEvent_Death), Mask);
 	if(pEvent)
 	{
 		pEvent->m_X = (int)Pos.x;
@@ -224,7 +214,7 @@ void CGameContext::CreateSound(vec2 Pos, int Sound, int Mask)
 		return;
 
 	// create a sound
-	NETEVENT_SOUNDWORLD *pEvent = (NETEVENT_SOUNDWORLD *)m_Events.Create(NETEVENTTYPE_SOUNDWORLD, sizeof(NETEVENT_SOUNDWORLD), Mask);
+	CNetEvent_SoundWorld *pEvent = (CNetEvent_SoundWorld *)m_Events.Create(NETEVENTTYPE_SOUNDWORLD, sizeof(CNetEvent_SoundWorld), Mask);
 	if(pEvent)
 	{
 		pEvent->m_X = (int)Pos.x;
@@ -959,13 +949,13 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 			}
 			if(KickID == ClientID)
 			{
-				SendChatTarget(ClientID, "You cant kick yourself");
+				SendChatTarget(ClientID, "You can't kick yourself");
 				return;
 			}
 			//if(Server()->IsAuthed(KickID))
 			if(m_apPlayers[KickID]->m_Authed > 0 && m_apPlayers[KickID]->m_Authed >= pPlayer->m_Authed)
 			{
-				SendChatTarget(ClientID, "You cant kick admins");
+				SendChatTarget(ClientID, "You can't kick admins");
 				m_apPlayers[ClientID]->m_Last_KickVote = time_get();
 				char aBufKick[128];
 				str_format(aBufKick, sizeof(aBufKick), "'%s' called for vote to kick you", Server()->ClientName(ClientID));
@@ -1017,13 +1007,22 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 			}
 			if(SpectateID == ClientID)
 			{
-				SendChatTarget(ClientID, "You cant move yourself");
+				SendChatTarget(ClientID, "You can't move yourself");
 				return;
 			}
 
-			str_format(aChatmsg, sizeof(aChatmsg), "'%s' called for vote to move '%s' to spectators (%s)", Server()->ClientName(ClientID), Server()->ClientName(SpectateID), pReason);
-			str_format(aDesc, sizeof(aDesc), "move '%s' to spectators", Server()->ClientName(SpectateID));
-			str_format(aCmd, sizeof(aCmd), "set_team %d -1", SpectateID);
+			if(g_Config.m_SvPauseable && g_Config.m_SvVotePause)
+			{
+				str_format(aChatmsg, sizeof(aChatmsg), "'%s' called for vote to pause '%s' for %d seconds (%s)", Server()->ClientName(ClientID), Server()->ClientName(SpectateID), g_Config.m_SvVotePauseTime, pReason);
+				str_format(aDesc, sizeof(aDesc), "Pause '%s' (%ds)", Server()->ClientName(SpectateID), g_Config.m_SvVotePauseTime);
+				str_format(aCmd, sizeof(aCmd), "force_pause %d %d", SpectateID, g_Config.m_SvVotePauseTime);
+			}
+			else
+			{
+				str_format(aChatmsg, sizeof(aChatmsg), "'%s' called for vote to move '%s' to spectators (%s)", Server()->ClientName(ClientID), Server()->ClientName(SpectateID), pReason);
+				str_format(aDesc, sizeof(aDesc), "move '%s' to spectators", Server()->ClientName(SpectateID));
+				str_format(aCmd, sizeof(aCmd), "set_team %d -1", SpectateID);
+			}
 		}
 
 		if(aCmd[0])
@@ -1069,7 +1068,7 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 				SendChatTarget(ClientID,"Use /pause first then you can kill");
 			else
 			{
-				pPlayer->m_LastSetTeam = Server()->Tick();
+				//pPlayer->m_LastSetTeam = Server()->Tick();
 				if(pPlayer->GetTeam() == TEAM_SPECTATORS || pMsg->m_Team == TEAM_SPECTATORS)
 					m_VoteUpdate = true;
 				pPlayer->SetTeam(pMsg->m_Team);
@@ -1252,6 +1251,13 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 			char aChatText[256];
 			str_format(aChatText, sizeof(aChatText), "'%s' changed name to '%s'", aOldName, Server()->ClientName(ClientID));
 			SendChat(-1, CGameContext::CHAT_ALL, aChatText);
+
+			// reload scores
+
+			Score()->PlayerData(ClientID)->Reset();
+			Score()->LoadScore(ClientID);
+			Score()->PlayerData(ClientID)->m_CurrentTime = Score()->PlayerData(ClientID)->m_BestTime;
+			m_apPlayers[ClientID]->m_Score = (Score()->PlayerData(ClientID)->m_BestTime)?Score()->PlayerData(ClientID)->m_BestTime:-9999;
 		}
 		Server()->SetClientClan(ClientID, pMsg->m_pClan);
 		Server()->SetClientCountry(ClientID, pMsg->m_Country);
@@ -1344,9 +1350,7 @@ void CGameContext::ConTuneParam(IConsole::IResult *pResult, void *pUserData, int
 void CGameContext::ConTuneReset(IConsole::IResult *pResult, void *pUserData, int ClientID)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
-	CTuningParams TuningParams;
-	*pSelf->Tuning() = TuningParams;
-	pSelf->SendTuningParams(-1);
+	pSelf->ResetTuning();
 	pResult->Print(IConsole::OUTPUT_LEVEL_STANDARD, "tuning", "Tuning reset");
 }
 
@@ -1717,6 +1721,12 @@ void CGameContext::OnInit(/*class IKernel *pKernel*/)
 	//world = new GAMEWORLD;
 	//players = new CPlayer[MAX_CLIENTS];
 
+	// Reset Tuning
+	ResetTuning();
+	g_Config.m_SvHit = 1;
+	g_Config.m_SvEndlessDrag = 0;
+	g_Config.m_SvOldLaser = 0;
+
 	char buf[512];
 	str_format(buf, sizeof(buf), "data/maps/%s.cfg", g_Config.m_SvMap);
 	Console()->ExecuteFile(buf, -1, IConsole::CONSOLELEVEL_CONFIG, 0, 0);
@@ -2032,4 +2042,16 @@ int CGameContext::GetDDRaceTeam(int ClientID)
 {
 	CGameControllerDDRace* pController = (CGameControllerDDRace*)m_pController;
 	return pController->m_Teams.m_Core.Team(ClientID);
+}
+
+void CGameContext::ResetTuning()
+{
+	CTuningParams TuningParams;
+	m_Tuning = TuningParams;
+	Tuning()->Set("gun_speed", 1400);
+	Tuning()->Set("gun_curvature", 0);
+	Tuning()->Set("shotgun_speed", 500);
+	Tuning()->Set("shotgun_speeddiff", 0);
+	Tuning()->Set("shotgun_curvature", 0);
+	SendTuningParams(-1);
 }

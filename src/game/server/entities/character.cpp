@@ -780,7 +780,8 @@ void CCharacter::Die(int Killer, int Weapon)
 	GameServer()->m_World.RemoveEntity(this);
 	GameServer()->m_World.m_Core.m_apCharacters[m_pPlayer->GetCID()] = 0;
 	GameServer()->CreateDeath(m_Pos, m_pPlayer->GetCID(), Teams()->TeamMask(Team()));
-	((CGameControllerDDRace*)GameServer()->m_pController)->m_Teams.SetForceCharacterTeam(m_pPlayer->GetCID(), 0);
+	if(!m_pPlayer->m_InfoSaved)
+		((CGameControllerDDRace*)GameServer()->m_pController)->m_Teams.SetForceCharacterTeam(m_pPlayer->GetCID(), 0);
 }
 
 bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon)
@@ -985,137 +986,6 @@ bool CCharacter::SameTeam(int ClientID)
 	return Teams()->m_Core.SameTeam(GetPlayer()->GetCID(), ClientID);
 }
 
-void CCharacter::OnFinish()
-{
-	//TODO:DDRace:btd: this ugly
-	float time = (float)(Server()->Tick() - m_StartTime) / ((float)Server()->TickSpeed());
-	if(time < 0.000001f) return;
-	CPlayerData *pData = GameServer()->Score()->PlayerData(m_pPlayer->GetCID());
-	char aBuf[128];
-		m_CpActive=-2;
-		str_format(aBuf, sizeof(aBuf), "%s finished in: %d minute(s) %5.2f second(s)", Server()->ClientName(m_pPlayer->GetCID()), (int)time/60, time-((int)time/60*60));
-		if(g_Config.m_SvHideScore)
-			GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
-		else
-		{
-			GameServer()->SendChat(-1, CGameContext::CHAT_ALL, aBuf);
-			if(g_Config.m_SvLaserScore && (pData->m_BestTime == 0))
-				GameServer()->CreateLolText(this, false, vec2(0,-75), vec2 (0,-1), 100, "Finish!");
-		}
-
-		if(time - pData->m_BestTime < 0)
-		{
-			// new record \o/
-			str_format(aBuf, sizeof(aBuf), "New record: %5.2f second(s) better.", fabs(time - pData->m_BestTime));
-			if(g_Config.m_SvHideScore)
-				GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
-			else
-			{
-				GameServer()->SendChat(-1, CGameContext::CHAT_ALL, aBuf);
-
-				if(g_Config.m_SvLaserScore)
-				{
-					str_format(aBuf, sizeof(aBuf), "-%5.2f", fabs(time - pData->m_BestTime));
-					GameServer()->CreateLolText(this, false, vec2(0,-75), vec2 (0,-1), 100, aBuf);
-				}
-			}
-		}
-		else if(pData->m_BestTime != 0) // tee has already finished?
-		{
-			if(fabs(time - pData->m_BestTime) <= 0.005)
-			{
-				GameServer()->SendChatTarget(m_pPlayer->GetCID(), "You finished with your best time.");
-
-				if(g_Config.m_SvLaserScore)
-					GameServer()->CreateLolText(this, false, vec2(0,-75), vec2 (0,-1), 100, "+0");
-			}
-			else
-			{
-				str_format(aBuf, sizeof(aBuf), "%5.2f second(s) worse, better luck next time.", fabs(pData->m_BestTime - time));
-				GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);//this is private, sent only to the tee
-			}
-		}
-
-		bool pCallSaveScore = false;
-		#if defined(CONF_SQL)
-			pCallSaveScore = g_Config.m_SvUseSQL;
-		#endif
-
-		if(!pData->m_BestTime || time < pData->m_BestTime)
-		{
-			// update the score
-			pData->Set(time, m_CpCurrent);
-			pCallSaveScore = true;
-		}
-
-		if(pCallSaveScore)
-			if(str_comp_num(Server()->ClientName(m_pPlayer->GetCID()), "nameless tee", 12) != 0)
-				GameServer()->Score()->SaveScore(m_pPlayer->GetCID(), time, this);
-
-		bool NeedToSendNewRecord = false;
-		// update server best time
-		if(GameServer()->m_pController->m_CurrentRecord == 0 || time < GameServer()->m_pController->m_CurrentRecord)
-		{
-			// check for nameless
-			if(str_comp_num(Server()->ClientName(m_pPlayer->GetCID()), "nameless tee", 12) != 0) {
-				GameServer()->m_pController->m_CurrentRecord = time;
-				//dbg_msg("character", "Finish");
-				NeedToSendNewRecord = true;
-			}
-		}
-
-		m_DDRaceState = DDRACE_FINISHED;
-		// set player score
-		if(!pData->m_CurrentTime || pData->m_CurrentTime > time)
-		{
-			pData->m_CurrentTime = time;
-			NeedToSendNewRecord = true;
-			for(int i = 0; i < MAX_CLIENTS; i++)
-			{
-				if(GameServer()->m_apPlayers[i] && GameServer()->m_apPlayers[i]->m_IsUsingDDRaceClient)
-				{
-					if(!g_Config.m_SvHideScore || i == m_pPlayer->GetCID())
-					{
-						CNetMsg_Sv_PlayerTime Msg;
-						Msg.m_Time = time * 100.0;
-						Msg.m_ClientID = m_pPlayer->GetCID();
-						Server()->SendPackMsg(&Msg, MSGFLAG_VITAL, i);
-					}
-				}
-			}
-		}
-
-		if(NeedToSendNewRecord && GetPlayer()->m_IsUsingDDRaceClient) {
-			for(int i = 0; i < MAX_CLIENTS; i++)
-			{
-				if(GameServer()->m_apPlayers[i] && GameServer()->m_apPlayers[i]->m_IsUsingDDRaceClient)
-				{
-					GameServer()->SendRecord(i);
-				}
-			}
-		}
-
-		if(GetPlayer()->m_IsUsingDDRaceClient) {
-			CNetMsg_Sv_DDRaceTime Msg;
-			Msg.m_Time = (int)(time * 100.0f);
-			Msg.m_Check = 0;
-			Msg.m_Finish = 1;
-
-				if(pData->m_BestTime)
-				{
-					float Diff = (time - pData->m_BestTime)*100;
-					Msg.m_Check = (int)Diff;
-				}
-
-			Server()->SendPackMsg(&Msg, MSGFLAG_VITAL, m_pPlayer->GetCID());
-		}
-
-		int TTime = 0-(int)time;
-		if(m_pPlayer->m_Score < TTime)
-			m_pPlayer->m_Score = TTime;
-
-}
-
 int CCharacter::Team()
 {
 	return ((CGameControllerDDRace*)GameServer()->m_pController)->m_Teams.m_Core.Team(m_pPlayer->GetCID());
@@ -1131,65 +1001,22 @@ void CCharacter::HandleFly()
 	m_Core.HandleFly();
 }
 
-//TODO: DDRace Revise Braodcast, make sure all vars are needed ..etc
 void CCharacter::HandleBroadcast()
 {
 	char aBroadcast[128];
 	m_Time = (float)(Server()->Tick() - m_StartTime) / ((float)Server()->TickSpeed());
 	CPlayerData *pData = GameServer()->Score()->PlayerData(m_pPlayer->GetCID());
 
-	if(Server()->Tick() - m_RefreshTime >= Server()->TickSpeed())
+	if((m_DDRaceState == DDRACE_STARTED && Server()->Tick() - m_RefreshTime >= Server()->TickSpeed()) &&
+			m_CpActive != -1 && m_CpTick > Server()->Tick() && !m_pPlayer->m_IsUsingDDRaceClient &&
+			pData->m_BestTime && pData->m_aBestCpTime[m_CpActive] != 0)
 	{
-		if (m_DDRaceState == DDRACE_STARTED)
-		{
-			if(m_CpActive != -1 && m_CpTick > Server()->Tick() && !m_pPlayer->m_IsUsingDDRaceClient)
-			{
-				if(pData->m_BestTime && pData->m_aBestCpTime[m_CpActive] != 0)
-				{
-					float Diff = m_CpCurrent[m_CpActive] - pData->m_aBestCpTime[m_CpActive];
-					str_format(aBroadcast, sizeof(aBroadcast), "Checkpoint | Diff : %+5.2f", Diff);
-					GameServer()->SendBroadcast(aBroadcast, m_pPlayer->GetCID());
-					m_LastBroadcast = Server()->Tick();
-				}
-			}
-			else if( g_Config.m_SvBroadcast[0] != 0 && m_BroadCast)
-			{
-				str_format(aBroadcast, sizeof(aBroadcast), "%s", g_Config.m_SvBroadcast);
-
-				if(Server()->Tick() >= (m_LastBroadcast + Server()->TickSpeed()))
-				{
-					GameServer()->SendBroadcast(aBroadcast, m_pPlayer->GetCID());
-					m_LastBroadcast = Server()->Tick();
-				}
-			}
-		}
-		else
-		{
-			char aTmp[128];
-			if(!m_pPlayer->m_IsUsingDDRaceClient)
-			{
-				if( g_Config.m_SvBroadcast[0] != 0 && (Server()->Tick() > (m_LastBroadcast + (Server()->TickSpeed() * 9))))
-				{
-					char aYourBest[64],aServerBest[64];
-					str_format(aYourBest, sizeof(aYourBest), "Your Best:'%s%d:%s%d'", ((pData->m_BestTime / 60) < 10)?"0":"", (int)(pData->m_BestTime / 60), (((int)pData->m_BestTime % 60) < 10)?"0":"", (int)pData->m_BestTime % 60);
-
-					CPlayerData *pData = GameServer()->Score()->PlayerData(m_pPlayer->GetCID());
-
-					str_format(aServerBest, sizeof(aServerBest), "Server Best:'%s%d:%s%d'", ((GameServer()->m_pController->m_CurrentRecord / 60) < 10)?"0":"", (int)(GameServer()->m_pController->m_CurrentRecord / 60), (((int)GameServer()->m_pController->m_CurrentRecord % 60) < 10)?"0":"", (int)GameServer()->m_pController->m_CurrentRecord % 60);
-					str_format(aTmp, sizeof(aTmp), "%s %s", (GameServer()->m_pController->m_CurrentRecord)?aServerBest:"", (pData->m_BestTime)?aYourBest:"");
-					GameServer()->SendBroadcast(aTmp, m_pPlayer->GetCID());
-					m_LastBroadcast = Server()->Tick();
-				}
-			}
-			else if( g_Config.m_SvBroadcast[0] != 0 && (Server()->Tick() > (m_LastBroadcast + (Server()->TickSpeed() * 9))))
-			{
-				str_format(aTmp, sizeof(aTmp), "%s", g_Config.m_SvBroadcast);
-				GameServer()->SendBroadcast(aTmp, m_pPlayer->GetCID());
-				m_LastBroadcast = Server()->Tick();
-			}
-		}
-		m_RefreshTime = Server()->Tick();
+		float Diff = m_CpCurrent[m_CpActive] - pData->m_aBestCpTime[m_CpActive];
+		str_format(aBroadcast, sizeof(aBroadcast), "Checkpoint | Diff : %+5.2f", Diff);
+		GameServer()->SendBroadcast(aBroadcast, m_pPlayer->GetCID());
+		m_LastBroadcast = Server()->Tick();
 	}
+	m_RefreshTime = Server()->Tick();
 }
 
 void CCharacter::HandleSkippableTiles(int Index)
@@ -1415,6 +1242,9 @@ void CCharacter::HandleTiles(int Index)
 		if(m_pPlayer->m_IsUsingDDRaceClient)
 			Server()->SendPackMsg(&Msg, MSGFLAG_VITAL, m_pPlayer->GetCID());
 	}
+	int tcp = GameServer()->Collision()->IsTCheckpoint(MapIndex);
+	if(tcp)
+		m_TeleCheckpoint = tcp;
 	if(((m_TileIndex == TILE_BEGIN) || (m_TileFIndex == TILE_BEGIN) || FTile1 == TILE_BEGIN || FTile2 == TILE_BEGIN || FTile3 == TILE_BEGIN || FTile4 == TILE_BEGIN || Tile1 == TILE_BEGIN || Tile2 == TILE_BEGIN || Tile3 == TILE_BEGIN || Tile4 == TILE_BEGIN) && (m_DDRaceState == DDRACE_NONE || m_DDRaceState == DDRACE_FINISHED || (m_DDRaceState == DDRACE_STARTED && !Team())))
 	{
 		bool CanBegin = true;
@@ -1778,6 +1608,30 @@ void CCharacter::HandleTiles(int Index)
 		m_Core.m_Vel = vec2(0,0);
 		return;
 	}
+	if(GameServer()->Collision()->IsCheckTeleport(MapIndex))
+	{
+		if(m_TeleCheckpoint && ((CGameControllerDDRace*)GameServer()->m_pController)->m_TeleCheckOuts[m_TeleCheckpoint-1].size())
+		{
+			m_Core.m_HookedPlayer = -1;
+			m_Core.m_HookState = HOOK_RETRACTED;
+			m_Core.m_TriggeredEvents |= COREEVENT_HOOK_RETRACT;
+			m_Core.m_HookState = HOOK_RETRACTED;
+			int Num = (((CGameControllerDDRace*)GameServer()->m_pController)->m_TeleCheckOuts[m_TeleCheckpoint-1].size());
+			m_Core.m_Pos = ((CGameControllerDDRace*)GameServer()->m_pController)->m_TeleCheckOuts[m_TeleCheckpoint-1][(!Num)?Num:rand() % Num];
+			m_Core.m_HookPos = m_Core.m_Pos;
+			return;
+		}
+		vec2 SpawnPos;
+		if(GameServer()->m_pController->CanSpawn(m_pPlayer->GetTeam(), &SpawnPos))
+		{
+			m_Core.m_HookedPlayer = -1;
+			m_Core.m_HookState = HOOK_RETRACTED;
+			m_Core.m_TriggeredEvents |= COREEVENT_HOOK_RETRACT;
+			m_Core.m_HookState = HOOK_RETRACTED;
+			m_Core.m_Pos = SpawnPos;
+			m_Core.m_HookPos = m_Core.m_Pos;
+		}
+	}
 }
 
 void CCharacter::DDRaceTick()
@@ -1921,6 +1775,7 @@ void CCharacter::DDRaceInit()
 	}
 	m_DefEmote = EMOTE_NORMAL;
 	m_DefEmoteReset = -1;
+	m_TeleCheckpoint = 0;
 }
 
 void CCharacter::XXLDDRaceInit()

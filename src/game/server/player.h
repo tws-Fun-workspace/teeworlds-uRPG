@@ -148,6 +148,10 @@ public:
 		bool m_EndlessHook;
 		int m_PauseTime;
 		int m_Team;
+		int m_TeleCheckpoint;
+		int m_CpActive;
+		float m_CpCurrent[25];
+		
 		//XXLDDRace
 		bool m_Bloody;
 		int m_ReloadMultiplier;
@@ -159,10 +163,11 @@ public:
 		int m_LastRescueSave;
 		int m_HammerType;
 	} m_PauseInfo;
+	int m_ForcePauseTime;
 	bool m_InfoSaved;
+	bool IsPlaying();
 	void LoadCharacter();
 	void SaveCharacter();
-	int64 m_Last_Pause;
 	int64 m_Last_KickVote;
 	int64 m_Last_Team;
 	int m_Authed;
