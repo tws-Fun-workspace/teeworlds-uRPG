@@ -1348,20 +1348,13 @@ void CGameContext::ConRescue(IConsole::IResult *pResult, void *pUserData, int Cl
 
 			float RescueDelay = 1.25;
 			if (pChr->m_FreezeTime == 0)
-			{
-				str_format(aBuf, sizeof(aBuf), "You are not freezed!");
-				pSelf->SendChatTarget(ClientID, aBuf);
-			}
+				pSelf->SendChatTarget(ClientID, "You are not freezed!");
 			else if (pChr->m_DeepFreeze)
-			{
-				str_format(aBuf, sizeof(aBuf), "You are deepfreezed, undeepfreeze first!");
-				pSelf->SendChatTarget(ClientID, aBuf);
-			}
+				pSelf->SendChatTarget(ClientID, "You are deepfreezed, undeepfreeze first!");
 			else if (!pChr->IsAlive())
-			{
-				str_format(aBuf, sizeof(aBuf), "You are not alive!");
-				pSelf->SendChatTarget(ClientID, aBuf);
-			}
+				pSelf->SendChatTarget(ClientID, "You are not alive!");
+			else if (pChr->m_RescuePos == vec2 (0,0)) //hum
+				pSelf->SendChatTarget(ClientID, "No position saved!");
 			else
 			{
 				//not freezed
@@ -1397,14 +1390,12 @@ void CGameContext::ConRescue(IConsole::IResult *pResult, void *pUserData, int Cl
 		}
 		else
 		{
-			pChr->UnFreeze();
+			if (pChr->m_TileIndex != TILE_FREEZE && pChr->m_TileFIndex != TILE_FREEZE)
+				pChr->UnFreeze();
 		}
 	}
 	else
-	{
-		str_format(aBuf, sizeof(aBuf), "You are not alive!");
-		pSelf->SendChatTarget(ClientID, aBuf);
-	}
+		pSelf->SendChatTarget(ClientID, "You are not alive!");
 }
 
 void CGameContext::ConRegister(IConsole::IResult *pResult, void *pUserData, int ClientID)
