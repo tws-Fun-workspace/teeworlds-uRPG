@@ -1510,9 +1510,10 @@ void CCharacter::HandleTiles(int Index)
 
 		SetWeapon(m_ActiveWeapon);
 
-		char aBuf[256];
-		str_format(aBuf, sizeof(aBuf), "You lost ninja!!!");
-		GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
+		if (g_Config.m_SvRMNinjaResetVel)
+			m_Core.m_Vel = vec2 (0,0);
+
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "You lost ninja!!!");
 	}
 
     //jDDRace
