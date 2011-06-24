@@ -184,6 +184,7 @@ function build(settings)
 	-- build the small libraries
 	wavpack = Compile(settings, Collect("src/engine/external/wavpack/*.c"))
 	pnglite = Compile(settings, Collect("src/engine/external/pnglite/*.c"))
+	md5 = Compile(settings, "src/engine/external/md5/md5.cpp")
 
 	-- build game components
 	engine_settings = settings:Copy()
@@ -273,10 +274,10 @@ function build(settings)
 
 	if arch == "amd64" then
 		server_exe = Link(server_settings, "XXLDDRace-Server_64", engine, server,
-		game_shared, game_server, zlib, server_link_other)
+		game_shared, game_server, zlib, md5, server_link_other)
 	else
 		server_exe = Link(server_settings, "XXLDDRace-Server_32", engine, server,
-		game_shared, game_server, zlib, server_link_other)
+		game_shared, game_server, zlib, md5, server_link_other)
 	end
 	
 

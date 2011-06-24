@@ -2,7 +2,7 @@
 
 #include <base/tl/sorted_array.h>
 #include <engine/shared/config.h>
-#include <engine/shared/md5.h>
+#include <engine/external/md5/md5.h>
 #include "gamecontext.h"
 #include "memberlist.h"
 #include <string.h>
