@@ -16,7 +16,7 @@ private:
 	{
 	public:
 		char m_aName[MAX_NAME_LENGTH];
-		char m_aPass[32];
+		char m_aPass[32+1];
 		int m_AuthLvl;
 
 		CPlayerMember() {};

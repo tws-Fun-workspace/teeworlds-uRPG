@@ -201,18 +201,15 @@ void CMemberList::Register(IConsole::IResult *pResult, int ClientID, const char*
 {
 	CPlayerMember *pPlayer = SearchList(ClientID, 0);
 	char aBuf[256];
-	char mBuf[32];
 
 	if (!pPlayer)
 	{
-		str_format(mBuf, sizeof(mBuf), "%s", md5(pPass).c_str());
-		SaveList(ClientID, mBuf, pSelf, false);
+		SaveList(ClientID, md5(pPass).c_str(), pSelf, false);
 		str_format(aBuf, sizeof(aBuf), "Registration successful.");
 	}
 	else
-	{
 		str_format(aBuf, sizeof(aBuf), "%s is already a registered name.", pSelf->Server()->ClientName(ClientID));
-	}
+
 	pResult->Print(IConsole::OUTPUT_LEVEL_STANDARD, "member", aBuf);
 }
 
@@ -220,26 +217,21 @@ void CMemberList::Login(IConsole::IResult *pResult, int ClientID, const char* pP
 {
 	CPlayerMember *pPlayer = SearchList(ClientID, 0);
 	char aBuf[256];
-	char mBuf[32];
 
 	if (!pPlayer)
-	{
 		str_format(aBuf, sizeof(aBuf), "You are not registered, type /register <pass> first.");
-	}
 	else if(pPlayer->m_AuthLvl < pSelf->m_apPlayers[ClientID]->m_Authed && pSelf->m_apPlayers[ClientID]->m_Authed > IConsole::CONSOLELEVEL_USER)
 	{
 		pPlayer->m_AuthLvl = pSelf->m_apPlayers[ClientID]->m_Authed;
+		pSelf->m_apPlayers[ClientID]->m_IsMember = true;
 		SaveList(ClientID, pPlayer->m_aPass , pSelf, false);
 		str_format(aBuf, sizeof(aBuf), "Level updated.");
 	}
 	else if(pSelf->m_apPlayers[ClientID]->m_IsLoggedIn)
-	{
 		str_format(aBuf, sizeof(aBuf), "You are already logged in.");
-	}
 	else
 	{
-		str_format(mBuf, sizeof(mBuf), "%s", md5(pPass).c_str());
-		if (str_comp(pPlayer->m_aPass, mBuf) == 0)
+		if (str_comp(pPlayer->m_aPass, md5(pPass).c_str()) == 0)
 		{
 			LoadMember(ClientID,pSelf);
 			pSelf->m_apPlayers[ClientID]->m_IsLoggedIn = true;
@@ -248,9 +240,7 @@ void CMemberList::Login(IConsole::IResult *pResult, int ClientID, const char* pP
 				pSelf->m_apPlayers[ClientID]->m_IsMember = true;
 		}
 		else
-		{
 			str_format(aBuf, sizeof(aBuf), "Wrong password.");
-		}
 	}
 	pResult->Print(IConsole::OUTPUT_LEVEL_STANDARD, "member", aBuf);
 }
@@ -261,9 +251,7 @@ void CMemberList::Member(int ClientID, CGameContext *pSelf)
 	char aBuf[256];
 
 	if (!pPlayer)
-	{
 		str_format(aBuf, sizeof(aBuf), "%s is not a registered name.", pSelf->Server()->ClientName(ClientID));
-	}
 	else
 	{
 		if (pPlayer->m_AuthLvl > 0)
@@ -287,9 +275,7 @@ void CMemberList::UnMember(int ClientID, CGameContext *pSelf)
 	char aBuf[256];
 
 	if (!pPlayer)
-	{
 		str_format(aBuf, sizeof(aBuf), "%s is not registered.", pSelf->Server()->ClientName(ClientID));
-	}
 	else
 	{
 		if (pPlayer->m_AuthLvl > 0)
@@ -311,13 +297,11 @@ void CMemberList::Check(int ClientID, CGameContext *pSelf)
 {
 	CPlayerMember *pPlayer = SearchList(ClientID, 0);
 	char aBuf[256];
+
 	if (!pPlayer)
-	{
 		str_format(aBuf, sizeof(aBuf), "%s is not registered.", pSelf->Server()->ClientName(ClientID));
-	}
 	else
-	{
 		str_format(aBuf, sizeof(aBuf), "%s: logged in=%d member=%d", pSelf->Server()->ClientName(ClientID), pSelf->m_apPlayers[ClientID]->m_IsLoggedIn, pSelf->m_apPlayers[ClientID]->m_IsMember);
-	}
+
 	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "member", aBuf);
 }
