@@ -1861,7 +1861,7 @@ void CCharacter::HandleRainbow()
 
 void CCharacter::HandleRescue()
 { 	//Do I realy need everything?
-	if(IsGrounded() &&  m_TileIndex != TILE_FREEZE && m_TileFIndex != TILE_FREEZE && !m_FreezeTime && !m_DeepFreeze && !m_LastRescueSave &&  m_Pos == m_PrevPos)
+	if(IsGrounded() &&  m_TileIndex != TILE_FREEZE && m_TileFIndex != TILE_FREEZE && !m_FreezeTime && !m_DeepFreeze && !m_LastRescueSave)
 	{
 		m_RescuePos = m_Pos;
 		m_LastRescueSave = 7; //not every point will be stored
