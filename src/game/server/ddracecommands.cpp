@@ -1102,9 +1102,9 @@ void CGameContext::ConOrgname(IConsole::IResult *pResult, void *pUserData, int C
 	pResult->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info", aBuf);
 
 
-	if (!pSelf->m_apPlayers[Victim]->m_isOrginalName){
+	if (!pSelf->m_apPlayers[Victim]->m_IsOrginalName){
 		str_copy(pSelf->m_apPlayers[Victim]->m_OrginalName, oldName, MAX_NAME_LENGTH);
-		pSelf->m_apPlayers[Victim]->m_isOrginalName = true;
+		pSelf->m_apPlayers[Victim]->m_IsOrginalName = true;
 	}
 //			pSelf->m_apPlayers[Victim]->m_OrginalName = oldName;
 //			str_copy(pSelf->m_apPlayers[Victim]->m_OrginalName, oldName, MAX_NAME_LENGTH);
@@ -1169,23 +1169,23 @@ void CGameContext::ConRainbow(IConsole::IResult *pResult, void *pUserData, int C
 		return;
 
 	char aBuf[256];
-	if ((pSelf->m_apPlayers[Victim]->m_rainbow == RAINBOW_NONE || pSelf->m_apPlayers[Victim]->m_rainbow == RAINBOW_BLACKWHITE) && Rainbowtype <= 1)
+	if ((pSelf->m_apPlayers[Victim]->m_Rainbow == RAINBOW_NONE || pSelf->m_apPlayers[Victim]->m_Rainbow == RAINBOW_BLACKWHITE) && Rainbowtype <= 1)
 	{
-		pSelf->m_apPlayers[Victim]->m_rainbow = RAINBOW_COLOR;
+		pSelf->m_apPlayers[Victim]->m_Rainbow = RAINBOW_COLOR;
 
 		str_format(aBuf, sizeof(aBuf), "You got rainbow by %s.", pSelf->Server()->ClientName(ClientID));
 		pSelf->SendChatTarget(Victim, aBuf);
 	}
-	else if ((pSelf->m_apPlayers[Victim]->m_rainbow == RAINBOW_NONE || pSelf->m_apPlayers[Victim]->m_rainbow == RAINBOW_COLOR) && Rainbowtype == 2)
+	else if ((pSelf->m_apPlayers[Victim]->m_Rainbow == RAINBOW_NONE || pSelf->m_apPlayers[Victim]->m_Rainbow == RAINBOW_COLOR) && Rainbowtype == 2)
 	{
-		pSelf->m_apPlayers[Victim]->m_rainbow = RAINBOW_BLACKWHITE;
+		pSelf->m_apPlayers[Victim]->m_Rainbow = RAINBOW_BLACKWHITE;
 
 		str_format(aBuf, sizeof(aBuf), "You got black and white rainbow by %s.", pSelf->Server()->ClientName(ClientID));
 		pSelf->SendChatTarget(Victim, aBuf);
 	}
 	else
 	{
-		pSelf->m_apPlayers[Victim]->m_rainbow = RAINBOW_NONE;
+		pSelf->m_apPlayers[Victim]->m_Rainbow = RAINBOW_NONE;
 		str_format(aBuf, sizeof(aBuf), "%s removed your rainbow.", pSelf->Server()->ClientName(ClientID));
 		pSelf->SendChatTarget(Victim, aBuf);
 	}

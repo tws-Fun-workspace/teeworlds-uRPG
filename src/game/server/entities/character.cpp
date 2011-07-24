@@ -1338,14 +1338,14 @@ void CCharacter::HandleTiles(int Index)
 			return;
 
 		char aBuf[256];
-		if (m_pPlayer->m_rainbow)
+		if (m_pPlayer->m_Rainbow)
 		{
-			m_pPlayer->m_rainbow = false;
+			m_pPlayer->m_Rainbow = false;
 			str_format(aBuf, sizeof(aBuf), "Rainbow is OFF!!");
 		}
 		else
 		{
-			m_pPlayer->m_rainbow = true;
+			m_pPlayer->m_Rainbow = true;
 			str_format(aBuf, sizeof(aBuf), "Rainbow is ON!!!");
 		}
 
@@ -1486,7 +1486,7 @@ void CCharacter::HandleTiles(int Index)
 			return;
 
 		//disable all extras
-		m_pPlayer->m_rainbow = false;
+		m_pPlayer->m_Rainbow = false;
 		m_FastReload = false;
 		m_ReloadMultiplier = 1000;
 		m_Super = false;
@@ -1817,46 +1817,39 @@ void CCharacter::HandleBlood()
 
 void CCharacter::HandleRainbow()
 {
-	//~ CPlayerData *pData = GameServer()->Score()->PlayerData(m_pPlayer->GetCID());
-
-	//~ str_copy(m_pPlayer->m_TeeInfos.m_SkinName, "default", sizeof(m_pPlayer->m_TeeInfos.m_SkinName));
-
-	if (m_pPlayer->m_rainbow == RAINBOW_COLOR){
+	if (m_pPlayer->m_Rainbow == RAINBOW_COLOR || g_Config.m_SvFainbowFeet)
+	{
 		m_pPlayer->m_TeeInfos.m_UseCustomColor = 1;
-		if (m_pPlayer->m_last_rainbow >= 16711424 ||m_pPlayer->m_last_rainbow < 65280 ){
-			m_pPlayer->m_last_rainbow =65280;
-		}else{
-			m_pPlayer->m_last_rainbow+=65536;  //the magic number
-		}
-		m_pPlayer->m_TeeInfos.m_ColorBody = m_pPlayer->m_last_rainbow;
-		m_pPlayer->m_TeeInfos.m_ColorFeet = m_pPlayer->m_last_rainbow;
 
+		if (m_pPlayer->m_LastRainbow >= 16711424 ||m_pPlayer->m_LastRainbow < 65280 )
+			m_pPlayer->m_LastRainbow = 65280;
+		else
+			m_pPlayer->m_LastRainbow += 65536;  //the magic number
 
-	}else if (m_pPlayer->m_rainbow == RAINBOW_BLACKWHITE){
+		m_pPlayer->m_TeeInfos.m_ColorFeet = m_pPlayer->m_LastRainbow;
+
+		if (m_pPlayer->m_Rainbow == RAINBOW_COLOR)
+			m_pPlayer->m_TeeInfos.m_ColorBody = m_pPlayer->m_LastRainbow;
+	}
+	else if (m_pPlayer->m_Rainbow == RAINBOW_BLACKWHITE)
+	{
 		m_pPlayer->m_TeeInfos.m_UseCustomColor = 1;
-		if (m_pPlayer->m_last_rainbow > 255){
-			m_pPlayer->m_last_rainbow = 0;
-		}else if (m_pPlayer->m_last_rainbow == 0){
-			m_pPlayer->m_up_bw_rainbow = false;
-		}else if (m_pPlayer->m_last_rainbow == 255){
-			m_pPlayer->m_up_bw_rainbow = true;
-		}
-		if (m_pPlayer->m_up_bw_rainbow){
-			m_pPlayer->m_last_rainbow-=1;
-		}else{
-			m_pPlayer->m_last_rainbow+=1;
-		}
-//		str_format(aBuf, sizeof(aBuf), "RBC: %d", m_pPlayer->m_last_rainbow);
-//		GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
-		m_pPlayer->m_TeeInfos.m_ColorBody = m_pPlayer->m_last_rainbow;
-		m_pPlayer->m_TeeInfos.m_ColorFeet = m_pPlayer->m_last_rainbow;
+		if (m_pPlayer->m_LastRainbow > 255)
+			m_pPlayer->m_LastRainbow = 0;
+		else if (m_pPlayer->m_LastRainbow == 0)
+			m_pPlayer->m_RainbowBwUp = false;
+		else if (m_pPlayer->m_LastRainbow == 255)
+			m_pPlayer->m_RainbowBwUp = true;
+
+		if (m_pPlayer->m_RainbowBwUp)
+			m_pPlayer->m_LastRainbow-=1;
+		else
+			m_pPlayer->m_LastRainbow+=1;
+
+		m_pPlayer->m_TeeInfos.m_ColorBody = m_pPlayer->m_LastRainbow;
+		m_pPlayer->m_TeeInfos.m_ColorFeet = m_pPlayer->m_LastRainbow;
 	}
 
-	//0 "dark tee" -.- (not realy dark..)
-	//black old client 0.5.2
-
-	//~ m_pPlayer->m_TeeInfos.m_ColorBody = 34275072;
-	//~ m_pPlayer->m_TeeInfos.m_ColorFeet = 34275072;
 }
 
 void CCharacter::HandleRescue()
@@ -1870,13 +1863,14 @@ void CCharacter::HandleRescue()
 
 void CCharacter::HandleJumps()
 {
-	if (m_Core.m_Jumped > 1 && m_Core.m_max_jumps > m_Core.m_jump_count+2){
+	if (m_Core.m_Jumped > 1 && m_Core.m_max_jumps > m_Core.m_jump_count+2)
+	{
 		m_Core.m_Jumped = 1;
 		m_Core.m_jump_count++;
-	}else if (m_Core.m_max_jumps == 1){
-		m_Core.m_Jumped = 2; //1 Jump
-	}else if (m_Core.m_max_jumps == 0){
-		m_Core.m_Jumped = 1; //0 Jumps
 	}
+	else if (m_Core.m_max_jumps == 1)
+		m_Core.m_Jumped = 2; //1 Jump
+	else if (m_Core.m_max_jumps == 0)
+		m_Core.m_Jumped = 1; //0 Jumps
 }
 

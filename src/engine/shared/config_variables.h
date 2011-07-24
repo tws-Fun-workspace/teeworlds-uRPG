@@ -212,5 +212,6 @@ MACRO_CONFIG_INT(SvWhisperLevel, sv_whisper_lvl, 1, -1, 4, CFGFLAG_SERVER, "Sets
 MACRO_CONFIG_INT(SvWhisperAdmin, sv_whisper_allow_to_admin, 0, 0, 1, CFGFLAG_SERVER, "Allows to whisper to admins", IConsole::CONSOLELEVEL_ADMIN)
 MACRO_CONFIG_INT(SvLaserScore, sv_laser_score, 0, 0, 1, CFGFLAG_SERVER, "Shows new score and checkpoints in laserfont above the player", IConsole::CONSOLELEVEL_ADMIN)
 MACRO_CONFIG_INT(SvRMNinjaResetVel, sv_rmninja_reset_vel, 0, 0, 1, CFGFLAG_SERVER, "Shows new score and checkpoints in laserfont above the player", IConsole::CONSOLELEVEL_ADMIN)
+MACRO_CONFIG_INT(SvFainbowFeet, sv_rainbow_feet, 0, 0, 1, CFGFLAG_SERVER, "The feets of the tees are rainbow", IConsole::CONSOLELEVEL_ADMIN)
 
 #endif

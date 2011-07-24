@@ -49,8 +49,8 @@ CPlayer::CPlayer(CGameContext *pGameServer, int ClientID, int Team)
 	//XXLmod
  	m_IsMember = false;
  	m_IsLoggedIn = false;
-	m_rainbow = RAINBOW_NONE;
-	m_last_rainbow = 0;
+	m_Rainbow = RAINBOW_NONE;
+	m_LastRainbow = 0;
 	m_Helped = 0;
 	m_Invisible = false;
 }

@@ -104,12 +104,12 @@ public:
 	} m_Latency;
 
 	//XXL
-	int m_rainbow;
-	int m_last_rainbow;
-	bool m_up_bw_rainbow;
+	int m_Rainbow;
+	int m_LastRainbow;
+	bool m_RainbowBwUp;
 	int m_Helped;
 	char m_OrginalName[MAX_NAME_LENGTH];
-	bool m_isOrginalName;
+	bool m_IsOrginalName;
 	bool m_IsMember;
 	bool m_IsLoggedIn;
 
