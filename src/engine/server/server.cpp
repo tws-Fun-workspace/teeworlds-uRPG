@@ -969,7 +969,12 @@ void CServer::SendServerInfo(NETADDR *pAddr, int Token)
 	p.AddString(aBuf, 6);
 
 	p.AddString(GameServer()->Version(), 32);
-	p.AddString(g_Config.m_SvName, 64);
+	if (ClientCount < VANILLA_MAX_CLIENTS)
+		p.AddString(g_Config.m_SvName, 64);
+	else
+	{
+		str_format(aBuf, sizeof(aBuf), "%s - %d/%d online", g_Config.m_SvName, ClientCount, m_NetServer.MaxClients()); p.AddString(aBuf, 64);
+	}
 	p.AddString(GetMapName(), 32);
 
 	// gametype
@@ -982,15 +987,26 @@ void CServer::SendServerInfo(NETADDR *pAddr, int Token)
 	str_format(aBuf, sizeof(aBuf), "%d", i);
 	p.AddString(aBuf, 2);
 
-	str_format(aBuf, sizeof(aBuf), "%d", PlayerCount); p.AddString(aBuf, 3); // num players
-	str_format(aBuf, sizeof(aBuf), "%d", max(m_NetServer.MaxClients()-g_Config.m_SvSpectatorSlots-g_Config.m_SvReservedSlots, PlayerCount)); p.AddString(aBuf, 3); // max players
-	str_format(aBuf, sizeof(aBuf), "%d", ClientCount); p.AddString(aBuf, 3); // num clients
-	str_format(aBuf, sizeof(aBuf), "%d", max(m_NetServer.MaxClients()-g_Config.m_SvReservedSlots, ClientCount)); p.AddString(aBuf, 3); // max clients
+	int MaxClients = m_NetServer.MaxClients();
+	if (ClientCount >= VANILLA_MAX_CLIENTS)
+	{
+		if (ClientCount < MaxClients)
+			ClientCount = VANILLA_MAX_CLIENTS - 1;
+		else
+			ClientCount = VANILLA_MAX_CLIENTS;
+	}
+	if (PlayerCount > ClientCount) PlayerCount = ClientCount;
+	if (MaxClients > VANILLA_MAX_CLIENTS) MaxClients = VANILLA_MAX_CLIENTS;
 
+	str_format(aBuf, sizeof(aBuf), "%d", PlayerCount); p.AddString(aBuf, 3); // num players
+	str_format(aBuf, sizeof(aBuf), "%d", MaxClients-g_Config.m_SvSpectatorSlots); p.AddString(aBuf, 3); // max players
+	str_format(aBuf, sizeof(aBuf), "%d", ClientCount); p.AddString(aBuf, 3); // num clients
+	str_format(aBuf, sizeof(aBuf), "%d", MaxClients); p.AddString(aBuf, 3); // max clients
 	for(i = 0; i < MAX_CLIENTS; i++)
 	{
 		if(m_aClients[i].m_State != CClient::STATE_EMPTY)
 		{
+			if (ClientCount-- == 0) break;
 			p.AddString(ClientName(i), MAX_NAME_LENGTH); // client name
 			p.AddString(ClientClan(i), MAX_CLAN_LENGTH); // client clan
 			str_format(aBuf, sizeof(aBuf), "%d", m_aClients[i].m_Country); p.AddString(aBuf, 6); // client country
@@ -1962,3 +1978,7 @@ void CServer::ConClearBanmasters(IConsole::IResult *pResult, void *pUser, int Cl
 	pServer->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server/banmaster", "cleared banmaster list");
 }
 
+int* CServer::GetIdMap(int ClientID)
+{
+	return (int*)(IdMap + VANILLA_MAX_CLIENTS * ClientID);
+}

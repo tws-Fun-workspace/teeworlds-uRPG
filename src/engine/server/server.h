@@ -111,6 +111,7 @@ public:
 	};
 
 	CClient m_aClients[MAX_CLIENTS];
+	int IdMap[MAX_CLIENTS * VANILLA_MAX_CLIENTS];
 
 	CSnapshotDelta m_SnapshotDelta;
 	CSnapshotBuilder m_SnapshotBuilder;
@@ -196,7 +197,7 @@ public:
 	static void ConBan(IConsole::IResult *pResult, void *pUser, int ClientID);
 	static void ConUnban(IConsole::IResult *pResult, void *pUser, int ClientID);
 	static void ConBans(IConsole::IResult *pResult, void *pUser, int ClientID);
- 	static void ConStatus(IConsole::IResult *pResult, void *pUser, int ClientID);
+	static void ConStatus(IConsole::IResult *pResult, void *pUser, int ClientID);
 	static void ConShutdown(IConsole::IResult *pResult, void *pUser, int ClientID);
 	static void ConRecord(IConsole::IResult *pResult, void *pUser, int ClientID);
 	static void ConStopRecord(IConsole::IResult *pResult, void *pUser, int ClientID);
@@ -238,6 +239,8 @@ public:
 	static void ConAddBanmaster(IConsole::IResult *pResult, void *pUser, int ClientID);
 	static void ConBanmasters(IConsole::IResult *pResult, void *pUser, int ClientID);
 	static void ConClearBanmasters(IConsole::IResult *pResult, void *pUser, int ClientID);
+
+	virtual int* GetIdMap(int ClientID);
 };
 
 #endif
