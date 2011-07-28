@@ -113,12 +113,12 @@ public:
 	CVoteOptionServer *m_pVoteOptionLast;
 
 	// helper functions
-	void CreateDamageInd(vec2 Pos, float AngleMod, int Amount, int Mask=-1);
-	void CreateExplosion(vec2 Pos, int Owner, int Weapon, bool NoDamage, int ActivatedTeam, int Mask);
-	void CreateHammerHit(vec2 Pos, int Mask=-1);
-	void CreatePlayerSpawn(vec2 Pos, int Mask=-1);
-	void CreateDeath(vec2 Pos, int Who, int Mask=-1);
-	void CreateSound(vec2 Pos, int Sound, int Mask=-1);
+	void CreateDamageInd(vec2 Pos, float AngleMod, int Amount, int64_t Mask=-1);
+	void CreateExplosion(vec2 Pos, int Owner, int Weapon, bool NoDamage, int ActivatedTeam, int64_t Mask);
+	void CreateHammerHit(vec2 Pos, int64_t Mask=-1);
+	void CreatePlayerSpawn(vec2 Pos, int64_t Mask=-1);
+	void CreateDeath(vec2 Pos, int Who, int64_t Mask=-1);
+	void CreateSound(vec2 Pos, int Sound, int64_t Mask=-1);
 	void CreateSoundGlobal(int Sound, int Target=-1);
 
 
@@ -278,8 +278,8 @@ public:
 	void ResetTuning();
 };
 
-inline int CmaskAll() { return -1; }
-inline int CmaskOne(int ClientID) { return 1<<ClientID; }
-inline int CmaskAllExceptOne(int ClientID) { return 0x7fffffff^CmaskOne(ClientID); }
-inline bool CmaskIsSet(int Mask, int ClientID) { return (Mask&CmaskOne(ClientID)) != 0; }
+inline int64_t CmaskAll() { return -1LL; }
+inline int64_t CmaskOne(int ClientID) { return 1LL<<ClientID; }
+inline int64_t CmaskAllExceptOne(int ClientID) { return -1LL^CmaskOne(ClientID); }
+inline bool CmaskIsSet(int64_t Mask, int ClientID) { return (Mask&CmaskOne(ClientID)) != 0; }
 #endif

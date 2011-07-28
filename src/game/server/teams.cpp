@@ -192,15 +192,15 @@ bool CGameTeams::TeamFinished(int Team)
 	return true;
 }
 
-int CGameTeams::TeamMask(int Team, int ExceptID)
+int64_t CGameTeams::TeamMask(int Team, int ExceptID)
 {
 	if(Team == TEAM_SUPER) return -1;
-	int Mask = 0;
+	int64_t Mask = 0;
 	for(int i = 0; i < MAX_CLIENTS; ++i)
 		if(i != ExceptID)
 			if((Character(i) && (m_Core.Team(i) == Team || m_Core.Team(i) == TEAM_SUPER))
 				|| (GetPlayer(i) && GetPlayer(i)->GetTeam() == -1))
-				Mask |= 1 << i;
+				Mask |= 1LL << i;
 	return Mask;
 }
 

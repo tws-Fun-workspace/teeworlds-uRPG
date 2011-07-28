@@ -101,7 +101,7 @@ class CCharacter *CGameContext::GetPlayerChar(int ClientID)
 	return m_apPlayers[ClientID]->GetCharacter();
 }
 
-void CGameContext::CreateDamageInd(vec2 Pos, float Angle, int Amount, int Mask)
+void CGameContext::CreateDamageInd(vec2 Pos, float Angle, int Amount, int64_t Mask)
 {
 	float a = 3 * 3.14159f / 2 + Angle;
 	//float a = get_angle(dir);
@@ -120,7 +120,7 @@ void CGameContext::CreateDamageInd(vec2 Pos, float Angle, int Amount, int Mask)
 	}
 }
 
-void CGameContext::CreateHammerHit(vec2 Pos, int Mask)
+void CGameContext::CreateHammerHit(vec2 Pos, int64_t Mask)
 {
 	// create the event
 	CNetEvent_HammerHit *pEvent = (CNetEvent_HammerHit *)m_Events.Create(NETEVENTTYPE_HAMMERHIT, sizeof(CNetEvent_HammerHit), Mask);
@@ -132,7 +132,7 @@ void CGameContext::CreateHammerHit(vec2 Pos, int Mask)
 }
 
 
-void CGameContext::CreateExplosion(vec2 Pos, int Owner, int Weapon, bool NoDamage, int ActivatedTeam, int Mask)
+void CGameContext::CreateExplosion(vec2 Pos, int Owner, int Weapon, bool NoDamage, int ActivatedTeam, int64_t Mask)
 {
 	// create the event
 	CNetEvent_Explosion *pEvent = (CNetEvent_Explosion *)m_Events.Create(NETEVENTTYPE_EXPLOSION, sizeof(CNetEvent_Explosion), Mask);
@@ -183,7 +183,7 @@ void create_smoke(vec2 Pos)
 	}
 }*/
 
-void CGameContext::CreatePlayerSpawn(vec2 Pos, int Mask)
+void CGameContext::CreatePlayerSpawn(vec2 Pos, int64_t Mask)
 {
 	// create the event
 	CNetEvent_Spawn *ev = (CNetEvent_Spawn *)m_Events.Create(NETEVENTTYPE_SPAWN, sizeof(CNetEvent_Spawn), Mask);
@@ -194,7 +194,7 @@ void CGameContext::CreatePlayerSpawn(vec2 Pos, int Mask)
 	}
 }
 
-void CGameContext::CreateDeath(vec2 Pos, int ClientID, int Mask)
+void CGameContext::CreateDeath(vec2 Pos, int ClientID, int64_t Mask)
 {
 	// create the event
 	CNetEvent_Death *pEvent = (CNetEvent_Death *)m_Events.Create(NETEVENTTYPE_DEATH, sizeof(CNetEvent_Death), Mask);
@@ -206,7 +206,7 @@ void CGameContext::CreateDeath(vec2 Pos, int ClientID, int Mask)
 	}
 }
 
-void CGameContext::CreateSound(vec2 Pos, int Sound, int Mask)
+void CGameContext::CreateSound(vec2 Pos, int Sound, int64_t Mask)
 {
 	if (Sound < 0)
 		return;

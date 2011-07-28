@@ -3,6 +3,7 @@
 #ifndef GAME_SERVER_EVENTHANDLER_H
 #define GAME_SERVER_EVENTHANDLER_H
 
+#include <stdint.h>
 //
 class CEventHandler
 {
@@ -24,7 +25,7 @@ public:
 	void SetGameServer(CGameContext *pGameServer);
 
 	CEventHandler();
-	void *Create(int Type, int Size, int Mask = -1);
+	void *Create(int Type, int Size, int64_t Mask = -1LL);
 	void Clear();
 	void Snap(int SnappingClient);
 };
