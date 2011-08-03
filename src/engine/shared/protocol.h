@@ -65,7 +65,11 @@ enum
 	// sent by both
 	NETMSG_PING,
 	NETMSG_PING_REPLY,
-	NETMSG_ERROR
+	NETMSG_ERROR,
+
+	// sent by server (todo: move it up)
+	NETMSG_RCON_CMD_ADD,
+	NETMSG_RCON_CMD_REM,
 };
 
 // this should be revised
@@ -75,6 +79,7 @@ enum
 	SERVER_FLAG_PASSWORD = 0x1,
 
 	MAX_CLIENTS=32,
+	VANILLA_MAX_CLIENTS=16,
 
 	MAX_INPUT_SIZE=128,
 	MAX_SNAPSHOT_PACKSIZE=900,

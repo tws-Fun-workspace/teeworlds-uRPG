@@ -49,6 +49,15 @@ public:
 	class IConsole *Console() { return m_pConsole; }
 	class IStorage *Storage() { return m_pStorage; }
 
+	enum
+	{
+		AUTHED_NO=0,
+		AUTHED_MOD,
+		AUTHED_ADMIN,
+
+		MAX_RCONCMD_SEND=16,
+	};
+
 	class CClient
 	{
 	public:
@@ -95,10 +104,13 @@ public:
 		
 		bool m_CustClt;
 
+		const IConsole::CCommandInfo *m_pRconCmdToSend;
+
 		void Reset();
 	};
 
 	CClient m_aClients[MAX_CLIENTS];
+	int IdMap[MAX_CLIENTS * VANILLA_MAX_CLIENTS];
 
 	CSnapshotDelta m_SnapshotDelta;
 	CSnapshotBuilder m_SnapshotBuilder;
@@ -112,6 +124,7 @@ public:
 	int m_RunServer;
 	int m_MapReload;
 	int m_RconClientID;
+	int m_RconAuthLevel;
 
 	int64 m_Lastheartbeat;
 	//static NETADDR4 master_server;
@@ -163,10 +176,13 @@ public:
 	void SendRconLine(int ClientID, const char *pLine);
 	static void SendRconLineAuthed(const char *pLine, void *pUser);
 
-	void ProcessClientPacket(CNetChunk *pPacket);
-		
-	void SendServerInfo(NETADDR *pAddr, int Token, bool isAuxSocket);
+	void SendRconCmdAdd(const IConsole::CCommandInfo *pCommandInfo, int ClientID);
+	void SendRconCmdRem(const IConsole::CCommandInfo *pCommandInfo, int ClientID);
+	void UpdateClientRconCommands();
 
+	void ProcessClientPacket(CNetChunk *pPacket);
+
+	void SendServerInfo(NETADDR *pAddr, int Token);
 	void UpdateServerInfo();
 
 	int BanAdd(NETADDR Addr, int Seconds, const char *pReason);
@@ -192,6 +208,7 @@ public:
 	static void ConMapReload(IConsole::IResult *pResult, void *pUser);
 	static void ConchainSpecialInfoupdate(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData);
 	static void ConchainMaxclientsperipUpdate(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData);
+	static void ConchainModCommandUpdate(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData);
 
 	void RegisterCommands();
 
@@ -200,6 +217,8 @@ public:
 	virtual void SnapFreeID(int ID);
 	virtual void *SnapNewItem(int Type, int ID, int Size);
 	void SnapSetStaticsize(int ItemType, int Size);
+
+	virtual int* GetIdMap(int ClientID);
 };
 
 #endif

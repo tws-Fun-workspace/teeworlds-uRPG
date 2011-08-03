@@ -534,7 +534,8 @@ void CCharacter::GiveNinja(bool Silent)
 	m_Ninja.m_ActivationTick = Server()->Tick();
 	m_aWeapons[WEAPON_NINJA].m_Got = true;
 	m_aWeapons[WEAPON_NINJA].m_Ammo = -1;
-	m_LastWeapon = m_ActiveWeapon;
+	if (m_ActiveWeapon != WEAPON_NINJA)
+		m_LastWeapon = m_ActiveWeapon;
 	m_ActiveWeapon = WEAPON_NINJA;
 	
 	if (!Silent)
@@ -592,6 +593,18 @@ void CCharacter::OnDirectInput(CNetObj_PlayerInput *pNewInput)
 	}
 
 	mem_copy(&m_LatestPrevInput, &m_LatestInput, sizeof(m_LatestInput));
+}
+
+void CCharacter::ResetInput()
+{
+	m_Input.m_Direction = 0;
+	m_Input.m_Hook = 0;
+	// simulate releasing the fire button
+	if((m_Input.m_Fire&1) != 0)
+		m_Input.m_Fire++;
+	m_Input.m_Fire &= INPUT_STATE_MASK;
+	m_Input.m_Jump = 0;
+	m_LatestPrevInput = m_LatestInput = m_Input;
 }
 
 void CCharacter::Tick()
@@ -812,24 +825,7 @@ void CCharacter::SendKillMsg(int Killer, int Weapon, int ModeSpecial)
 	Msg.m_Victim = m_pPlayer->GetCID();
 	Msg.m_Weapon = Weapon;
 	Msg.m_ModeSpecial = ModeSpecial;
-	for(int i = 0; i < MAX_CLIENTS; i++)
-		if (Server()->ClientIngame(i))
-		{
-			Msg.m_Killer = -1;
-			Msg.m_Victim = -1;
-			for (int j = 0;j < 16;j++)
-			{
-				if (GameServer()->m_apPlayers[i]->idMap[j] == m_pPlayer->GetCID())
-					Msg.m_Victim = j;
-				if (GameServer()->m_apPlayers[i]->idMap[j] == Killer)
-					Msg.m_Killer = j;
-			}
-			if (Msg.m_Victim != -1)
-			{
-				if (Msg.m_Killer == -1) Msg.m_Killer = Msg.m_Victim;
-				Server()->SendPackMsg(&Msg, MSGFLAG_VITAL, i);
-			}
-		}
+	Server()->SendPackMsg(&Msg, MSGFLAG_VITAL, -1);
 }
 
 void CCharacter::Die(int Killer, int Weapon)
@@ -914,7 +910,15 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon)
 
 	// do damage Hit sound
 	if(From >= 0 && From != m_pPlayer->GetCID() && GameServer()->m_apPlayers[From])
-		GameServer()->CreateSound(GameServer()->m_apPlayers[From]->m_ViewPos, SOUND_HIT, CmaskOne(From));
+	{
+		int Mask = CmaskOne(From);
+		for(int i = 0; i < MAX_CLIENTS; i++)
+		{
+			if(GameServer()->m_apPlayers[i] && GameServer()->m_apPlayers[i]->GetTeam() == TEAM_SPECTATORS && GameServer()->m_apPlayers[i]->m_SpectatorID == From)
+				Mask |= CmaskOne(i);
+		}
+		GameServer()->CreateSound(GameServer()->m_apPlayers[From]->m_ViewPos, SOUND_HIT, Mask);
+	}
 
 	// check for death
 	if(m_Health <= 0)
@@ -949,66 +953,10 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon)
 void CCharacter::Snap(int SnappingClient)
 {
 	CNetObj_Character Measure; // used only for measuring the offset between vanilla and extended core
+	int id = m_pPlayer->GetCID();
 
-	int id = -1;
-	int lastfree = -1;
-	int* idMap = GameServer()->m_apPlayers[SnappingClient]->idMap;
-	int* idLastSent = GameServer()->m_apPlayers[SnappingClient]->idMapBook;
-	double maxDist = 0;
-	int maxDistId = 0;
-	int tick = Server()->Tick();
-	int m_ClientID = m_pPlayer->GetCID();
-	if (m_ClientID == SnappingClient)
-	{
-		id = 0;
-	} 
-	else
-		for (int i = 15;i >= 1;i--)
-		{
-			if (!GameServer()->m_apPlayers[idMap[i]]) idMap[i]=-1;
-			if (idMap[i]==-1) lastfree=i;
-			else
-			{
-				//idMap updates once in 10 ticks
-				if (tick % 10 == 0)
-				{
-					double dist = distance(GameServer()->m_apPlayers[idMap[i]]->m_ViewPos, GameServer()->m_apPlayers[SnappingClient]->m_ViewPos);
-					if (dist > maxDist)
-					{
-						maxDist = dist;
-						maxDistId = i;
-					}
-				}
-			}
-			if (idMap[i] == m_ClientID)
-			{
-				id = i;
-				break;
-			}
-		}
-
-	if (id == -1)
-	{
-		if (lastfree != -1)
-		{
-			id = lastfree;
-			idMap[id] = m_ClientID;
-		}
-		else
-		{
-			//idMap updates once in 10 ticks
-			if (tick % 10 != 0) return;
-			//dont bother swapping clients which are too far to be displayed
-			if(NetworkClipped(SnappingClient))
-				return;
-			if (distance(GameServer()->m_apPlayers[m_ClientID]->m_ViewPos, GameServer()->m_apPlayers[SnappingClient]->m_ViewPos) > maxDist) return;
-			id = maxDistId;
-			idMap[maxDistId] = m_ClientID;
-		}
-	}
-	//must ensure not update slot more than once per tick
-	if (idLastSent[id] == tick) return;
-	idLastSent[id] = tick;
+	if (!Server()->Translate(id, SnappingClient))
+		return;
 
 	if(NetworkClipped(SnappingClient))
 		return;
@@ -1055,16 +1003,8 @@ void CCharacter::Snap(int SnappingClient)
 
 	if (pCharacter->m_HookedPlayer != -1)
 	{
-		int hooked = pCharacter->m_HookedPlayer;
-		pCharacter->m_HookedPlayer = -1;
-		for (int j = 0;j < 16;j++)
-		{
-			if (idMap[j] == hooked)
-			{
-				pCharacter->m_HookedPlayer = j;
-				break;
-			}
-		}
+		if (!Server()->Translate(pCharacter->m_HookedPlayer, SnappingClient))
+			pCharacter->m_HookedPlayer = -1;
 	}
 	pCharacter->m_Emote = m_EmoteType;
 
@@ -1077,7 +1017,8 @@ void CCharacter::Snap(int SnappingClient)
 
 	pCharacter->m_Direction = m_Input.m_Direction;
 
-	if(m_pPlayer->GetCID() == SnappingClient || SnappingClient == -1 || m_pPlayer->GetCID() == GameServer()->m_apPlayers[SnappingClient]->m_SpectatorID)
+	if(m_pPlayer->GetCID() == SnappingClient || SnappingClient == -1 ||
+		(!g_Config.m_SvStrictSpectateMode && m_pPlayer->GetCID() == GameServer()->m_apPlayers[SnappingClient]->m_SpectatorID))
 	{
 		pCharacter->m_Health = m_Health;
 		pCharacter->m_Armor = m_Armor;
