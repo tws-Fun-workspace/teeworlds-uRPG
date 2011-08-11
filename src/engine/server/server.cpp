@@ -1957,7 +1957,7 @@ bool CServer::CompareClients(int ClientLevel, int Victim, void *pUser)
 	if(!ClientOnline(Victim, pSelf))
 		return false;
 
-	return clamp(ClientLevel, 0, 3) > clamp(pSelf->m_aClients[Victim].m_Authed, 0, 3);
+	return clamp(ClientLevel, 0, 4) > clamp(pSelf->m_aClients[Victim].m_Authed, 0, 4);
 }
 
 bool CServer::ClientOnline(int ClientID, void *pUser)
