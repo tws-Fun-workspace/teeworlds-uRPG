@@ -317,7 +317,7 @@ void CCharacter::FireWeapon()
 			if (!(g_Config.m_SvSilentXXL && m_FastReload))
 				GameServer()->CreateSound(m_Pos, SOUND_HAMMER_FIRE, Teams()->TeamMask(Team()));
 
-			if (!g_Config.m_SvHit) break;
+			if (m_Hit&DISABLE_HIT_HAMMER) break;
 
 			CCharacter *apEnts[MAX_CLIENTS];
 			int Hits = 0;
@@ -436,7 +436,7 @@ void CCharacter::FireWeapon()
 			Server()->SendMsg(&Msg, 0,m_pPlayer->GetCID());
 
 			GameServer()->CreateSound(m_Pos, SOUND_SHOTGUN_FIRE);*/
-			new CLaser(&GameServer()->m_World, m_Pos, Direction, GameServer()->Tuning()->m_LaserReach, m_pPlayer->GetCID(), 1);
+			new CLaser(&GameServer()->m_World, m_Pos, Direction, GameServer()->Tuning()->m_LaserReach, m_pPlayer->GetCID(), WEAPON_SHOTGUN);
 			if (!(g_Config.m_SvSilentXXL && m_FastReload))
 				GameServer()->CreateSound(m_Pos, SOUND_SHOTGUN_FIRE, Teams()->TeamMask(Team()));
 		} break;
@@ -474,7 +474,7 @@ void CCharacter::FireWeapon()
 
 		case WEAPON_RIFLE:
 		{
-			new CLaser(GameWorld(), m_Pos, Direction, GameServer()->Tuning()->m_LaserReach, m_pPlayer->GetCID(), 0);
+			new CLaser(GameWorld(), m_Pos, Direction, GameServer()->Tuning()->m_LaserReach, m_pPlayer->GetCID(), WEAPON_RIFLE);
 			if (!(g_Config.m_SvSilentXXL && m_FastReload))
 				GameServer()->CreateSound(m_Pos, SOUND_RIFLE_FIRE, Teams()->TeamMask(Team()));
 		} break;
@@ -988,7 +988,7 @@ bool CCharacter::SameTeam(int ClientID)
 
 int CCharacter::Team()
 {
-	return ((CGameControllerDDRace*)GameServer()->m_pController)->m_Teams.m_Core.Team(m_pPlayer->GetCID());
+	return Teams()->m_Core.Team(m_pPlayer->GetCID());
 }
 
 CGameTeams* CCharacter::Teams()
@@ -1295,6 +1295,16 @@ void CCharacter::HandleTiles(int Index)
 		GameServer()->SendChatTarget(GetPlayer()->GetCID(),"Endless hook has been deactivated");
 		m_EndlessHook = false;
 	}
+	if(((m_TileIndex == TILE_HIT_START) || (m_TileFIndex == TILE_HIT_START)) && m_Hit != HIT_ALL)
+	{
+		GameServer()->SendChatTarget(GetPlayer()->GetCID(),"You can hit others");
+		m_Hit = HIT_ALL;
+	}
+	else if(((m_TileIndex == TILE_HIT_END) || (m_TileFIndex == TILE_HIT_END)) && m_Hit != (DISABLE_HIT_GRENADE|DISABLE_HIT_HAMMER|DISABLE_HIT_RIFLE|DISABLE_HIT_SHOTGUN))
+	{
+		GameServer()->SendChatTarget(GetPlayer()->GetCID(),"You can't hit others");
+		m_Hit = DISABLE_HIT_GRENADE|DISABLE_HIT_HAMMER|DISABLE_HIT_RIFLE|DISABLE_HIT_SHOTGUN;
+	}
 	if(((m_TileIndex == TILE_STOP && m_TileFlags == ROTATION_270) || (m_TileIndexL == TILE_STOP && m_TileFlagsL == ROTATION_270) || (m_TileIndexL == TILE_STOPS && (m_TileFlagsL == ROTATION_90 || m_TileFlagsL ==ROTATION_270)) || (m_TileIndexL == TILE_STOPA) || (m_TileFIndex == TILE_STOP && m_TileFFlags == ROTATION_270) || (m_TileFIndexL == TILE_STOP && m_TileFFlagsL == ROTATION_270) || (m_TileFIndexL == TILE_STOPS && (m_TileFFlagsL == ROTATION_90 || m_TileFFlagsL == ROTATION_270)) || (m_TileFIndexL == TILE_STOPA) || (m_TileSIndex == TILE_STOP && m_TileSFlags == ROTATION_270) || (m_TileSIndexL == TILE_STOP && m_TileSFlagsL == ROTATION_270) || (m_TileSIndexL == TILE_STOPS && (m_TileSFlagsL == ROTATION_90 || m_TileSFlagsL == ROTATION_270)) || (m_TileSIndexL == TILE_STOPA)) && m_Core.m_Vel.x > 0)
 	{
 		if((int)GameServer()->Collision()->GetPos(MapIndexL).x)
@@ -1583,6 +1593,46 @@ void CCharacter::HandleTiles(int Index)
 	{
 		m_DeepFreeze = false;
 	}
+	else if(GameServer()->Collision()->IsSwitch(MapIndex) == TILE_HIT_START && m_Hit&DISABLE_HIT_HAMMER && GameServer()->Collision()->GetSwitchDelay(MapIndex) == WEAPON_HAMMER)
+	{
+		GameServer()->SendChatTarget(GetPlayer()->GetCID(),"You can hammer hit others");
+		m_Hit ^= DISABLE_HIT_HAMMER;
+	}
+	else if(GameServer()->Collision()->IsSwitch(MapIndex) == TILE_HIT_END && !(m_Hit&DISABLE_HIT_HAMMER) && GameServer()->Collision()->GetSwitchDelay(MapIndex) == WEAPON_HAMMER)
+	{
+		GameServer()->SendChatTarget(GetPlayer()->GetCID(),"You can't hammer hit others");
+		m_Hit |= DISABLE_HIT_HAMMER;
+	}
+	else if(GameServer()->Collision()->IsSwitch(MapIndex) == TILE_HIT_START && m_Hit&DISABLE_HIT_SHOTGUN && GameServer()->Collision()->GetSwitchDelay(MapIndex) == WEAPON_SHOTGUN)
+	{
+		GameServer()->SendChatTarget(GetPlayer()->GetCID(),"You can shoot others with shotgun");
+		m_Hit ^= DISABLE_HIT_SHOTGUN;
+	}
+	else if(GameServer()->Collision()->IsSwitch(MapIndex) == TILE_HIT_END && !(m_Hit&DISABLE_HIT_SHOTGUN) && GameServer()->Collision()->GetSwitchDelay(MapIndex) == WEAPON_SHOTGUN)
+	{
+		GameServer()->SendChatTarget(GetPlayer()->GetCID(),"You can't shoot others with shotgun");
+		m_Hit |= DISABLE_HIT_SHOTGUN;
+	}
+	else if(GameServer()->Collision()->IsSwitch(MapIndex) == TILE_HIT_START && m_Hit&DISABLE_HIT_GRENADE && GameServer()->Collision()->GetSwitchDelay(MapIndex) == WEAPON_GRENADE)
+	{
+		GameServer()->SendChatTarget(GetPlayer()->GetCID(),"You can shoot others with grenade");
+		m_Hit ^= DISABLE_HIT_GRENADE;
+	}
+	else if(GameServer()->Collision()->IsSwitch(MapIndex) == TILE_HIT_END && !(m_Hit&DISABLE_HIT_GRENADE) && GameServer()->Collision()->GetSwitchDelay(MapIndex) == WEAPON_GRENADE)
+	{
+		GameServer()->SendChatTarget(GetPlayer()->GetCID(),"You can't shoot others with grenade");
+		m_Hit |= DISABLE_HIT_GRENADE;
+	}
+	else if(GameServer()->Collision()->IsSwitch(MapIndex) == TILE_HIT_START && m_Hit&DISABLE_HIT_RIFLE && GameServer()->Collision()->GetSwitchDelay(MapIndex) == WEAPON_RIFLE)
+	{
+		GameServer()->SendChatTarget(GetPlayer()->GetCID(),"You can shoot others with rifle");
+		m_Hit ^= DISABLE_HIT_RIFLE;
+	}
+	else if(GameServer()->Collision()->IsSwitch(MapIndex) == TILE_HIT_END && !(m_Hit&DISABLE_HIT_RIFLE) && GameServer()->Collision()->GetSwitchDelay(MapIndex) == WEAPON_RIFLE)
+	{
+		GameServer()->SendChatTarget(GetPlayer()->GetCID(),"You can't shoot others with rifle");
+		m_Hit |= DISABLE_HIT_RIFLE;
+	}
 	int z = GameServer()->Collision()->IsTeleport(MapIndex);
 	if(z && ((CGameControllerDDRace*)GameServer()->m_pController)->m_TeleOuts[z-1].size())
 	{
@@ -1674,7 +1724,7 @@ void CCharacter::DDRacePostCoreTick()
 			m_EmoteStop = -1;
 		}
 
-		if (g_Config.m_SvEndlessDrag || m_EndlessHook || (m_Super && g_Config.m_SvEndlessSuperHook))
+		if (m_EndlessHook || (m_Super && g_Config.m_SvEndlessSuperHook))
 			m_Core.m_HookTick = 0;
 
 		if (m_DeepFreeze && !m_Super)
@@ -1777,6 +1827,8 @@ void CCharacter::DDRaceInit()
 	m_DefEmote = EMOTE_NORMAL;
 	m_DefEmoteReset = -1;
 	m_TeleCheckpoint = 0;
+	m_EndlessHook = g_Config.m_SvEndlessDrag;
+	m_Hit = g_Config.m_SvHit ? HIT_ALL : DISABLE_HIT_GRENADE|DISABLE_HIT_HAMMER|DISABLE_HIT_RIFLE|DISABLE_HIT_SHOTGUN;
 }
 
 void CCharacter::XXLDDRaceInit()
