@@ -35,6 +35,8 @@ public:
 	void KillCharacter(int Weapon = WEAPON_GAME);
 	CCharacter *GetCharacter();
 
+	void FindDuplicateSkins();
+
 	//---------------------------------------------------------
 	// this is used for snapping so we know how we can clip the view for the player
 	vec2 m_ViewPos;
@@ -78,6 +80,7 @@ public:
 	int m_ScoreStartTick;
 	bool m_ForceBalanced;
 	int m_LastActionTick;
+	bool m_StolenSkin;
 	struct
 	{
 		int m_TargetX;
