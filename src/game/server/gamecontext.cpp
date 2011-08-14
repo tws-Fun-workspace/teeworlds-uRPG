@@ -630,12 +630,8 @@ void CGameContext::OnClientEnter(int ClientID)
 	Score()->PlayerData(ClientID)->Reset();
 	Score()->LoadScore(ClientID);
 
-	if (g_Config.m_SvRconScore){ //TODO: XXLTomate: lol, wth?
-		if (g_Config.m_SvRconScore)
+	if (g_Config.m_SvRconScore)
 			m_apPlayers[ClientID]->m_Score = m_apPlayers[ClientID]->m_Authed;
-		else
-			m_apPlayers[ClientID]->m_Score = 0;
-	}
 	else
 	{
 		Score()->PlayerData(ClientID)->m_CurrentTime = Score()->PlayerData(ClientID)->m_BestTime;
@@ -1256,8 +1252,14 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 
 			Score()->PlayerData(ClientID)->Reset();
 			Score()->LoadScore(ClientID);
-			Score()->PlayerData(ClientID)->m_CurrentTime = Score()->PlayerData(ClientID)->m_BestTime;
-			m_apPlayers[ClientID]->m_Score = (Score()->PlayerData(ClientID)->m_BestTime)?Score()->PlayerData(ClientID)->m_BestTime:-9999;
+
+			if (g_Config.m_SvRconScore)
+					m_apPlayers[ClientID]->m_Score = m_apPlayers[ClientID]->m_Authed;
+			else
+			{
+				Score()->PlayerData(ClientID)->m_CurrentTime = Score()->PlayerData(ClientID)->m_BestTime;
+				m_apPlayers[ClientID]->m_Score = (Score()->PlayerData(ClientID)->m_BestTime)?Score()->PlayerData(ClientID)->m_BestTime:-9999;
+			}
 		}
 		Server()->SetClientClan(ClientID, pMsg->m_pClan);
 		Server()->SetClientCountry(ClientID, pMsg->m_Country);
