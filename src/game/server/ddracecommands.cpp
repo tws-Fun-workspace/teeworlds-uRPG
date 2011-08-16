@@ -877,3 +877,14 @@ void CGameContext::ConMutes(IConsole::IResult *pResult, void *pUserData, int Cli
 		pResult->Print(IConsole::OUTPUT_LEVEL_STANDARD, "mutes", aBuf);
 	}
 }
+
+void CGameContext::ConList(IConsole::IResult *pResult, void *pUserData, int ClientID)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+
+	char zerochar = 0;
+	if(pResult->NumArguments() > 0)
+		pSelf->List(ClientID, pResult->GetString(0));
+	else
+		pSelf->List(ClientID, &zerochar);
+}

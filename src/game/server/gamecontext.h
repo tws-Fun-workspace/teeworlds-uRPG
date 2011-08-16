@@ -137,6 +137,7 @@ public:
 	void SendWeaponPickup(int ClientID, int Weapon);
 	void SendBroadcast(const char *pText, int ClientID);
 
+	void List(int ClientID, const char* filter);
 
 	//
 	void CheckPureTuning();
@@ -239,6 +240,8 @@ private:
 	static void ConMuteIP(IConsole::IResult *pResult, void *pUserData, int ClientID);
 	static void ConUnmute(IConsole::IResult *pResult, void *pUserData, int ClientID);
 	static void ConMutes(IConsole::IResult *pResult, void *pUserData, int ClientID);
+
+	static void ConList(IConsole::IResult *pResult, void *pUserData, int ClientID);
 
 	enum
 	{
