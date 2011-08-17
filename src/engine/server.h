@@ -22,6 +22,7 @@ public:
 	{
 		const char *m_pName;
 		int m_Latency;
+		bool m_CustClt;
 	};
 
 	int Tick() const { return m_CurrentGameTick; }
@@ -137,6 +138,7 @@ public:
 
 	virtual int* GetIdMap(int ClientID) = 0;
 	virtual void DemoRecorder_HandleAutoStart() = 0;
+	virtual void SetCustClt(int ClientID) = 0;
 };
 
 class IGameServer : public IInterface
