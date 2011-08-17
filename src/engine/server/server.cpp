@@ -343,6 +343,7 @@ int CServer::GetClientInfo(int ClientID, CClientInfo *pInfo)
 	{
 		pInfo->m_pName = m_aClients[ClientID].m_aName;
 		pInfo->m_Latency = m_aClients[ClientID].m_Latency;
+		pInfo->m_CustClt = m_aClients[ClientID].m_CustClt;
 		return 1;
 	}
 	return 0;
