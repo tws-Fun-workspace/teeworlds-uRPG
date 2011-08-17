@@ -316,6 +316,7 @@ int CServer::Init()
 		m_aClients[i].m_State = CClient::STATE_EMPTY;
 		m_aClients[i].m_aName[0] = 0;
 		m_aClients[i].m_aClan[0] = 0;
+		m_aClients[i].m_CustClt = 0;
 		m_aClients[i].m_Country = -1;
 		m_aClients[i].m_Snapshots.Init();
 	}
@@ -586,6 +587,7 @@ int CServer::NewClientCallback(int ClientID, void *pUser)
 	pThis->m_aClients[ClientID].m_Country = -1;
 	pThis->m_aClients[ClientID].m_Authed = 0;
 	pThis->m_aClients[ClientID].m_AuthTries = 0;
+	pThis->m_aClients[ClientID].m_CustClt = 0;
 	memset(&pThis->m_aClients[ClientID].m_Addr, 0, sizeof(NETADDR));
 	pThis->m_aClients[ClientID].Reset();
 	return 0;
@@ -1981,4 +1983,9 @@ void CServer::ConClearBanmasters(IConsole::IResult *pResult, void *pUser, int Cl
 int* CServer::GetIdMap(int ClientID)
 {
 	return (int*)(IdMap + VANILLA_MAX_CLIENTS * ClientID);
+}
+
+void CServer::SetCustClt(int ClientID)
+{
+	m_aClients[ClientID].m_CustClt = 1;
 }

@@ -1060,6 +1060,10 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 			Server()->SendPackMsg(&Msg, MSGFLAG_VITAL, -1);
 		}
 	}
+	else if (MsgID == NETMSGTYPE_CL_ISDDRACE64)
+	{
+		Server()->SetCustClt(ClientID);
+	}
 	else if (MsgID == NETMSGTYPE_CL_SETSPECTATORMODE && !m_World.m_Paused)
 	{
 		CNetMsg_Cl_SetSpectatorMode *pMsg = (CNetMsg_Cl_SetSpectatorMode *)pRawMsg;

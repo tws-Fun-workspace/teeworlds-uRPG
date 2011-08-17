@@ -108,6 +108,7 @@ public:
 		// DDRace
 
 		NETADDR m_Addr;
+		bool m_CustClt;
 	};
 
 	CClient m_aClients[MAX_CLIENTS];
@@ -241,6 +242,7 @@ public:
 	static void ConClearBanmasters(IConsole::IResult *pResult, void *pUser, int ClientID);
 
 	virtual int* GetIdMap(int ClientID);
+	virtual void SetCustClt(int ClientID);
 };
 
 #endif
