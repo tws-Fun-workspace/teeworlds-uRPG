@@ -83,7 +83,7 @@ void CPlayer::Tick()
 	}
 
 	if(!m_pCharacter && m_Team == TEAM_SPECTATORS && m_SpectatorID == SPEC_FREEVIEW)
-		m_ViewPos -= vec2(clamp(m_ViewPos.x-m_LatestActivity.m_TargetX, -5000.0f, 500.0f), clamp(m_ViewPos.y-m_LatestActivity.m_TargetY, -400.0f, 400.0f));
+		m_ViewPos -= vec2(clamp(m_ViewPos.x-m_LatestActivity.m_TargetX, -500.0f, 500.0f), clamp(m_ViewPos.y-m_LatestActivity.m_TargetY, -400.0f, 400.0f));
 
 	if(!m_pCharacter && m_DieTick+Server()->TickSpeed()*3 <= Server()->Tick())
 		m_Spawning = true;
@@ -192,7 +192,11 @@ void CPlayer::Snap(int SnappingClient)
 
 void CPlayer::FakeSnap(int SnappingClient)
 {
-	// WORK IN PROGRESS STUFF NOT FINISHED
+	IServer::CClientInfo info;
+	Server()->GetClientInfo(SnappingClient, &info);
+	if (info.m_CustClt)
+		return;
+
 	int id = VANILLA_MAX_CLIENTS - 1;
 
 	CNetObj_ClientInfo *pClientInfo = static_cast<CNetObj_ClientInfo *>(Server()->SnapNewItem(NETOBJTYPE_CLIENTINFO, id, sizeof(CNetObj_ClientInfo)));
@@ -329,6 +333,7 @@ int CPlayer::BlockKillCheck()
 			if (g_Config.m_SvScoringDebugLog)
 				dbg_msg("score","%s killed by %s and lost %.1f, now has %.1f", GetAccount()->Name(), GameServer()->m_apPlayers[killer]->GetAccount() ? GameServer()->m_apPlayers[killer]->GetAccount()->Name() : "(unk)", scoreStolen, blockScore);
 			GetAccount()->Payload()->blockScore = blockScore;
+			GameServer()->m_Rank.UpdateScore(GetAccount());
 			if (fabs(scoreStolen) >= .5f)
 				str_format(aVictimText, sizeof aVictimText, "%+.1f", -scoreStolen);
 		}
@@ -344,6 +349,7 @@ int CPlayer::BlockKillCheck()
 			if (g_Config.m_SvScoringDebugLog)
 				dbg_msg("score","%s killed %s and gained %.1f, now has %.1f", killerAcc->Name(), GetAccount() ? GetAccount()->Name() : "(unk)", scoreStolen, GameServer()->m_apPlayers[killer]->blockScore);
 			killerAcc->Payload()->blockScore = GameServer()->m_apPlayers[killer]->blockScore;
+			GameServer()->m_Rank.UpdateScore(killerAcc);
 			if (fabs(scoreStolen) >= .5f)
 				str_format(aKillerText, sizeof aKillerText, "%+.1f", scoreStolen);
 		}
@@ -464,15 +470,15 @@ void CPlayer::TryRespawn()
 
 void CPlayer::FindDuplicateSkins()
 {
+	if (m_TeeInfos.m_UseCustomColor == 0 && !m_StolenSkin) return;
 	m_StolenSkin = 0;
-	if (m_OrigTeeInfos.m_UseCustomColor == 0) return;
 	for (int i = 0; i < MAX_CLIENTS; ++i)
 	{
 		if (i == m_ClientID) continue;
 		if(GameServer()->m_apPlayers[i])
 		{
 			if (GameServer()->m_apPlayers[i]->m_StolenSkin) continue;
-			if ((GameServer()->m_apPlayers[i]->m_OrigTeeInfos.m_UseCustomColor == 1) &&
+			if ((GameServer()->m_apPlayers[i]->m_OrigTeeInfos.m_UseCustomColor == m_TeeInfos.m_UseCustomColor) &&
 			(GameServer()->m_apPlayers[i]->m_OrigTeeInfos.m_ColorFeet == m_OrigTeeInfos.m_ColorFeet) &&
 			(GameServer()->m_apPlayers[i]->m_OrigTeeInfos.m_ColorBody == m_OrigTeeInfos.m_ColorBody) &&
 			!str_comp(GameServer()->m_apPlayers[i]->m_TeeInfos.m_SkinName, m_TeeInfos.m_SkinName))

@@ -40,7 +40,7 @@ public:
 	template<class T>
 	int SendPackMsg(T *pMsg, int Flags, int ClientID)
 	{
-		int result;
+		int result = 0;
 		T tmp;
 		if (ClientID == -1)
 		{
@@ -99,6 +99,10 @@ public:
 
 	bool Translate(int& target, int client)
 	{
+		CClientInfo info;
+		GetClientInfo(client, &info);
+		if (info.m_CustClt)
+			return true;
 		int* map = GetIdMap(client);
 		bool found = false;
 		for (int i = 0; i < VANILLA_MAX_CLIENTS; i++)
@@ -128,6 +132,7 @@ public:
 	virtual void Kick(int ClientID, const char *pReason) = 0;
 
 	virtual int* GetIdMap(int ClientID) = 0;
+	virtual void DemoRecorder_HandleAutoStart() = 0;
 };
 
 class IGameServer : public IInterface

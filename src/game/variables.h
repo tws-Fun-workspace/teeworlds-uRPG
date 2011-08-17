@@ -41,7 +41,7 @@ MACRO_CONFIG_INT(PlayerColorBody, player_color_body, 65408, 0, 0xFFFFFF, CFGFLAG
 MACRO_CONFIG_INT(PlayerColorFeet, player_color_feet, 65408, 0, 0xFFFFFF, CFGFLAG_CLIENT|CFGFLAG_SAVE, "Player feet color")
 MACRO_CONFIG_STR(PlayerSkin, player_skin, 24, "default", CFGFLAG_CLIENT|CFGFLAG_SAVE, "Player skin")
 
-MACRO_CONFIG_INT(UiPage, ui_page, 5, 0, 10, CFGFLAG_CLIENT|CFGFLAG_SAVE, "Interface page")
+MACRO_CONFIG_INT(UiPage, ui_page, 6, 0, 10, CFGFLAG_CLIENT|CFGFLAG_SAVE, "Interface page")
 MACRO_CONFIG_INT(UiToolboxPage, ui_toolbox_page, 0, 0, 2, CFGFLAG_CLIENT|CFGFLAG_SAVE, "Toolbox page")
 MACRO_CONFIG_STR(UiServerAddress, ui_server_address, 64, "localhost:8303", CFGFLAG_CLIENT|CFGFLAG_SAVE, "Interface server address")
 MACRO_CONFIG_INT(UiScale, ui_scale, 100, 50, 150, CFGFLAG_CLIENT|CFGFLAG_SAVE, "Interface scale")
@@ -87,7 +87,11 @@ MACRO_CONFIG_STR(SvAnnouncement, sv_announcement, 255, "", CFGFLAG_SERVER, "")
 MACRO_CONFIG_INT(SvAnnouncementInterval, sv_announcement_interval, 5, 1, 300, CFGFLAG_SERVER, "")
 
 MACRO_CONFIG_INT(SvScoringDebug, sv_scoring_debug, 0, 0, 1, CFGFLAG_SERVER, "Include scoring debug info in players' names")
+#ifdef CONF_DEBUG
+MACRO_CONFIG_INT(SvScoringDebugLog, sv_scoring_debug_log, 1, 0, 1, CFGFLAG_SERVER, "Include scoring debug info in log")
+#else
 MACRO_CONFIG_INT(SvScoringDebugLog, sv_scoring_debug_log, 0, 0, 1, CFGFLAG_SERVER, "Include scoring debug info in log")
+#endif
 
 MACRO_CONFIG_INT(SvStrictSpectateMode, sv_strict_spectate_mode, 0, 0, 1, CFGFLAG_SERVER, "Restricts information in spectator mode")
 MACRO_CONFIG_INT(SvVoteSpectate, sv_vote_spectate, 1, 0, 1, CFGFLAG_SERVER, "Allow voting to move players to spectators")

@@ -15,6 +15,7 @@
 #include "gamemodes/tdm.h"
 #include "gamemodes/ctf.h"
 #include "gamemodes/mod.h"
+#include "gamemodes/rank.h"
 
 struct CMute CGameContext::m_aMutes[MAX_MUTES];
 
@@ -42,6 +43,7 @@ void CGameContext::Construct(int Resetting)
 	{
 		m_pVoteOptionHeap = new CHeap();
 		new CDDChatHnd();
+		new CRankHnd();
 		for(int z = 0; z < MAX_MUTES; ++z)
 			m_aMutes[z].m_IP[0] = 0;
 	}
@@ -191,7 +193,7 @@ void CGameContext::CreateDeath(vec2 Pos, int ClientID)
 	}
 }
 
-void CGameContext::CreateSound(vec2 Pos, int Sound, int Mask)
+void CGameContext::CreateSound(vec2 Pos, int Sound, int64_t Mask)
 {
 	if (Sound < 0)
 		return;
@@ -617,10 +619,6 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 		
 		char *pMsgStart = str_skip_whitespaces((char*)pMsg->m_pMessage);
 
-		if (*pMsgStart == IChatCtl::ms_CmdChar)
-			IChatCtl::Dispatch(pPlayer, pMsgStart);//one could handle unhandled msgs here
-		else
-		{
 			if(g_Config.m_SvSpamprotection && pPlayer->m_LastChat && pPlayer->m_LastChat+Server()->TickSpeed() > Server()->Tick())
 				return;
 
@@ -652,8 +650,12 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 				return;
 			}
 			else
-				SendChat(ClientID, Team, pMsg->m_pMessage);
-		}
+			{
+				if (*pMsgStart == IChatCtl::ms_CmdChar)
+					IChatCtl::Dispatch(pPlayer, pMsgStart);//one could handle unhandled msgs here
+				else
+					SendChat(ClientID, Team, pMsg->m_pMessage);
+			}
 	}
 	else if(MsgID == NETMSGTYPE_CL_CALLVOTE)
 	{
@@ -987,8 +989,12 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 	}
 	else if (MsgID == NETMSGTYPE_CL_CHANGEINFO)
 	{
-		if(g_Config.m_SvSpamprotection && pPlayer->m_LastChangeInfo && pPlayer->m_LastChangeInfo+Server()->TickSpeed()*5 > Server()->Tick())
+		if(g_Config.m_SvSpamprotection && pPlayer->m_LastChangeInfo && pPlayer->m_LastChangeInfo+Server()->TickSpeed()*2 > Server()->Tick())
+		{
+			if (pPlayer->m_LastChangeInfo < Server()->Tick())
+				pPlayer->m_LastChangeInfo += Server()->TickSpeed()/2;
 			return;
+		}
 
 		CNetMsg_Cl_ChangeInfo *pMsg = (CNetMsg_Cl_ChangeInfo *)pRawMsg;
 		pPlayer->m_LastChangeInfo = Server()->Tick();
@@ -1476,6 +1482,17 @@ void CGameContext::ConMutes(IConsole::IResult *pResult, void *pUserData)
 		}
 }
 
+void CGameContext::ConGive(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	int ClientID = pResult->GetInteger(0);
+	int Score = pResult->GetInteger(1);
+	CAccount* acc = pSelf->m_apPlayers[ClientID]->GetAccount();
+	if (!acc) return;
+	acc->Payload()->blockScore+=Score;
+	pSelf->m_Rank.UpdateScore(acc);
+}
+
 void CGameContext::CreateLolText(CEntity *pParent, bool Follow, vec2 Pos, vec2 Vel, int Lifespan, const char *pText)
 {
 	CLoltext::Create(&m_World, pParent, Pos, Vel, Lifespan, pText, true, Follow);
@@ -1505,7 +1522,7 @@ void CGameContext::OnConsoleInit()
 	Console()->Register("tune_dump", "", CFGFLAG_SERVER, ConTuneDump, this, "Dump tuning");
 
 	Console()->Register("change_map", "?r", CFGFLAG_SERVER|CFGFLAG_STORE, ConChangeMap, this, "Change map");
-	Console()->Register("restart", "?i", CFGFLAG_SERVER|CFGFLAG_STORE, ConRestart, this, "Restart in x seconds");
+	Console()->Register("restart", "?i", CFGFLAG_SERVER|CFGFLAG_STORE, ConRestart, this, "Restart in x seconds (0 = abort)");
 	Console()->Register("broadcast", "r", CFGFLAG_SERVER, ConBroadcast, this, "Broadcast message");
 	Console()->Register("say", "r", CFGFLAG_SERVER, ConSay, this, "Say in chat");
 	Console()->Register("set_team", "ii?i", CFGFLAG_SERVER, ConSetTeam, this, "Set team of player to team");
@@ -1524,6 +1541,8 @@ void CGameContext::OnConsoleInit()
 	Console()->Register("mutes", "", CFGFLAG_SERVER, ConMutes, this, "");
 
 	Console()->Chain("sv_motd", ConchainSpecialMotdupdate, this);
+
+	Console()->Register("give", "ii", CFGFLAG_SERVER, ConGive, this, "");
 }
 
 void CGameContext::OnInit(/*class IKernel *pKernel*/)
@@ -1600,6 +1619,7 @@ void CGameContext::OnInit(/*class IKernel *pKernel*/)
 #endif
 	IChatCtl::Init(this);
  	CAccount::Init(AccVersion());
+	m_Rank.Init();
 }
 
 void CGameContext::OnShutdown()

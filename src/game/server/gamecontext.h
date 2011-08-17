@@ -16,7 +16,11 @@
 #include "account.h"
 #include "player.h"
 
+#include "gamemodes/rank.h"
+
 #define MAX_MUTES 32
+
+#include <stdint.h>
 
 /*
 	Tick
@@ -73,6 +77,8 @@ class CGameContext : public IGameServer
 	static void ConMutes(IConsole::IResult *pResult, void *pUserData);
 	static void ConchainSpecialMotdupdate(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData);
 
+	static void ConGive(IConsole::IResult *pResult, void *pUserData);
+
 	CGameContext(int Resetting);
 	void Construct(int Resetting);
 
@@ -96,6 +102,8 @@ public:
 
 	IGameController *m_pController;
 	CGameWorld m_World;
+
+	CRank m_Rank;
 
 	// helper functions
 	class CCharacter *GetPlayerChar(int ClientID);
@@ -134,7 +142,7 @@ public:
 	void CreateHammerHit(vec2 Pos);
 	void CreatePlayerSpawn(vec2 Pos);
 	void CreateDeath(vec2 Pos, int Who);
-	void CreateSound(vec2 Pos, int Sound, int Mask=-1);
+	void CreateSound(vec2 Pos, int Sound, int64_t Mask=-1);
 	void CreateSoundGlobal(int Sound, int Target=-1);
 
 
@@ -186,8 +194,8 @@ public:
 	virtual const char *AccVersion();
 };
 
-inline int CmaskAll() { return -1; }
-inline int CmaskOne(int ClientID) { return 1<<ClientID; }
-inline int CmaskAllExceptOne(int ClientID) { return 0x7fffffff^CmaskOne(ClientID); }
-inline bool CmaskIsSet(int Mask, int ClientID) { return (Mask&CmaskOne(ClientID)) != 0; }
+inline int64_t CmaskAll() { return -1LL; }
+inline int64_t CmaskOne(int ClientID) { return 1LL<<ClientID; }
+inline int64_t CmaskAllExceptOne(int ClientID) { return CmaskAll()^CmaskOne(ClientID); }
+inline bool CmaskIsSet(int64_t Mask, int ClientID) { return (Mask&CmaskOne(ClientID)) != 0; }
 #endif

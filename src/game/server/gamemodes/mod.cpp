@@ -5,6 +5,7 @@
 #include <engine/shared/config.h>
 
 #include "mod.h"
+#include "rank.h"
 
 #include <engine/shared/protocol.h>
 #include <engine/shared/config.h>
