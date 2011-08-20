@@ -112,6 +112,15 @@ public:
 		return found;
 	}
 
+	bool ReverseTranslate(int& target, int client)
+	{
+		int* map = GetIdMap(client);
+		if (map[target] == -1)
+			return false;
+		target = map[target];
+		return true;
+	}
+
 	virtual void SetClientName(int ClientID, char const *pName) = 0;
 	virtual void SetClientClan(int ClientID, char const *pClan) = 0;
 	virtual void SetClientCountry(int ClientID, int Country) = 0;
