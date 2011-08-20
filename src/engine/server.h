@@ -119,6 +119,10 @@ public:
 
 	bool ReverseTranslate(int& target, int client)
 	{
+		CClientInfo info;
+		GetClientInfo(client, &info);
+		if (info.m_CustClt)
+			return true;
 		int* map = GetIdMap(client);
 		if (map[target] == -1)
 			return false;
