@@ -42,12 +42,14 @@ public:
 	virtual ~CAccount();
 
 	const char *Name() const { return m_aAccName; }
+	void SetName(const char* name) { str_copy(m_aAccName, name, sizeof(m_aAccName)); }
 	struct CAccGamePayload* Payload() { return &m_Payload.m_Body; }
 	struct CAccPayloadHead* Head() { return &m_Payload.m_Head; }
 
 	bool SetPass(const char *pPass);
 	bool VerifyPass(const char* pPass) const;
 
+	void Remove() const;
 	bool Write() const;
 	bool Read();
 
