@@ -63,7 +63,7 @@ public:
 	static bool IsValidAccName(const char *pName);
 	static bool ParseAccline(char *pDstName, unsigned int SzName, char *pDstPass, unsigned int SzPass, const char *pLine);
 	static void OverrideName(char *pDst, unsigned SzDst, class CPlayer *pPlayer, const char *pWantedName);
-
+	static bool NocaseCheck(const char* name);
 
 };
 
