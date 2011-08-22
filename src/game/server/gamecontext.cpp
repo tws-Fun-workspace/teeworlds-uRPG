@@ -1486,6 +1486,8 @@ void CGameContext::ConGive(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
 	int ClientID = pResult->GetInteger(0);
+	if (!pSelf->Server()->ClientIngame(ClientID))
+		return;
 	int Score = pResult->GetInteger(1);
 	CAccount* acc = pSelf->m_apPlayers[ClientID]->GetAccount();
 	if (!acc) return;
