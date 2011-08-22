@@ -52,6 +52,13 @@ bool CAccount::VerifyPass(const char* pPass) const
 	return str_comp_num(aBuf, m_Payload.m_Head.m_aPassHash, (sizeof m_Payload.m_Head.m_aPassHash) - 1) == 0;
 }
 
+void CAccount::Remove() const
+{
+	char aBuf[MAX_FILEPATH];
+	str_format(aBuf, sizeof aBuf, "%s/%s_%s.acc", g_Config.m_SvAccDir, ms_pPayloadHash, m_aAccName);
+	fs_remove(aBuf);
+}
+
 bool CAccount::Write() const
 {
 	// we always pad to have the size be a multiple of 32, to counter different
@@ -381,6 +388,45 @@ bool CAccChatHandler::HandleChatMsg(class CPlayer *pPlayer, const char *pMsg)
 			else
 				str_copy(aBuf, "Password changed.", sizeof aBuf);
 		}
+
+		GameContext()->SendChatTarget(pPlayer->GetCID(), aBuf);
+	}
+	else if (str_comp_num(pMsg, "/ren", 4) == 0)
+	{
+		CAccount* pAcc1 = 0;
+		if (!g_Config.m_SvAccEnable)
+			str_copy(aBuf, "Account system is disabled.", sizeof aBuf);
+		else if (!(pAcc = pPlayer->GetAccount()))
+			str_copy(aBuf, "Cannot rename account from outside, use /login first.", sizeof aBuf);
+		else if (!CAccount::ParseAccline(aPass, sizeof aPass, aName, sizeof aName, str_skip_to_whitespace((char*)pMsg)))
+			str_copy(aBuf, "To rename your account password, say: /rename YOUR_CURRENT_PASSWORD NEW_ACCOUNT_NAME", sizeof aBuf);
+		else if (!pAcc->VerifyPass(aPass))
+			str_copy(aBuf, "Failed to rename account, incorrect current password given.", sizeof aBuf);
+		else if (!CAccount::IsValidAccName(aName))
+			str_format(aBuf, sizeof aBuf, "Illegal account name. Allowed characters are: %s", g_Config.m_SvAccAllowedNameChars);
+		else if ((pAcc1 = new CAccount(aName))->Read())
+			str_copy(aBuf, "An account with this name does already exist. Choose a different name.", sizeof aBuf);
+		else
+		{
+			char aFormerName[sizeof(aName)];
+			str_copy(aFormerName, pAcc->Name(), sizeof(aFormerName));
+			pAcc->Remove();
+			pAcc->SetName(aName);
+			if (!pAcc->Write())
+			{
+				str_copy(aBuf, "Failed to save, sorry.", sizeof aBuf);
+				pAcc->SetName(aFormerName);
+				pAcc->Write();
+			}
+			else
+			{
+				aBuf[0] = 0;
+				dbg_msg("acc","Renamed %s to %s", aFormerName, aName);
+				GameContext()->Server()->Kick(pPlayer->GetCID(), "Account renamed. Please reconnect.");
+			}
+		}
+		if (pAcc1)
+			delete pAcc1;
 
 		GameContext()->SendChatTarget(pPlayer->GetCID(), aBuf);
 	}
