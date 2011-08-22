@@ -93,6 +93,7 @@ MACRO_CONFIG_INT(SvAccEnforceNames, sv_acc_enforce_names, 0, 0, 1, CFGFLAG_SERVE
 MACRO_CONFIG_STR(SvAccMemberPrefix, sv_acc_member_prefix, 32, "", CFGFLAG_SERVER, "name prefix for logged-in players")
 MACRO_CONFIG_STR(SvAccGuestPrefix, sv_acc_guest_prefix, 32, "", CFGFLAG_SERVER, "name prefix for guests")
 MACRO_CONFIG_INT(SvAccAutoSave, sv_acc_auto_save, 1, 0, 1, CFGFLAG_SERVER, "save account on player disconnect?")
+MACRO_CONFIG_INT(SvAccNocase, sv_acc_nocase, 0, 0, 1, CFGFLAG_SERVER, "deny multiple accnames differing only in letter cases")
 
 MACRO_CONFIG_INT(Debug, debug, 0, 0, 1, CFGFLAG_CLIENT|CFGFLAG_SERVER, "Debug mode")
 MACRO_CONFIG_INT(DbgStress, dbg_stress, 0, 0, 0, CFGFLAG_CLIENT|CFGFLAG_SERVER, "Stress systems")

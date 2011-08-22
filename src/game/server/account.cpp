@@ -128,7 +128,7 @@ void CAccount::Init(const char *pPayloadHash)
 {
 	ms_pChatHnd = new CAccChatHandler;
 	IChatCtl::Register(ms_pChatHnd);
- 	CAccount::ms_pPayloadHash = pPayloadHash;
+	CAccount::ms_pPayloadHash = pPayloadHash;
 	if (!*g_Config.m_SvAccDir)
 		str_copy(g_Config.m_SvAccDir, ".", 2);
 
@@ -259,6 +259,8 @@ bool CAccChatHandler::HandleChatMsg(class CPlayer *pPlayer, const char *pMsg)
 			str_copy(aBuf, "The password must not contain any spaces.", sizeof aBuf);
 		else if (!CAccount::IsValidAccName(aName))
 			str_format(aBuf, sizeof aBuf, "Illegal account name. Allowed characters are: %s", g_Config.m_SvAccAllowedNameChars);
+		else if (g_Config.m_SvAccNocase && CAccount::NocaseCheck(aName))
+			str_copy(aBuf, "An account with similar name does already exist. Choose a different name.", sizeof aBuf);
 		else if ((pAcc = new CAccount(aName))->Read())
 			str_copy(aBuf, "An account with this name does already exist. Choose a different name.", sizeof aBuf);
 		else if (!pAcc->SetPass(aPass) || !pAcc->Write())
@@ -404,6 +406,8 @@ bool CAccChatHandler::HandleChatMsg(class CPlayer *pPlayer, const char *pMsg)
 			str_copy(aBuf, "Failed to rename account, incorrect current password given.", sizeof aBuf);
 		else if (!CAccount::IsValidAccName(aName))
 			str_format(aBuf, sizeof aBuf, "Illegal account name. Allowed characters are: %s", g_Config.m_SvAccAllowedNameChars);
+		else if (g_Config.m_SvAccNocase && CAccount::NocaseCheck(aName))
+			str_copy(aBuf, "An account with similar name does already exist. Choose a different name.", sizeof aBuf);
 		else if ((pAcc1 = new CAccount(aName))->Read())
 			str_copy(aBuf, "An account with this name does already exist. Choose a different name.", sizeof aBuf);
 		else
@@ -468,4 +472,26 @@ bool CAccChatHandler::HandleChatMsg(class CPlayer *pPlayer, const char *pMsg)
 		return false;
 
 	return true;
+}
+
+bool NocaseAccountCheckFound;
+
+int NocaseAccountCheckCallback(const char *name, int is_dir, int dir_type, void *user)
+{
+	if (is_dir) return 0;
+	if (!str_comp_nocase(name, (const char*)user))
+	{
+		NocaseAccountCheckFound = 1;
+		return 1;
+	}
+	return 0;
+}
+
+bool CAccount::NocaseCheck(const char* name)
+{
+	NocaseAccountCheckFound = 0;
+	char aBuf[MAX_FILEPATH];
+	str_format(aBuf, sizeof aBuf, "%s_%s.acc", ms_pPayloadHash, name);
+	fs_listdir(g_Config.m_SvAccDir, NocaseAccountCheckCallback, 0, aBuf);
+	return NocaseAccountCheckFound;
 }
