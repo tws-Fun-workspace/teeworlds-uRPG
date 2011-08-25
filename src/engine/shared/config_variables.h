@@ -25,6 +25,9 @@ MACRO_CONFIG_INT(ClAutoScreenshotMax, cl_auto_screenshot_max, 10, 0, 1000, CFGFL
 
 MACRO_CONFIG_INT(ClEventthread, cl_eventthread, 0, 0, 1, CFGFLAG_CLIENT, "Enables the usage of a thread to pump the events")
 
+MACRO_CONFIG_INT(ClSelAreaX , cl_sel_area_x, 1150, 0, 2000, CFGFLAG_CLIENT, "")
+MACRO_CONFIG_INT(ClSelAreaY , cl_sel_area_y, 930, 0, 2000, CFGFLAG_CLIENT, "")
+
 MACRO_CONFIG_INT(InpGrab, inp_grab, 0, 0, 1, CFGFLAG_SAVE|CFGFLAG_CLIENT, "Use forceful input grabbing method")
 
 MACRO_CONFIG_STR(BrFilterString, br_filter_string, 25, "", CFGFLAG_SAVE|CFGFLAG_CLIENT, "Server browser filtering string")

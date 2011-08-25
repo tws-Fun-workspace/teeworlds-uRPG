@@ -31,6 +31,7 @@
 #include "components/countryflags.h"
 #include "components/damageind.h"
 #include "components/debughud.h"
+#include "components/tag.h"
 #include "components/effects.h"
 #include "components/emoticon.h"
 #include "components/flow.h"
@@ -66,6 +67,7 @@ static CSkins gs_Skins;
 static CCountryFlags gs_CountryFlags;
 static CFlow gs_Flow;
 static CHud gs_Hud;
+static CTagSys gs_TagSys;
 static CDebugHud gs_DebugHud;
 static CControls gs_Controls;
 static CEffects gs_Effects;
@@ -116,6 +118,7 @@ void CGameClient::OnConsoleInit()
 	m_pCountryFlags = &::gs_CountryFlags;
 	m_pChat = &::gs_Chat;
 	m_pFlow = &::gs_Flow;
+	m_pTagSys = &::gs_TagSys;
 	m_pCamera = &::gs_Camera;
 	m_pControls = &::gs_Controls;
 	m_pEffects = &::gs_Effects;
@@ -145,6 +148,7 @@ void CGameClient::OnConsoleInit()
 	m_All.Add(m_pItems);
 	m_All.Add(&gs_Players);
 	m_All.Add(&gs_MapLayersForeGround);
+	m_All.Add(&gs_TagSys);
 	m_All.Add(&m_pParticles->m_RenderExplosions);
 	m_All.Add(&gs_NamePlates);
 	m_All.Add(&m_pParticles->m_RenderGeneral);

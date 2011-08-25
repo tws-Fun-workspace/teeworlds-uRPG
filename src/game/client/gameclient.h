@@ -231,6 +231,7 @@ public:
 	class CSkins *m_pSkins;
 	class CCountryFlags *m_pCountryFlags;
 	class CFlow *m_pFlow;
+	class CTagSys *m_pTagSys;
 	class CChat *m_pChat;
 	class CDamageInd *m_pDamageind;
 	class CCamera *m_pCamera;
