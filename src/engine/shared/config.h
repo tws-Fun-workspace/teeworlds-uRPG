@@ -5,11 +5,11 @@
 
 struct CConfiguration
 {
-	#define MACRO_CONFIG_INT(Name,ScriptName,Def,Min,Max,Save,Desc,Level) int m_##Name;
-	#define MACRO_CONFIG_STR(Name,ScriptName,Len,Def,Save,Desc,Level) char m_##Name[Len]; // Flawfinder: ignore
-	#include "config_variables.h" 
-	#undef MACRO_CONFIG_INT 
-	#undef MACRO_CONFIG_STR 
+	#define MACRO_CONFIG_INT(Name,ScriptName,Def,Min,Max,Save,Desc) int m_##Name;
+	#define MACRO_CONFIG_STR(Name,ScriptName,Len,Def,Save,Desc) char m_##Name[Len]; // Flawfinder: ignore
+	#include "config_variables.h"
+	#undef MACRO_CONFIG_INT
+	#undef MACRO_CONFIG_STR
 };
 
 extern CConfiguration g_Config;
@@ -22,7 +22,8 @@ enum
 	CFGFLAG_STORE=8,
 	CFGFLAG_MASTER=16,
 	// DDRace
-	CMDFLAG_TEST=32
+	CMDFLAG_TEST=32,
+	CFGFLAG_CHAT = 64
 };
 
 #endif
