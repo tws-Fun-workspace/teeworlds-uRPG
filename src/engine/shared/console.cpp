@@ -253,7 +253,7 @@ bool CConsole::LineIsValid(const char *pStr)
 	return true;
 }
 
-bool CConsole::ExecuteLineStroked(int Stroke, const char *pStr, int ClientID)
+void CConsole::ExecuteLineStroked(int Stroke, const char *pStr, int ClientID)
 {
 	while(pStr && *pStr)
 	{
@@ -287,10 +287,10 @@ bool CConsole::ExecuteLineStroked(int Stroke, const char *pStr, int ClientID)
 		}
 
 		if(ParseStart(&Result, pStr, (pEnd-pStr) + 1) != 0)
-			return false;
+			return;
 
 		if(!*Result.m_pCommand)
-			return false;
+			return;
 
 		CCommand *pCommand = FindCommand(Result.m_pCommand, m_FlagMask);
 
@@ -324,13 +324,14 @@ bool CConsole::ExecuteLineStroked(int Stroke, const char *pStr, int ClientID)
 					else
 					{
 						if(pCommand->m_Flags&CMDFLAG_TEST && !g_Config.m_SvTestingCommands)
-							return false;
+							return;
 						pCommand->m_pfnCallback(&Result, pCommand->m_pUserData);
-						if (pCommand->m_Flags&CMDFLAG_TEST) {
+						if (pCommand->m_Flags&CMDFLAG_TEST)
+						{
 							m_Cheated = true;
 							str_format(g_Config.m_SvBroadcast, sizeof(g_Config.m_SvBroadcast), "Cheated: No records will be saved");
 						}
-						return true;
+						return;
 					}
 				}
 			}
@@ -350,7 +351,6 @@ bool CConsole::ExecuteLineStroked(int Stroke, const char *pStr, int ClientID)
 
 		pStr = pNextPart;
 	}
-	return false;
 }
 
 void CConsole::PossibleCommands(const char *pStr, int FlagMask, bool Temp, FPossibleCallback pfnCallback, void *pUser)
@@ -379,12 +379,10 @@ CConsole::CCommand *CConsole::FindCommand(const char *pName, int FlagMask)
 	return 0x0;
 }
 
-bool CConsole::ExecuteLine(const char *pStr, int ClientID)
+void CConsole::ExecuteLine(const char *pStr, int ClientID)
 {
-	bool Press = false, Release = false;
-	Press = CConsole::ExecuteLineStroked(1, pStr, ClientID); // press it
-	Release = CConsole::ExecuteLineStroked(0, pStr, ClientID); // then release it
-	return Press || Release;
+	CConsole::ExecuteLineStroked(1, pStr, ClientID); // press it
+	CConsole::ExecuteLineStroked(0, pStr, ClientID); // then release it
 }
 
 

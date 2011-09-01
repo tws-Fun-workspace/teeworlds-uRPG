@@ -996,9 +996,7 @@ CGameTeams* CCharacter::Teams()
 
 void CCharacter::HandleBroadcast()
 {
-	char aBroadcast[128];
 	m_Time = (float)(Server()->Tick() - m_StartTime) / ((float)Server()->TickSpeed());
-	CPlayerData *pData = GameServer()->Score()->PlayerData(m_pPlayer->GetCID());
 
 	if(Server()->Tick() - m_RefreshTime >= Server()->TickSpeed())
 	{
@@ -1025,7 +1023,7 @@ void CCharacter::HandleSkippableTiles(int Index)
 			GameServer()->Collision()->GetFCollisionAt(m_Pos.x-m_ProximityRadius/3.f, m_Pos.y-m_ProximityRadius/3.f)&CCollision::COLFLAG_DEATH ||
 			GameServer()->Collision()->GetCollisionAt(m_Pos.x-m_ProximityRadius/3.f, m_Pos.y+m_ProximityRadius/3.f)&CCollision::COLFLAG_DEATH ||
 			GameLayerClipped(m_Pos)) &&
-			!m_Super)
+			!m_Super && !(Team() && Teams()->TeeFinished(m_pPlayer->GetCID())))
 		{
 			Die(m_pPlayer->GetCID(), WEAPON_WORLD);
 			return;
