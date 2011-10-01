@@ -797,7 +797,7 @@ void CGameContext::ConBlood(IConsole::IResult *pResult, void *pUserData)
 	int Victim = pResult->GetInteger(0);
 
 	CGameContext *pSelf = (CGameContext *)pUserData;
-	CPlayer *pPlayer = pSelf->m_apPlayers[pResult->m_ClientID];
+	CPlayer *pPlayer = pSelf->m_apPlayers[Victim];
 	if(!pPlayer)
 		return;
 

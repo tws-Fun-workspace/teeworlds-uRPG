@@ -447,14 +447,19 @@ void CConsole::ConModCommandAccess(IResult *pResult, void *pUser)
 	{
 		if(pResult->NumArguments() == 2)
 		{
-			pCommand->SetAccessLevel(pResult->GetInteger(1));
+			pCommand->SetAccessLevel(pResult->GetInteger(1) == 0 ? ACCESS_LEVEL_USER : pResult->GetInteger(1) == 1 ? ACCESS_LEVEL_HELPER : pResult->GetInteger(1) == 2 ? ACCESS_LEVEL_MOD : ACCESS_LEVEL_ADMIN);
+
 			str_format(aBuf, sizeof(aBuf), "moderator access for '%s' is now %s", pResult->GetString(0), pCommand->GetAccessLevel() ? "enabled" : "disabled");
+			pConsole->Print(OUTPUT_LEVEL_STANDARD, "Console", aBuf);
+			str_format(aBuf, sizeof(aBuf), "helper access for '%s' is now %s", pResult->GetString(0), pCommand->GetAccessLevel() >= ACCESS_LEVEL_HELPER ? "enabled" : "disabled");
 			pConsole->Print(OUTPUT_LEVEL_STANDARD, "Console", aBuf);
 			str_format(aBuf, sizeof(aBuf), "user access for '%s' is now %s", pResult->GetString(0), pCommand->GetAccessLevel() >= ACCESS_LEVEL_USER ? "enabled" : "disabled");
 		}
 		else
 		{
 			str_format(aBuf, sizeof(aBuf), "moderator access for '%s' is %s", pResult->GetString(0), pCommand->GetAccessLevel() ? "enabled" : "disabled");
+			pConsole->Print(OUTPUT_LEVEL_STANDARD, "Console", aBuf);
+			str_format(aBuf, sizeof(aBuf), "helper access for '%s' is %s", pResult->GetString(0), pCommand->GetAccessLevel() >= ACCESS_LEVEL_HELPER ? "enabled" : "disabled");
 			pConsole->Print(OUTPUT_LEVEL_STANDARD, "Console", aBuf);
 			str_format(aBuf, sizeof(aBuf), "user access for '%s' is %s", pResult->GetString(0), pCommand->GetAccessLevel() >= ACCESS_LEVEL_USER ? "enabled" : "disabled");
 		}
@@ -598,7 +603,7 @@ CConsole::CConsole(int FlagMask)
 	Register("echo", "r", CFGFLAG_SERVER|CFGFLAG_CLIENT, Con_Echo, this, "Echo the text");
 	Register("exec", "r", CFGFLAG_SERVER|CFGFLAG_CLIENT, Con_Exec, this, "Execute the specified file");
 
-	Register("mod_command", "s?i", CFGFLAG_SERVER, ConModCommandAccess, this, "Specify command accessibility for moderators");
+	Register("level_command", "s?i", CFGFLAG_SERVER, ConModCommandAccess, this, "Specify command accessibility");
 	Register("mod_status", "", CFGFLAG_SERVER, ConModCommandStatus, this, "List all commands which are accessible for moderators");
 	Register("user_status", "", CFGFLAG_SERVER, ConUserCommandStatus, this, "List all commands which are accessible for users");
 	Register("cmdlist", "", CFGFLAG_SERVER|CFGFLAG_CHAT, ConUserCommandStatus, this, "List all commands which are accessible for users");
