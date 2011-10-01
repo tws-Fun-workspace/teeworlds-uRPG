@@ -45,6 +45,7 @@ public:
 
 	void OnPredictedInput(CNetObj_PlayerInput *pNewInput);
 	void OnDirectInput(CNetObj_PlayerInput *pNewInput);
+	void ResetInput();
 	void FireWeapon();
 
 	void Die(int Killer, int Weapon);
@@ -188,7 +189,6 @@ public:
 	int m_CpTick;
 	int m_CpActive;
 	float m_CpCurrent[25];
-	bool m_BroadCast;
 	int m_TileIndex;
 	int m_TileFlags;
 	int m_TileFIndex;

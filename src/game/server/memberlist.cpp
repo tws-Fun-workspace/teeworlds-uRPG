@@ -1,13 +1,15 @@
 /* (c) XXLTomate (xxltomate@v93.eu) -- MemberList */
 
+#include "gamecontext.h"
+#include "memberlist.h"
 #include <base/tl/sorted_array.h>
 #include <engine/shared/config.h>
 #include <engine/external/md5/md5.h>
-#include "gamecontext.h"
-#include "memberlist.h"
+#include <engine/server/server.h>
 #include <string.h>
 #include <sstream>
 #include <fstream>
+
 
 static LOCK gs_MemberLock = 0;
 
@@ -22,10 +24,10 @@ CMemberList::CPlayerMember::CPlayerMember(const char *pName, const char *pPass, 
 {
 	str_copy(m_aName, pName, sizeof(m_aName));
 	str_copy(m_aPass, pPass, sizeof(m_aPass));
-	m_AuthLvl = clamp(AuthLvl, -1, 4);
+	m_AuthLvl = clamp(AuthLvl, -1, 3); //TODO: XXLTomate: AUTHED_ADMIN
 }
 
-CMemberList::CMemberList(CGameContext *pGameServer) : m_pGameServer(pGameServer), m_pServer(pGameServer->Server())
+CMemberList::CMemberList(CGameContext *pGameServer) : m_pGameServer(pGameServer), m_pServer((CServer*)pGameServer->Server())
 {
 	if(gs_MemberLock == 0)
 		gs_MemberLock = lock_create();
@@ -133,7 +135,7 @@ void CMemberList::UpdatePlayer(int ClientID, const char* pPass, int AuthLvl)
 
 	if(pPlayer)
 	{
-		pPlayer->m_AuthLvl = clamp(AuthLvl, -1, 4);
+		pPlayer->m_AuthLvl = clamp(AuthLvl, -1, (int)m_pServer->AUTHED_ADMIN);
 		str_copy(pPlayer->m_aName, pName, sizeof(pPlayer->m_aName));
 		str_copy(pPlayer->m_aPass, pPass, sizeof(pPlayer->m_aPass));
 
@@ -159,7 +161,7 @@ void CMemberList::LoadMember(int ClientID, CGameContext *pSelf)
 		Save();
 
 		// set Level
-		if (pPlayer->m_AuthLvl > IConsole::CONSOLELEVEL_USER)
+		if (pPlayer->m_AuthLvl > m_pServer->AUTHED_NO)
 		{
 			char buf[128]="Authentication successful. Remote console access granted for ClientID=%d with level=%d";
 			pSelf->Server()->SetRconLevel(ClientID,pPlayer->m_AuthLvl);
@@ -210,7 +212,7 @@ void CMemberList::Register(IConsole::IResult *pResult, int ClientID, const char*
 	else
 		str_format(aBuf, sizeof(aBuf), "%s is already a registered name.", pSelf->Server()->ClientName(ClientID));
 
-	pResult->Print(IConsole::OUTPUT_LEVEL_STANDARD, "member", aBuf);
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "member", aBuf);
 }
 
 void CMemberList::Login(IConsole::IResult *pResult, int ClientID, const char* pPass, CGameContext *pSelf)
@@ -220,7 +222,7 @@ void CMemberList::Login(IConsole::IResult *pResult, int ClientID, const char* pP
 
 	if (!pPlayer)
 		str_format(aBuf, sizeof(aBuf), "You are not registered, type /register <pass> first.");
-	else if(pPlayer->m_AuthLvl < pSelf->m_apPlayers[ClientID]->m_Authed && pSelf->m_apPlayers[ClientID]->m_Authed > IConsole::CONSOLELEVEL_USER)
+	else if(pPlayer->m_AuthLvl < pSelf->m_apPlayers[ClientID]->m_Authed && pSelf->m_apPlayers[ClientID]->m_Authed > m_pServer->AUTHED_NO)
 	{
 		pPlayer->m_AuthLvl = pSelf->m_apPlayers[ClientID]->m_Authed;
 		pSelf->m_apPlayers[ClientID]->m_IsMember = true;
@@ -242,7 +244,7 @@ void CMemberList::Login(IConsole::IResult *pResult, int ClientID, const char* pP
 		else
 			str_format(aBuf, sizeof(aBuf), "Wrong password.");
 	}
-	pResult->Print(IConsole::OUTPUT_LEVEL_STANDARD, "member", aBuf);
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "member", aBuf);
 }
 
 void CMemberList::Member(int ClientID, CGameContext *pSelf)
@@ -285,7 +287,7 @@ void CMemberList::UnMember(int ClientID, CGameContext *pSelf)
 		else
 		{
 			str_format(aBuf, sizeof(aBuf), "%s is NOW unmembered.", pSelf->Server()->ClientName(ClientID));
-			pPlayer->m_AuthLvl = IConsole::CONSOLELEVEL_USER;
+			pPlayer->m_AuthLvl = m_pServer->AUTHED_NO;
 			pSelf->m_apPlayers[ClientID]->m_IsMember = false;
 			SaveList(ClientID, pPlayer->m_aPass , pSelf, true);
 		}

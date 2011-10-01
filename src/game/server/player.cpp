@@ -27,6 +27,7 @@ CPlayer::CPlayer(CGameContext *pGameServer, int ClientID, int Team)
 	m_Team = GameServer()->m_pController->ClampTeam(Team);
 	m_SpectatorID = SPEC_FREEVIEW;
 	m_LastActionTick = Server()->Tick();
+	m_TeamChangeTick = Server()->Tick();
 
 	// DDRace
 
@@ -101,6 +102,9 @@ void CPlayer::Tick()
 			m_Latency.m_AccumMax = 0;
 		}
 	}
+
+	if(!m_pCharacter && m_Team == TEAM_SPECTATORS && m_SpectatorID == SPEC_FREEVIEW)
+		m_ViewPos -= vec2(clamp(m_ViewPos.x-m_LatestActivity.m_TargetX, -500.0f, 500.0f), clamp(m_ViewPos.y-m_LatestActivity.m_TargetY, -400.0f, 400.0f));
 
 	if(!m_pCharacter && m_DieTick+Server()->TickSpeed()*3 <= Server()->Tick())
 		m_Spawning = true;
@@ -232,9 +236,21 @@ void CPlayer::OnPredictedInput(CNetObj_PlayerInput *NewInput)
 
 void CPlayer::OnDirectInput(CNetObj_PlayerInput *NewInput)
 {
+	if (AfkTimer(NewInput->m_TargetX, NewInput->m_TargetY))
+		return; // we must return if kicked, as player struct is already deleted
+	if(NewInput->m_PlayerFlags&PLAYERFLAG_CHATTING)
+	{
 	// skip the input if chat is active
-	if((m_PlayerFlags&PLAYERFLAG_CHATTING) && (NewInput->m_PlayerFlags&PLAYERFLAG_CHATTING))
+		if(m_PlayerFlags&PLAYERFLAG_CHATTING)
 		return;
+
+		// reset input
+		if(m_pCharacter)
+			m_pCharacter->ResetInput();
+
+	m_PlayerFlags = NewInput->m_PlayerFlags;
+ 		return;
+	}
 
 	m_PlayerFlags = NewInput->m_PlayerFlags;
 
@@ -244,10 +260,6 @@ void CPlayer::OnDirectInput(CNetObj_PlayerInput *NewInput)
 	if(!m_pCharacter && m_Team != TEAM_SPECTATORS && (NewInput->m_Fire&1))
 		m_Spawning = true;
 
-	if(!m_pCharacter && m_Team == TEAM_SPECTATORS && m_SpectatorID == SPEC_FREEVIEW)
-		m_ViewPos = vec2(NewInput->m_TargetX, NewInput->m_TargetY);
-	if (AfkTimer(NewInput->m_TargetX, NewInput->m_TargetY))
-		return; // we must return if kicked, as player struct is already deleted
 	// check for activity
 	if(NewInput->m_Direction || m_LatestActivity.m_TargetX != NewInput->m_TargetX ||
 		m_LatestActivity.m_TargetY != NewInput->m_TargetY || NewInput->m_Jump ||
@@ -308,8 +320,8 @@ void CPlayer::SetTeam(int Team)
 	m_LastActionTick = Server()->Tick();
 	// we got to wait 0.5 secs before respawning
 	m_RespawnTick = Server()->Tick()+Server()->TickSpeed()/2;
-	//str_format(aBuf, sizeof(aBuf), "team_join player='%d:%s' m_Team=%d", m_ClientID, Server()->ClientName(m_ClientID), m_Team);
-	//GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
+	str_format(aBuf, sizeof(aBuf), "team_join player='%d:%s' m_Team=%d", m_ClientID, Server()->ClientName(m_ClientID), m_Team);
+	GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
 
 	//GameServer()->m_pController->OnPlayerInfoChange(GameServer()->m_apPlayers[m_ClientID]);
 
@@ -330,20 +342,20 @@ void CPlayer::TryRespawn()
 	{
 		m_pCharacter = new(m_ClientID) CCharacter(&GameServer()->m_World);
 		m_pCharacter->Spawn(this, m_PauseInfo.m_Core.m_Pos);
-		GameServer()->CreatePlayerSpawn(m_PauseInfo.m_Core.m_Pos, ((CGameControllerDDRace*)GameServer()->m_pController)->m_Teams.TeamMask((m_PauseInfo.m_Team > 0 && m_PauseInfo.m_Team < TEAM_SUPER) ? m_PauseInfo.m_Team : 0));
+		GameServer()->CreatePlayerSpawn(m_PauseInfo.m_Core.m_Pos, ((CGameControllerDDRace*)GameServer()->m_pController)->m_Teams.TeamMask((m_PauseInfo.m_Team > 0 && m_PauseInfo.m_Team < TEAM_SUPER) ? m_PauseInfo.m_Team : 0, -1, m_ClientID));
 		LoadCharacter();
 	}
 	else
 	{
-		vec2 SpawnPos;
+	vec2 SpawnPos;
 
-		if(!GameServer()->m_pController->CanSpawn(m_Team, &SpawnPos))
-			return;
+	if(!GameServer()->m_pController->CanSpawn(m_Team, &SpawnPos))
+		return;
 
-		m_Spawning = false;
-		m_pCharacter = new(m_ClientID) CCharacter(&GameServer()->m_World);
-		m_pCharacter->Spawn(this, SpawnPos);
-		GameServer()->CreatePlayerSpawn(SpawnPos);
+	m_Spawning = false;
+	m_pCharacter = new(m_ClientID) CCharacter(&GameServer()->m_World);
+	m_pCharacter->Spawn(this, SpawnPos);
+	GameServer()->CreatePlayerSpawn(SpawnPos);
 	}
 }
 
@@ -379,6 +391,7 @@ void CPlayer::LoadCharacter()
 	m_pCharacter->m_TeleCheckpoint = m_PauseInfo.m_TeleCheckpoint;
 	m_pCharacter->m_CpActive = m_PauseInfo.m_CpActive;
 	m_pCharacter->m_Hit = m_PauseInfo.m_Hit;
+	m_pCharacter->Teams()->m_Core.SetSolo(m_ClientID, m_PauseInfo.m_Solo);
 	for(int i = 0; i < NUM_CHECKPOINTS; i++)
 		m_pCharacter->m_CpCurrent[i] = m_PauseInfo.m_CpCurrent[i];
 	((CGameControllerDDRace*)GameServer()->m_pController)->m_Teams.m_Core.Team(GetCID(), m_PauseInfo.m_Team);
@@ -417,6 +430,7 @@ void CPlayer::SaveCharacter()
 	m_PauseInfo.m_TeleCheckpoint = m_pCharacter->m_TeleCheckpoint;
 	m_PauseInfo.m_CpActive = m_pCharacter->m_CpActive;
 	m_PauseInfo.m_Hit = m_pCharacter->m_Hit;
+	m_PauseInfo.m_Solo = m_pCharacter->Teams()->m_Core.GetSolo(m_ClientID);
 	for(int i = 0; i < NUM_CHECKPOINTS; i++)
 		m_PauseInfo.m_CpCurrent[i] = m_pCharacter->m_CpCurrent[i];
 	//m_PauseInfo.m_RefreshTime = m_pCharacter->m_RefreshTime;

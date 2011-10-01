@@ -5,12 +5,13 @@
 
 #include "gamecontext.h"
 #include <base/tl/sorted_array.h>
+#include <engine/server/server.h>
 
 class CMemberList
 {
 private:
 	CGameContext *m_pGameServer;
-	IServer *m_pServer;
+	CServer *m_pServer;
 
 	class CPlayerMember
 	{

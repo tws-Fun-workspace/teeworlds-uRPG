@@ -220,8 +220,6 @@ void CGhost::RenderGhostHook(CGhostCharacter Player, CGhostCharacter Prev)
 	
 	float IntraTick = Client()->PredIntraGameTick();
 
-	float Angle = mix((float)Prev.m_Angle, (float)Player.m_Angle, IntraTick)/256.0f;
-	vec2 Direction = GetDirection((int)(Angle*256.0f));
 	vec2 Pos = mix(vec2(Prev.m_X, Prev.m_Y), vec2(Player.m_X, Player.m_Y), IntraTick);
 
 	vec2 HookPos = mix(vec2(Prev.m_HookX, Prev.m_HookY), vec2(Player.m_HookX, Player.m_HookY), IntraTick);
@@ -521,14 +519,14 @@ void CGhost::Unload(int ID)
 	m_lGhosts.remove_fast(Item);
 }
 
-void CGhost::ConGPlay(IConsole::IResult *pResult, void *pUserData, int ClientID)
+void CGhost::ConGPlay(IConsole::IResult *pResult, void *pUserData)
 {
 	((CGhost *)pUserData)->StartRender();
 }
 
 void CGhost::OnConsoleInit()
 {
-	Console()->Register("gplay","", CFGFLAG_CLIENT, ConGPlay, this, "", IConsole::CONSOLELEVEL_USER);
+	Console()->Register("gplay", "", CFGFLAG_CLIENT, ConGPlay, this, "");
 }
 
 void CGhost::OnMessage(int MsgType, void *pRawMsg)

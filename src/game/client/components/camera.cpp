@@ -68,13 +68,13 @@ void CCamera::OnRender()
 
 void CCamera::OnConsoleInit()
 {
-	Console()->Register("zoom+", "", CFGFLAG_CLIENT, ConZoomPlus, this, "Zoom increase", IConsole::CONSOLELEVEL_USER);
-	Console()->Register("zoom-", "", CFGFLAG_CLIENT, ConZoomMinus, this, "Zoom decrease", IConsole::CONSOLELEVEL_USER);
-	Console()->Register("zoom", "", CFGFLAG_CLIENT, ConZoomReset, this, "Zoom reset", IConsole::CONSOLELEVEL_USER);
+	Console()->Register("zoom+", "", CFGFLAG_CLIENT, ConZoomPlus, this, "Zoom increase");
+	Console()->Register("zoom-", "", CFGFLAG_CLIENT, ConZoomMinus, this, "Zoom decrease");
+	Console()->Register("zoom", "", CFGFLAG_CLIENT, ConZoomReset, this, "Zoom reset");
 }
 
 const float ZoomStep = 0.75f;
-void CCamera::ConZoomPlus(IConsole::IResult *pResult, void *pUserData, int ClientID)
+void CCamera::ConZoomPlus(IConsole::IResult *pResult, void *pUserData)
 {
 	CCamera *pSelf = (CCamera *)pUserData;
 	CServerInfo Info;
@@ -82,7 +82,7 @@ void CCamera::ConZoomPlus(IConsole::IResult *pResult, void *pUserData, int Clien
 	if(g_Config.m_ClDDRaceCheats == 1 && str_find_nocase(Info.m_aGameType, "race"))
 		((CCamera *)pUserData)->m_Zoom *= ZoomStep;
 }
-void CCamera::ConZoomMinus(IConsole::IResult *pResult, void *pUserData, int ClientID)
+void CCamera::ConZoomMinus(IConsole::IResult *pResult, void *pUserData)
 {
 	CCamera *pSelf = (CCamera *)pUserData;
 	CServerInfo Info;
@@ -90,7 +90,7 @@ void CCamera::ConZoomMinus(IConsole::IResult *pResult, void *pUserData, int Clie
 	if(g_Config.m_ClDDRaceCheats == 1 && str_find_nocase(Info.m_aGameType, "race"))
 		((CCamera *)pUserData)->m_Zoom *= 1/ZoomStep;
 }
-void CCamera::ConZoomReset(IConsole::IResult *pResult, void *pUserData, int ClientID)
+void CCamera::ConZoomReset(IConsole::IResult *pResult, void *pUserData)
 {
 	CCamera *pSelf = (CCamera *)pUserData;
 	CServerInfo Info;
