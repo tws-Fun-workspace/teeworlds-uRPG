@@ -716,6 +716,8 @@ void IGameController::Tick()
 		}
 	}
 
+	//DoWincheck();
+	
 	// logout inactive players
 	if(g_Config.m_SvInactiveLogoutTime > 0)
 	{

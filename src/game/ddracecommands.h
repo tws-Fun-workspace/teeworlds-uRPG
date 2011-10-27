@@ -64,7 +64,11 @@ CONSOLE_COMMAND("vis", "i", CFGFLAG_SERVER|CMDFLAG_TEST, ConVis, this, "Makes pl
 CONSOLE_COMMAND("unfreeze", "i", CFGFLAG_SERVER|CMDFLAG_TEST, ConUnFreeze, this, "Unfreezes player v")
 CONSOLE_COMMAND("freeze", "i?i", CFGFLAG_SERVER|CMDFLAG_TEST, ConFreeze, this, "Freezes player v for i seconds (infinite by default)")
 
-
+CONSOLE_COMMAND("mute", "", CFGFLAG_SERVER, ConMute, this, "");
+CONSOLE_COMMAND("muteid", "ii", CFGFLAG_SERVER, ConMuteID, this, "");
+CONSOLE_COMMAND("muteip", "si", CFGFLAG_SERVER, ConMuteIP, this, "");
+CONSOLE_COMMAND("unmute", "i", CFGFLAG_SERVER, ConUnmute, this, "");
+CONSOLE_COMMAND("mutes", "", CFGFLAG_SERVER, ConMutes, this, "");
 #undef CONSOLE_COMMAND
 
 #endif
