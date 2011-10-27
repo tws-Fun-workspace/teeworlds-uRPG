@@ -212,7 +212,7 @@ MACRO_CONFIG_INT(GfxFullClear, gfx_full_clear, 0, 0, 1, CFGFLAG_SAVE|CFGFLAG_CLI
 MACRO_CONFIG_INT(GfxMiniTees, gfx_mini_tees, 0, 0, 1, CFGFLAG_SAVE|CFGFLAG_CLIENT, "Cute!!!! Minitees")
 
 //XXLmod server:
-//MACRO_CONFIG_STR(SvRconPasswordSAdmin, sv_sadmin_pass, 32, "", CFGFLAG_SERVER, "Remote console super administrator password")
+MACRO_CONFIG_STR(SvRconSubAdminPassword, sv_rcon_subadmin_pass, 32, "", CFGFLAG_SERVER, "Remote console subadministrator password")
 MACRO_CONFIG_STR(SvRconHelperPassword, sv_rcon_helper_password, 32, "", CFGFLAG_SERVER, "Remote console password for helpers (limited access)")
 MACRO_CONFIG_INT(SvDmgBlood, sv_dmg_blood, 0, 0, 1, CFGFLAG_SERVER, "Turns blood on damage on/off")
 MACRO_CONFIG_INT(SvRescue, sv_rescue, 0, 0, 1, CFGFLAG_SERVER, "Turns rescue /r on/off")
