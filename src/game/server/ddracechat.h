@@ -24,8 +24,8 @@ CHAT_COMMAND("showothers", "?i", CFGFLAG_CHAT|CFGFLAG_SERVER, ConShowOthers, thi
 CHAT_COMMAND("rescue", "", CFGFLAG_CHAT|CFGFLAG_SERVER, ConRescue, this, "Rescue from freeze")
 CHAT_COMMAND("r", "", CFGFLAG_CHAT|CFGFLAG_SERVER, ConRescue, this, "Rescue from freeze")
 CHAT_COMMAND("jumps", "", CFGFLAG_CHAT|CFGFLAG_SERVER, ConJumps, this, "Shows your jumps")
-CHAT_COMMAND("register", "r", CFGFLAG_CHAT|CFGFLAG_SERVER, ConRegister, this, "Rescue from freeze")
-CHAT_COMMAND("login", "r", CFGFLAG_CHAT|CFGFLAG_SERVER, ConLogin, this, "Rescue from freeze")
+CHAT_COMMAND("register", "r", CFGFLAG_CHAT|CFGFLAG_SERVER, ConRegister, this, "Register to memberlist")
+CHAT_COMMAND("login", "r", CFGFLAG_CHAT|CFGFLAG_SERVER, ConLogin, this, "Login to memberlist")
 CHAT_COMMAND("helper", "?i", CFGFLAG_CHAT|CFGFLAG_SERVER, ConHelper, this, "Calls a helper./Authenticates player v to the level of 1")
 
 #if defined(CONF_SQL)

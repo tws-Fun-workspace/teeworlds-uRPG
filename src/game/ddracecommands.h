@@ -39,10 +39,8 @@ CONSOLE_COMMAND("mutes", "", CFGFLAG_SERVER, ConMutes, this, "");
 
 //jDDRace
 CONSOLE_COMMAND("setjumps", "ii", CFGFLAG_SERVER|CMDFLAG_TEST, ConSetJumps, this, "Gives player v i jumps")
-//XXLDDRace TODO: remove crap like score/rename
 CONSOLE_COMMAND("skin", "is", CFGFLAG_SERVER|CMDFLAG_TEST, ConSkin, this, "Changes the skin from i in s")
 CONSOLE_COMMAND("rename", "ir", CFGFLAG_SERVER|CMDFLAG_TEST, ConRename, this, "Renames i name to s")
-//CONSOLE_COMMAND("orgname", "v", CFGFLAG_SERVER, ConOrgname, this, "Renames i back to his orginal name", IConsole::CONSOLELEVEL_CONFIG) //not working
 CONSOLE_COMMAND("xxl", "i", CFGFLAG_SERVER|CMDFLAG_TEST, ConFastReload, this, "Fast reload :-)")
 CONSOLE_COMMAND("rainbow", "i?i", CFGFLAG_SERVER|CMDFLAG_TEST, ConRainbow, this, "Colorchange the tee i like a rainbow")
 CONSOLE_COMMAND("whisper", "ir", CFGFLAG_SERVER, ConWhisper, this, "Whispers r to player v")
@@ -63,12 +61,6 @@ CONSOLE_COMMAND("invis", "i", CFGFLAG_SERVER|CMDFLAG_TEST, ConInvis, this, "Make
 CONSOLE_COMMAND("vis", "i", CFGFLAG_SERVER|CMDFLAG_TEST, ConVis, this, "Makes player v visible again")
 CONSOLE_COMMAND("unfreeze", "i", CFGFLAG_SERVER|CMDFLAG_TEST, ConUnFreeze, this, "Unfreezes player v")
 CONSOLE_COMMAND("freeze", "i?i", CFGFLAG_SERVER|CMDFLAG_TEST, ConFreeze, this, "Freezes player v for i seconds (infinite by default)")
-
-CONSOLE_COMMAND("mute", "", CFGFLAG_SERVER, ConMute, this, "");
-CONSOLE_COMMAND("muteid", "ii", CFGFLAG_SERVER, ConMuteID, this, "");
-CONSOLE_COMMAND("muteip", "si", CFGFLAG_SERVER, ConMuteIP, this, "");
-CONSOLE_COMMAND("unmute", "i", CFGFLAG_SERVER, ConUnmute, this, "");
-CONSOLE_COMMAND("mutes", "", CFGFLAG_SERVER, ConMutes, this, "");
 #undef CONSOLE_COMMAND
 
 #endif
