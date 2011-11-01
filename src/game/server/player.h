@@ -139,6 +139,7 @@ public:
 		int m_CpActive;
 		float m_CpCurrent[25];
 		int m_Hit;
+		bool m_Solo;
 	} m_PauseInfo;
 	int m_ForcePauseTime;
 	bool m_InfoSaved;
@@ -160,6 +161,9 @@ public:
 	int m_Sent1stAfkWarning; // afk timer's 1st warning after 50% of sv_max_afk_time
 	int m_Sent2ndAfkWarning; // afk timer's 2nd warning after 90% of sv_max_afk_time
 	char m_pAfkMsg[160];
+#if defined(CONF_SQL)
+	int64 m_LastSQLQuery;
+#endif
 };
 
 #endif
