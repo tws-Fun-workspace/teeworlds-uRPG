@@ -815,7 +815,7 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 						SendChatTarget(ClientID, "Invalid option");
 						return;
 					}
-					if(!m_apPlayers[ClientID]->m_Authed && strncmp(pOption->m_aCommand, "sv_map ", 7) == 0 && time_get() < LastMapVote + (time_freq() * g_Config.m_SvVoteMapTimeDelay))
+					if(!m_apPlayers[ClientID]->m_Authed && (strncmp(pOption->m_aCommand, "sv_map ", 7) == 0 || strncmp(pOption->m_aCommand, "change_map ", 11) == 0) && time_get() < LastMapVote + (time_freq() * g_Config.m_SvVoteMapTimeDelay))
 					{
 						char chatmsg[512] = {0};
 						str_format(chatmsg, sizeof(chatmsg), "There's a %d second delay between map-votes,Please wait %d Second(s)", g_Config.m_SvVoteMapTimeDelay,((LastMapVote+(g_Config.m_SvVoteMapTimeDelay * time_freq()))/time_freq())-(time_get()/time_freq()));
@@ -1691,10 +1691,25 @@ void CGameContext::OnInit(/*class IKernel *pKernel*/)
 	//players = new CPlayer[MAX_CLIENTS];
 
 	// Reset Tuning
-	ResetTuning();
-	g_Config.m_SvHit = 1;
-	g_Config.m_SvEndlessDrag = 0;
-	g_Config.m_SvOldLaser = 0;
+	if(g_Config.m_SvTuneReset)
+	{
+		ResetTuning();
+	}
+	else
+	{
+		Tuning()->Set("gun_speed", 1400);
+		Tuning()->Set("gun_curvature", 0);
+		Tuning()->Set("shotgun_speed", 500);
+		Tuning()->Set("shotgun_speeddiff", 0);
+		Tuning()->Set("shotgun_curvature", 0);
+	}
+
+	if(g_Config.m_SvDDRaceTuneReset)
+	{
+		g_Config.m_SvHit = 1;
+		g_Config.m_SvEndlessDrag = 0;
+		g_Config.m_SvOldLaser = 0;
+	}
 
 	char buf[512];
 	str_format(buf, sizeof(buf), "data/maps/%s.cfg", g_Config.m_SvMap);
@@ -1974,6 +1989,8 @@ void CGameContext::SendRecord(int ClientID)
 
 int CGameContext::ProcessSpamProtection(int ClientID)
 {
+	if(!m_apPlayers[ClientID])
+		return 0;
 	if(g_Config.m_SvSpamprotection && m_apPlayers[ClientID]->m_LastChat
 		&& m_apPlayers[ClientID]->m_LastChat + Server()->TickSpeed() * g_Config.m_SvChatDelay > Server()->Tick())
 		return 1;
