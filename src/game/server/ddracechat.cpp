@@ -583,8 +583,6 @@ void CGameContext::ConRescue(IConsole::IResult *pResult, void *pUserData)
 				//Teleport player
 				pChr->Core()->m_Pos = pChr->m_RescuePos;
 			}
-			//str_format(aBuf, sizeof(aBuf), "HookedPlayer: %d",pChr->Core()->m_HookedPlayer );
-			//pSelf->SendChatTarget(ClientID, aBuf);
 		}
 		else
 		{
