@@ -37,7 +37,7 @@ CONSOLE_COMMAND("muteip", "si", CFGFLAG_SERVER, ConMuteIP, this, "");
 CONSOLE_COMMAND("unmute", "v", CFGFLAG_SERVER, ConUnmute, this, "");
 CONSOLE_COMMAND("mutes", "", CFGFLAG_SERVER, ConMutes, this, "");
 
-//jDDRace
+// XXLDDRace
 CONSOLE_COMMAND("setjumps", "vi", CFGFLAG_SERVER|CMDFLAG_TEST, ConSetJumps, this, "Gives player v i jumps")
 CONSOLE_COMMAND("skin", "vs", CFGFLAG_SERVER|CMDFLAG_TEST, ConSkin, this, "Changes the skin from i in s")
 CONSOLE_COMMAND("rename", "vr", CFGFLAG_SERVER|CMDFLAG_TEST, ConRename, this, "Renames i name to s")

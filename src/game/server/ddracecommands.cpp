@@ -743,6 +743,12 @@ void CGameContext::ConScore(IConsole::IResult *pResult, void *pUserData)
 	if(!pPlayer)
 		return;
 
+	if (!g_Config.m_SvRconScore)
+	{
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info", "You can't set a score, if sv_rcon_score is not enabled.");
+		return;
+	}
+
 	CCharacter* pChr = pSelf->m_apPlayers[Victim]->GetCharacter();;
 	if(!pChr)
 		return;
