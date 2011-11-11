@@ -356,16 +356,21 @@ void CConsole::ExecuteLineStroked(int Stroke, const char *pStr, int ClientID)
 
 						if (Result.HasVictim())
 						{
-							if(Result.GetVictim() == CResult::VICTIM_ALL)
+							if (m_AccessLevel == ACCESS_LEVEL_HELPER && Result.GetVictim() != ClientID)
+								Print(OUTPUT_LEVEL_STANDARD, "Console", "Helpers can execute commands only on their self.");
+							else
 							{
-								for (int i = 0; i < MAX_CLIENTS; i++)
+								if(Result.GetVictim() == CResult::VICTIM_ALL)
 								{
+									for (int i = 0; i < MAX_CLIENTS; i++)
+									{
 										Result.SetVictim(i);
 										pCommand->m_pfnCallback(&Result, pCommand->m_pUserData);
+									}
 								}
+								else
+									pCommand->m_pfnCallback(&Result, pCommand->m_pUserData);
 							}
-							else
-								pCommand->m_pfnCallback(&Result, pCommand->m_pUserData);
 						}
 						else
 							pCommand->m_pfnCallback(&Result, pCommand->m_pUserData);
