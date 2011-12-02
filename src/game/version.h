@@ -3,7 +3,7 @@
 #ifndef GAME_VERSION_H
 #define GAME_VERSION_H
 #include "generated/nethash.cpp"
-#define XXL_VERSION "1.8"
-#define GAME_VERSION "0.6, 1.096a, "  XXL_VERSION
+#define XXL_VERSION "1.8a"
+#define GAME_VERSION "0.6, 1.097a, "  XXL_VERSION
 #define GAME_NETVERSION "0.6 626fce9a778df4d4"
 #endif

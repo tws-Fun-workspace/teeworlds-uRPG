@@ -310,7 +310,7 @@ void CGameContext::ConForcePause(IConsole::IResult *pResult, void *pUserData)
 	CGameContext *pSelf = (CGameContext *)pUserData;
 	// if(!CheckClientID(pResult->m_ClientID)) return;
 	CServer* pServ = (CServer*)pSelf->Server();
-	int Victim = pResult->GetInteger(0);
+	int Victim = pResult->GetVictim();
 	int Seconds = 0;
 	char aBuf[128];
 
