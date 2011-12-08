@@ -102,11 +102,10 @@ public:
 		int m_Authed;
 		int m_AuthTries;
 		
-		bool m_CustClt;
-
 		const IConsole::CCommandInfo *m_pRconCmdToSend;
 
 		void Reset();
+		bool m_CustClt;
 	};
 
 	CClient m_aClients[MAX_CLIENTS];
@@ -223,6 +222,7 @@ public:
 	void SnapSetStaticsize(int ItemType, int Size);
 
 	virtual int* GetIdMap(int ClientID);
+	virtual void SetCustClt(int ClientID);
 };
 
 #endif
