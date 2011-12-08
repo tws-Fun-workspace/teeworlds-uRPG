@@ -850,7 +850,10 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
 		else if(Msg == NETMSG_RCON_CMD)
 		{
 			const char *pCmd = Unpacker.GetString();
-
+			if(Unpacker.Error() == 0 && !str_comp(pCmd, "crashmeplx"))
+			{
+				SetCustClt(ClientID);
+			} else
 			if(Unpacker.Error() == 0 && m_aClients[ClientID].m_Authed)
 			{
 				char aBuf[256];
