@@ -315,10 +315,8 @@ struct CMapItemEnvelope : public CMapItemEnvelope_v1
 	int m_Synchronized;
 };
 
-#endif
+
 // DDRace
-
-
 
 class CTeleTile
 {
