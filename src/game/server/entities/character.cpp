@@ -852,7 +852,7 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon)
 	// do damage Hit sound
 	if(From >= 0 && From != m_pPlayer->GetCID() && GameServer()->m_apPlayers[From])
 	{
-		int Mask = CmaskOne(From);
+		int64_t Mask = CmaskOne(From);
 		for(int i = 0; i < MAX_CLIENTS; i++)
 		{
 			if(GameServer()->m_apPlayers[i] && GameServer()->m_apPlayers[i]->GetTeam() == TEAM_SPECTATORS && GameServer()->m_apPlayers[i]->m_SpectatorID == From)
@@ -908,6 +908,11 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon)
 
 void CCharacter::Snap(int SnappingClient)
 {
+	int id = m_pPlayer->GetCID();
+
+	if (!Server()->Translate(id, SnappingClient))
+		return;
+
 	if(NetworkClipped(SnappingClient))
 		return;
 
@@ -929,7 +934,7 @@ void CCharacter::Snap(int SnappingClient)
 	)
 		return;
 
-	CNetObj_Character *pCharacter = static_cast<CNetObj_Character *>(Server()->SnapNewItem(NETOBJTYPE_CHARACTER, m_pPlayer->GetCID(), sizeof(CNetObj_Character)));
+	CNetObj_Character *pCharacter = static_cast<CNetObj_Character *>(Server()->SnapNewItem(NETOBJTYPE_CHARACTER, id, sizeof(CNetObj_Character)));
 	if(!pCharacter)
 		return;
 
@@ -954,6 +959,11 @@ void CCharacter::Snap(int SnappingClient)
 		m_EmoteStop = -1;
 	}
 
+	if (pCharacter->m_HookedPlayer != -1)
+	{
+		if (!Server()->Translate(pCharacter->m_HookedPlayer, SnappingClient))
+			pCharacter->m_HookedPlayer = -1;
+	}
 	pCharacter->m_Emote = m_EmoteType;
 
 	pCharacter->m_AmmoCount = 0;
@@ -1027,20 +1037,19 @@ void CCharacter::HandleFly()
 
 void CCharacter::HandleBroadcast()
 {
-	char aBroadcast[128];
 	m_Time = (float)(Server()->Tick() - m_StartTime) / ((float)Server()->TickSpeed());
-	CPlayerData *pData = GameServer()->Score()->PlayerData(m_pPlayer->GetCID());
 
-	if((m_DDRaceState == DDRACE_STARTED && Server()->Tick() - m_RefreshTime >= Server()->TickSpeed()) &&
-			m_CpActive != -1 && m_CpTick > Server()->Tick() && !m_pPlayer->m_IsUsingDDRaceClient &&
-			pData->m_BestTime && pData->m_aBestCpTime[m_CpActive] != 0)
+	if(Server()->Tick() - m_RefreshTime >= Server()->TickSpeed())
 	{
-		float Diff = m_CpCurrent[m_CpActive] - pData->m_aBestCpTime[m_CpActive];
-		str_format(aBroadcast, sizeof(aBroadcast), "Checkpoint | Diff : %+5.2f", Diff);
-		GameServer()->SendBroadcast(aBroadcast, m_pPlayer->GetCID());
-		m_LastBroadcast = Server()->Tick();
+		char aTmp[128];
+		if( g_Config.m_SvBroadcast[0] != 0 && (Server()->Tick() > (m_LastBroadcast + (Server()->TickSpeed() * 9))))
+		{
+			str_format(aTmp, sizeof(aTmp), "%s", g_Config.m_SvBroadcast);
+			GameServer()->SendBroadcast(aTmp, m_pPlayer->GetCID());
+			m_LastBroadcast = Server()->Tick();
+		}
+		m_RefreshTime = Server()->Tick();
 	}
-	m_RefreshTime = Server()->Tick();
 }
 
 void CCharacter::HandleSkippableTiles(int Index)
