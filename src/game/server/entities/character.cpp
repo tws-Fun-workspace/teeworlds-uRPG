@@ -964,6 +964,7 @@ void CCharacter::Snap(int SnappingClient)
 	
 	IServer::CClientInfo CltInfo;
 	Server()->GetClientInfo(SnappingClient, &CltInfo);
+	CltInfo.m_CustClt = 0;
 
 	// set emote
 	if (m_EmoteStop < Server()->Tick())

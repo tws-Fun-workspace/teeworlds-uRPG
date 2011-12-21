@@ -117,6 +117,19 @@ public:
 		return found;
 	}
 
+	bool ReverseTranslate(int& target, int client)
+	{
+		CClientInfo info;
+		GetClientInfo(client, &info);
+		if (info.m_CustClt)
+			return true;
+		int* map = GetIdMap(client);
+		if (map[target] == -1)
+			return false;
+		target = map[target];
+		return true;
+	}
+
 	virtual void SetClientName(int ClientID, char const *pName) = 0;
 	virtual void SetClientClan(int ClientID, char const *pClan) = 0;
 	virtual void SetClientCountry(int ClientID, int Country) = 0;
@@ -133,6 +146,7 @@ public:
 
 	virtual int* GetIdMap(int ClientID) = 0;
 	virtual void DemoRecorder_HandleAutoStart() = 0;
+	virtual void SetCustClt(int ClientID) = 0;
 };
 
 class IGameServer : public IInterface
