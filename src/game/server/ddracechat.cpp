@@ -32,26 +32,26 @@ void CGameContext::ConCredits(IConsole::IResult *pResult, void *pUserData)
 	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "credit",
 			"Code (in the past): \'3DA\' and \'Fluxid\'");
 	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "credit",
-			"Please check the changelog on DDRace.info.");
+			"Modded mod by XXLTomate.");
 	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "credit",
-			"Also the commit log on github.com/GreYFoX/teeworlds .");
+			"Info at XXL-Clan.com .");
 }
 
 void CGameContext::ConInfo(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *) pUserData;
 	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info",
-			"DDRace Mod. Version: " GAME_VERSION);
-#if defined( GIT_SHORTREV_HASH )
+			"-->XXLDDRace<--");
 	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info",
-			"Git revision hash: " GIT_SHORTREV_HASH);
-#endif
+			"Mod by XXLTomate based on");
 	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info",
-			"Official site: DDRace.info");
+			"DDRace Mod. Version: " DDRACE_VERSION);
 	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info",
-			"For more Info /cmdlist");
+			"XXLDDRace Mod. Version: " XXL_VERSION);
 	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info",
-			"Or visit DDRace.info");
+			"Download and info at XXL-Clan.com");
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info",
+			"For commands /cmdlist");
 }
 
 void CGameContext::ConHelp(IConsole::IResult *pResult, void *pUserData)
