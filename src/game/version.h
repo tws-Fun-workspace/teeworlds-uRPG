@@ -4,6 +4,6 @@
 #define GAME_VERSION_H
 #include "generated/nethash.cpp"
 #define XXL_VERSION "1.8a"
-#define GAME_VERSION "0.6, 1.098a, "  XXL_VERSION
+#define GAME_VERSION "0.6, 1.0991a, "  XXL_VERSION
 #define GAME_NETVERSION "0.6 626fce9a778df4d4"
 #endif
