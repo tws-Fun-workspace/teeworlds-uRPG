@@ -648,7 +648,7 @@ void CGameContext::OnClientEnter(int ClientID)
 
 		SendChatTarget(ClientID, "   XXLDDrace "  XXL_VERSION " by XXLTomate");
 		SendChatTarget(ClientID, "   DDRace-mod with some extras.");
-		SendChatTarget(ClientID, "   For more infos write /info");
+		SendChatTarget(ClientID, "   For more info write /info");
 
 		if(g_Config.m_SvWelcome[0]!=0)
 			SendChatTarget(ClientID,g_Config.m_SvWelcome);
