@@ -1973,13 +1973,26 @@ void CCharacter::HandleRainbow()
 }
 
 void CCharacter::HandleRescue()
-{ 	// Nearly the same like IsGrounded(), but with less tolerance
-	if ((GameServer()->Collision()->CheckPoint(m_Pos.x+m_ProximityRadius/2, m_Pos.y+m_ProximityRadius/2+1) || GameServer()->Collision()->CheckPoint(m_Pos.x-m_ProximityRadius/2, m_Pos.y+m_ProximityRadius/2+1))
-			&& m_TileIndex != TILE_FREEZE
-			&& m_TileFIndex != TILE_FREEZE
+{
+	// calculate offset tiles because of random position saving at m_Pos
+	int MapIndexRescueR = GameServer()->Collision()->GetPureMapIndex(vec2(m_Pos.x + 2, m_Pos.y));
+	int MapIndexRescueL = GameServer()->Collision()->GetPureMapIndex(vec2(m_Pos.x - 2, m_Pos.y));
+
+	int m_TileIndexRescueOffsetR = GameServer()->Collision()->GetTileIndex(MapIndexRescueR);
+	int m_TileFIndexRescueOffsetR = GameServer()->Collision()->GetFTileIndex(MapIndexRescueR);
+	int m_TileIndexRescueOffsetL = GameServer()->Collision()->GetTileIndex(MapIndexRescueL);
+	int m_TileFIndexRescueOffsetL = GameServer()->Collision()->GetFTileIndex(MapIndexRescueL);
+
+	// check if the rescue pos should be saved
+	if (!m_LastRescueSave
 			&& !m_FreezeTime
 			&& !m_DeepFreeze
-			&& !m_LastRescueSave)
+			&& m_TileIndexRescueOffsetR != TILE_FREEZE
+			&& m_TileFIndexRescueOffsetR != TILE_FREEZE
+			&& m_TileIndexRescueOffsetL != TILE_FREEZE
+			&& m_TileFIndexRescueOffsetL != TILE_FREEZE
+			// nearly the same like IsGrounded(), but with less tolerance
+			&& (GameServer()->Collision()->CheckPoint(m_Pos.x+m_ProximityRadius/2, m_Pos.y+m_ProximityRadius/2+1) || GameServer()->Collision()->CheckPoint(m_Pos.x-m_ProximityRadius/2, m_Pos.y+m_ProximityRadius/2+1)))
 	{
 		m_RescuePos = m_Pos;
 		m_LastRescueSave = 7; // not every point will be stored
