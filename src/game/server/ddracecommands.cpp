@@ -300,11 +300,16 @@ void CGameContext::ConTeleport(IConsole::IResult *pResult, void *pUserData)
 	CGameContext *pSelf = (CGameContext *) pUserData;
 	if (!CheckClientID(pResult->GetVictim()))
 		return;
-	int TeleTo = pResult->GetVictim();
+
+	if (!CheckClientID(pResult->GetInteger(0)))
+		return;
+
+	int TeleTo = pResult->GetInteger(0);
+	int Tele = pResult->GetVictim();
 	if (pSelf->m_apPlayers[TeleTo])
 	{
-		CCharacter* pChr = pSelf->GetPlayerChar(pResult->m_ClientID);
-		if (pChr)
+		CCharacter* pChr = pSelf->GetPlayerChar(Tele);
+		if (pChr && pSelf->GetPlayerChar(TeleTo))
 		{
 			pChr->Core()->m_Pos = pSelf->m_apPlayers[TeleTo]->m_ViewPos;
 			pChr->m_DDRaceState = DDRACE_CHEAT;
