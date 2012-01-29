@@ -213,8 +213,8 @@ public:
 	class CCollision *Collision() { return m_pCollision; }
 
 	//XXLmod
-	int m_max_jumps;
-	int m_jump_count;
+	int m_MaxJumps;
+	int m_JumpCount;
 	void HandleFly();
 
 private:

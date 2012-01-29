@@ -1001,7 +1001,7 @@ void CGameContext::ConJumps(IConsole::IResult *pResult, void *pUserData)
 		return;
 
 	char aBuf[64];
-	str_format(aBuf, sizeof(aBuf), "You can jump %d times.", pChr->Core()->m_max_jumps);
+	str_format(aBuf, sizeof(aBuf), "You can jump %d times.", pChr->Core()->m_MaxJumps);
 	pSelf->SendChatTarget(pResult->m_ClientID, aBuf);
 }
 

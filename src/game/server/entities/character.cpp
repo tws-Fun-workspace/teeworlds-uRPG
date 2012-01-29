@@ -89,8 +89,8 @@ bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
 	XXLDDRaceInit();
 
 	//jDDRace
-	m_Core.m_max_jumps = 2; //2 is default
-	m_Core.m_jump_count = 0;
+	m_Core.m_MaxJumps = 2; //2 is default
+	m_Core.m_JumpCount = 0;
 
 
 	return true;
@@ -1581,21 +1581,21 @@ void CCharacter::HandleTiles(int Index)
 		if (m_LastIndexTile == TILE_JUMPS_DEFAULT || m_LastIndexFrontTile == TILE_JUMPS_DEFAULT)
 			return;
 
-		m_Core.m_max_jumps = 2; //default
+		m_Core.m_MaxJumps = 2; //default
 	}
 	if(((m_TileIndex == TILE_JUMPS_ADD) || (m_TileFIndex == TILE_JUMPS_ADD))) //87
 	{
 		if (m_LastIndexTile == TILE_JUMPS_ADD || m_LastIndexFrontTile == TILE_JUMPS_ADD)
 			return;
 
-		m_Core.m_max_jumps++; //add a jump
+		m_Core.m_MaxJumps++; //add a jump
 	}
 	if(((m_TileIndex == TILE_JUMPS_REMOVE) || (m_TileFIndex == TILE_JUMPS_REMOVE))) //87
 	{
 		if (m_LastIndexTile == TILE_JUMPS_REMOVE || m_LastIndexFrontTile == TILE_JUMPS_REMOVE)
 			return;
-		if (m_Core.m_max_jumps >0)
-			m_Core.m_max_jumps--; //remove a jump
+		if (m_Core.m_MaxJumps >0)
+			m_Core.m_MaxJumps--; //remove a jump
 	}
 
 	//First time here?
@@ -2001,14 +2001,14 @@ void CCharacter::HandleRescue()
 
 void CCharacter::HandleJumps()
 {
-	if (m_Core.m_Jumped > 1 && m_Core.m_max_jumps > m_Core.m_jump_count+2)
+	if (m_Core.m_Jumped > 1 && m_Core.m_MaxJumps > m_Core.m_JumpCount + 2)
 	{
 		m_Core.m_Jumped = 1;
-		m_Core.m_jump_count++;
+		m_Core.m_JumpCount++;
 	}
-	else if (m_Core.m_max_jumps == 1)
+	else if (m_Core.m_MaxJumps == 1)
 		m_Core.m_Jumped = 2; //1 Jump
-	else if (m_Core.m_max_jumps == 0)
+	else if (m_Core.m_MaxJumps == 0)
 		m_Core.m_Jumped = 1; //0 Jumps
 }
 

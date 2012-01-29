@@ -911,7 +911,7 @@ void CGameContext::ConSetJumps(IConsole::IResult *pResult, void *pUserData)
 	if (!pChr)
 		return;
 
-	pChr->Core()->m_max_jumps = clamp(pResult->GetInteger(0), 0, 9999);
+	pChr->Core()->m_MaxJumps = clamp(pResult->GetInteger(0), 0, 9999);
 	pChr->m_DDRaceState = DDRACE_CHEAT;
 }
 
