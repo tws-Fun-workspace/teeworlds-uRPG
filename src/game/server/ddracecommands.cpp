@@ -471,7 +471,7 @@ void CGameContext::ConHammer(IConsole::IResult *pResult, void *pUserData)
 		return;
 
 	CServer* pServ = (CServer*)pSelf->Server();
-	if(Type>10 || Type<0)
+	if(Type > 10 || Type < 0)
 	{
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info", "Select hammer between 0 and 10");
 	}
