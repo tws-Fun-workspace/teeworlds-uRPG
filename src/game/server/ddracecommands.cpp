@@ -104,23 +104,6 @@ void CGameContext::ConSetlvl1(IConsole::IResult *pResult, void *pUserData)
 		pServ->SetRconLevel(Victim, pServ->AUTHED_HELPER);
 }
 
-void CGameContext::ConLogOut(IConsole::IResult *pResult, void *pUserData)
-{
-	CGameContext *pSelf = (CGameContext *)pUserData;
-	if(!CheckClientID(pResult->m_ClientID)) return;
-	int Victim = pResult->m_ClientID;
-	CServer* pServ = (CServer*)pSelf->Server();
-
-	if(pSelf->m_apPlayers[Victim])
-	{
-		pSelf->m_apPlayers[Victim]->m_Authed = IConsole::ACCESS_LEVEL_USER;
-		pServ->SetRconLevel(Victim, IConsole::ACCESS_LEVEL_USER);
-		if (g_Config.m_SvRconScore)
-			pSelf->m_apPlayers[Victim]->m_Score = 0;
-		pSelf->m_apPlayers[Victim]->m_IsMember = false;
-		pSelf->m_apPlayers[Victim]->m_IsLoggedIn = false;
-	}
-}
 void CGameContext::ConKillPlayer(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *) pUserData;

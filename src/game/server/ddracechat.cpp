@@ -1029,4 +1029,41 @@ void CGameContext::ConLogin(IConsole::IResult *pResult, void *pUserData)
 	pSelf->MemberList->Login(pResult, pResult->m_ClientID, pResult->GetString(0), pSelf);
 }
 
+void CGameContext::ConLogOut(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	CServer* pServer = (CServer*)pSelf->Server();
+
+	int Victim;
+	if(pResult->NumArguments() == 0)
+		Victim = pResult->m_ClientID;
+	else
+		Victim = pResult->GetInteger(0);
+
+	if(!CheckClientID(Victim)) return;
+
+	if (g_Config.m_SvRconScore)
+		pSelf->m_apPlayers[Victim]->m_Score = 0;
+
+	// logout from membertile
+	pSelf->m_apPlayers[Victim]->m_IsMember = false;
+	pSelf->m_apPlayers[Victim]->m_IsLoggedIn = false;
+
+	// from server.cpp
+	if(pServer->m_aClients[Victim].m_State != CServer::CClient::STATE_EMPTY)
+		{
+			CMsgPacker Msg(NETMSG_RCON_AUTH_STATUS);
+			Msg.AddInt(0);	//authed
+			Msg.AddInt(0);	//cmdlist
+			pServer->SendMsgEx(&Msg, MSGFLAG_VITAL, Victim, true);
+
+			pServer->m_aClients[Victim].m_Authed = pServer->AUTHED_NO;
+			pServer->m_aClients[Victim].m_pRconCmdToSend = 0;
+			pServer->SendRconLine(Victim, "Logout successful.");
+			char aBuf[32];
+			str_format(aBuf, sizeof(aBuf), "ClientID=%d logged out", Victim);
+			pServer->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
+		}
+
+}
 
