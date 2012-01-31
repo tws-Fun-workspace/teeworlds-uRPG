@@ -11,6 +11,7 @@
 #endif
 
 bool CheckClientID(int ClientID);
+bool CheckRights(int ClientID, int Victim, CGameContext *GameContext);
 
 void CGameContext::ConCredits(IConsole::IResult *pResult, void *pUserData)
 {
@@ -1066,4 +1067,3 @@ void CGameContext::ConLogOut(IConsole::IResult *pResult, void *pUserData)
 		}
 
 }
-
