@@ -946,8 +946,6 @@ bool CheckRights(int ClientID, int Victim, CGameContext *GameContext)
 	if(!CheckClientID(ClientID)) return false;
 	if(!CheckClientID(Victim)) return false;
 
-	CServer* pServ = (CServer*)GameContext->Server();
-
 	if(GameContext->m_apPlayers[ClientID]->m_Authed <= GameContext->m_apPlayers[Victim]->m_Authed)
 		return false;
 
