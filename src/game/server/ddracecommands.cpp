@@ -225,9 +225,9 @@ void CGameContext::ModifyWeapons(IConsole::IResult *pResult, void *pUserData,
 		int Weapon, bool Remove)
 {
 	CGameContext *pSelf = (CGameContext *) pUserData;
-	if (!CheckClientID(pResult->m_ClientID))
+	if (!CheckRights(pResult->m_ClientID, pResult->GetVictim(), pSelf))
 		return;
-	int ClientID = pResult->m_ClientID;
+	int ClientID = pResult->GetVictim();
 	if (clamp(Weapon, -1, NUM_WEAPONS - 1) != Weapon)
 	{
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "info",
@@ -948,6 +948,9 @@ bool CheckRights(int ClientID, int Victim, CGameContext *GameContext)
 
 	if (ClientID == Victim)
 		return true;
+
+	if (!GameContext->m_apPlayers[ClientID] || !GameContext->m_apPlayers[Victim])
+		return false;
 
 	if(GameContext->m_apPlayers[ClientID]->m_Authed <= GameContext->m_apPlayers[Victim]->m_Authed)
 		return false;
