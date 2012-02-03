@@ -287,7 +287,7 @@ void CGameContext::ConTeleport(IConsole::IResult *pResult, void *pUserData)
 	int TeleTo = pResult->GetInteger(0);
 	int Tele = pResult->GetVictim();
 
-	if (!CheckRights(Tele, TeleTo, (CGameContext *)pUserData))
+	if (!CheckRights(pResult->m_ClientID, Tele, (CGameContext *)pUserData))
 		return;
 
 	if (pSelf->m_apPlayers[TeleTo])
