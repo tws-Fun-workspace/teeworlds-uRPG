@@ -89,8 +89,8 @@ bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
 	XXLDDRaceInit();
 
 	//jDDRace
-	m_Core.m_max_jumps = 2; //2 is default
-	m_Core.m_jump_count = 0;
+	m_Core.m_MaxJumps = 2; //2 is default
+	m_Core.m_JumpCount = 0;
 
 
 	return true;
@@ -344,7 +344,7 @@ void CCharacter::FireWeapon()
 				/*pTarget->TakeDamage(vec2(0.f, -1.f) + normalize(Dir + vec2(0.f, -1.1f)) * 10.0f, g_pData->m_Weapons.m_Hammer.m_pBase->m_Damage,
 					m_pPlayer->GetCID(), m_ActiveWeapon);*/
 
-				vec2 Temp = pTarget->m_Core.m_Vel + normalize(Dir + vec2(0.f, -1.1f)) * 10.0f;
+				vec2 Temp = pTarget->m_Core.m_Vel + normalize(Dir + vec2(0.f, -1.1f)) * 10.0f * (m_HammerType + 1);
 				if(Temp.x > 0 && ((pTarget->m_TileIndex == TILE_STOP && pTarget->m_TileFlags == ROTATION_270) || (pTarget->m_TileIndexL == TILE_STOP && pTarget->m_TileFlagsL == ROTATION_270) || (pTarget->m_TileIndexL == TILE_STOPS && (pTarget->m_TileFlagsL == ROTATION_90 || pTarget->m_TileFlagsL ==ROTATION_270)) || (pTarget->m_TileIndexL == TILE_STOPA) || (pTarget->m_TileFIndex == TILE_STOP && pTarget->m_TileFFlags == ROTATION_270) || (pTarget->m_TileFIndexL == TILE_STOP && pTarget->m_TileFFlagsL == ROTATION_270) || (pTarget->m_TileFIndexL == TILE_STOPS && (pTarget->m_TileFFlagsL == ROTATION_90 || pTarget->m_TileFFlagsL == ROTATION_270)) || (pTarget->m_TileFIndexL == TILE_STOPA) || (pTarget->m_TileSIndex == TILE_STOP && pTarget->m_TileSFlags == ROTATION_270) || (pTarget->m_TileSIndexL == TILE_STOP && pTarget->m_TileSFlagsL == ROTATION_270) || (pTarget->m_TileSIndexL == TILE_STOPS && (pTarget->m_TileSFlagsL == ROTATION_90 || pTarget->m_TileSFlagsL == ROTATION_270)) || (pTarget->m_TileSIndexL == TILE_STOPA)))
 					Temp.x = 0;
 				if(Temp.x < 0 && ((pTarget->m_TileIndex == TILE_STOP && pTarget->m_TileFlags == ROTATION_90) || (pTarget->m_TileIndexR == TILE_STOP && pTarget->m_TileFlagsR == ROTATION_90) || (pTarget->m_TileIndexR == TILE_STOPS && (pTarget->m_TileFlagsR == ROTATION_90 || pTarget->m_TileFlagsR == ROTATION_270)) || (pTarget->m_TileIndexR == TILE_STOPA) || (pTarget->m_TileFIndex == TILE_STOP && pTarget->m_TileFFlags == ROTATION_90) || (pTarget->m_TileFIndexR == TILE_STOP && pTarget->m_TileFFlagsR == ROTATION_90) || (pTarget->m_TileFIndexR == TILE_STOPS && (pTarget->m_TileFFlagsR == ROTATION_90 || pTarget->m_TileFFlagsR == ROTATION_270)) || (pTarget->m_TileFIndexR == TILE_STOPA) || (pTarget->m_TileSIndex == TILE_STOP && pTarget->m_TileSFlags == ROTATION_90) || (pTarget->m_TileSIndexR == TILE_STOP && pTarget->m_TileSFlagsR == ROTATION_90) || (pTarget->m_TileSIndexR == TILE_STOPS && (pTarget->m_TileSFlagsR == ROTATION_90 || pTarget->m_TileSFlagsR == ROTATION_270)) || (pTarget->m_TileSIndexR == TILE_STOPA)))
@@ -636,6 +636,9 @@ void CCharacter::Tick()
 		m_pPlayer->m_ForceBalanced = false;
 	}*/
 
+	if (m_Paused)
+		return;
+
 	DDRaceTick();
 	XXLDDRaceTick();
 
@@ -797,8 +800,7 @@ void CCharacter::Die(int Killer, int Weapon)
 	GameServer()->m_World.RemoveEntity(this);
 	GameServer()->m_World.m_Core.m_apCharacters[m_pPlayer->GetCID()] = 0;
 	GameServer()->CreateDeath(m_Pos, m_pPlayer->GetCID(), Teams()->TeamMask(Team(), -1, m_pPlayer->GetCID()));
-	if(!m_pPlayer->m_InfoSaved)
-		((CGameControllerDDRace*)GameServer()->m_pController)->m_Teams.SetForceCharacterTeam(m_pPlayer->GetCID(), 0);
+	Teams()->SetForceCharacterTeam(m_pPlayer->GetCID(), 0);
 }
 
 bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon)
@@ -921,15 +923,17 @@ void CCharacter::Snap(int SnappingClient)
 		return;
 
 	CCharacter* SnapChar = GameServer()->GetPlayerChar(SnappingClient);
-	if(SnapChar && !SnapChar->m_Super &&
-		GameServer()->m_apPlayers[SnappingClient]->GetTeam() != -1 &&
-		!CanCollide(SnappingClient) &&
-		(!GameServer()->m_apPlayers[SnappingClient]->m_IsUsingDDRaceClient ||
-				(GameServer()->m_apPlayers[SnappingClient]->m_IsUsingDDRaceClient &&
-				!GameServer()->m_apPlayers[SnappingClient]->m_ShowOthers
-				)
-			)
-		)
+	CPlayer* SnapPlayer = GameServer()->m_apPlayers[SnappingClient];
+
+	if((SnapPlayer->GetTeam() == TEAM_SPECTATORS || SnapPlayer->m_Paused) && SnapPlayer->m_SpectatorID != -1
+		&& !CanCollide(SnapPlayer->m_SpectatorID) && !SnapPlayer->m_ShowOthers)
+		return;
+
+	if( SnapPlayer->GetTeam() != TEAM_SPECTATORS && !SnapPlayer->m_Paused && SnapChar && !SnapChar->m_Super
+		&& !CanCollide(SnappingClient) && !SnapPlayer->m_ShowOthers)
+		return;
+
+	if (m_Paused)
 		return;
 
 	if(GetPlayer()->m_Invisible &&
@@ -959,7 +963,7 @@ void CCharacter::Snap(int SnappingClient)
 	// set emote
 	if (m_EmoteStop < Server()->Tick())
 	{
-		m_EmoteType = m_DefEmote;
+		m_EmoteType = m_pPlayer->m_DefEmote;
 		m_EmoteStop = -1;
 	}
 
@@ -1041,19 +1045,27 @@ void CCharacter::HandleFly()
 
 void CCharacter::HandleBroadcast()
 {
-	m_Time = (float)(Server()->Tick() - m_StartTime) / ((float)Server()->TickSpeed());
-
-	if(Server()->Tick() - m_RefreshTime >= Server()->TickSpeed())
+	CPlayerData *pData = GameServer()->Score()->PlayerData(m_pPlayer->GetCID());
+	if((m_DDRaceState == DDRACE_STARTED && Server()->Tick() - m_RefreshTime >= Server()->TickSpeed()) &&
+			m_CpActive != -1 && m_CpTick > Server()->Tick() && !m_pPlayer->m_IsUsingDDRaceClient &&
+			pData->m_BestTime && pData->m_aBestCpTime[m_CpActive] != 0)
 	{
-		char aTmp[128];
-		if( g_Config.m_SvBroadcast[0] != 0 && (Server()->Tick() > (m_LastBroadcast + (Server()->TickSpeed() * 9))))
-		{
-			str_format(aTmp, sizeof(aTmp), "%s", g_Config.m_SvBroadcast);
-			GameServer()->SendBroadcast(aTmp, m_pPlayer->GetCID());
-			m_LastBroadcast = Server()->Tick();
-		}
-		m_RefreshTime = Server()->Tick();
+		char aBroadcast[128];
+		m_Time = (float)(Server()->Tick() - m_StartTime) / ((float)Server()->TickSpeed());
+		float Diff = m_CpCurrent[m_CpActive] - pData->m_aBestCpTime[m_CpActive];
+		str_format(aBroadcast, sizeof(aBroadcast), "Checkpoint | Diff : %+5.2f", Diff);
+		GameServer()->SendBroadcast(aBroadcast, m_pPlayer->GetCID());
+		m_LastBroadcast = Server()->Tick();
 	}
+	else if ((m_pPlayer->m_TimerType == 1 || m_pPlayer->m_TimerType == 2) && m_DDRaceState == DDRACE_STARTED && m_LastBroadcast + Server()->TickSpeed() * g_Config.m_SvTimeInBroadcastInterval <= Server()->Tick())
+	{
+		char aBuftime[64];
+		int IntTime = (int)((float)(Server()->Tick() - m_StartTime) / ((float)Server()->TickSpeed()));
+		str_format(aBuftime, sizeof(aBuftime), "%s%d:%s%d", ((IntTime/60) > 9)?"":"0", IntTime/60, ((IntTime%60) > 9)?"":"0", IntTime%60);
+		GameServer()->SendBroadcast(aBuftime, m_pPlayer->GetCID());
+		m_LastBroadcast = Server()->Tick();
+	}
+	m_RefreshTime = Server()->Tick();
 }
 
 void CCharacter::HandleSkippableTiles(int Index)
@@ -1579,21 +1591,21 @@ void CCharacter::HandleTiles(int Index)
 		if (m_LastIndexTile == TILE_JUMPS_DEFAULT || m_LastIndexFrontTile == TILE_JUMPS_DEFAULT)
 			return;
 
-		m_Core.m_max_jumps = 2; //default
+		m_Core.m_MaxJumps = 2; //default
 	}
 	if(((m_TileIndex == TILE_JUMPS_ADD) || (m_TileFIndex == TILE_JUMPS_ADD))) //87
 	{
 		if (m_LastIndexTile == TILE_JUMPS_ADD || m_LastIndexFrontTile == TILE_JUMPS_ADD)
 			return;
 
-		m_Core.m_max_jumps++; //add a jump
+		m_Core.m_MaxJumps++; //add a jump
 	}
 	if(((m_TileIndex == TILE_JUMPS_REMOVE) || (m_TileFIndex == TILE_JUMPS_REMOVE))) //87
 	{
 		if (m_LastIndexTile == TILE_JUMPS_REMOVE || m_LastIndexFrontTile == TILE_JUMPS_REMOVE)
 			return;
-		if (m_Core.m_max_jumps >0)
-			m_Core.m_max_jumps--; //remove a jump
+		if (m_Core.m_MaxJumps >0)
+			m_Core.m_MaxJumps--; //remove a jump
 	}
 
 	//First time here?
@@ -1770,10 +1782,10 @@ void CCharacter::DDRaceTick()
 
 void CCharacter::DDRacePostCoreTick()
 {
-	if (m_DefEmoteReset >= 0 && m_DefEmoteReset <= Server()->Tick())
+	if (m_pPlayer->m_DefEmoteReset >= 0 && m_pPlayer->m_DefEmoteReset <= Server()->Tick())
 		{
-			m_DefEmoteReset = -1;
-			m_EmoteType = m_DefEmote = EMOTE_NORMAL;
+		m_pPlayer->m_DefEmoteReset = -1;
+			m_EmoteType = m_pPlayer->m_DefEmote = EMOTE_NORMAL;
 			m_EmoteStop = -1;
 		}
 
@@ -1862,11 +1874,26 @@ void CCharacter::GiveAllWeapons()
 	 return;
 }
 
+void CCharacter::Pause(bool Pause)
+{
+	m_Paused = Pause;
+	if(Pause)
+	{
+		GameServer()->m_World.m_Core.m_apCharacters[m_pPlayer->GetCID()] = 0;
+		GameServer()->m_World.RemoveEntity(this);
+	}
+	else
+	{
+		GameServer()->m_World.m_Core.m_apCharacters[m_pPlayer->GetCID()] = &m_Core;
+		GameServer()->m_World.InsertEntity(this);
+	}
+}
+
 void CCharacter::DDRaceInit()
 {
+	m_Paused = false;
 	m_DDRaceState = DDRACE_NONE;
 	m_PrevPos = m_Pos;
-	m_EyeEmote = true;
 	m_LastBroadcast = 0;
 	m_TeamBeforeSuper = 0;
 	m_Core.m_Id = GetPlayer()->GetCID();
@@ -1876,8 +1903,6 @@ void CCharacter::DDRaceInit()
 		GameServer()->SendChatTarget(GetPlayer()->GetCID(),"Please join a team before you start");
 		m_LastStartWarning = Server()->Tick();
 	}
-	m_DefEmote = EMOTE_NORMAL;
-	m_DefEmoteReset = -1;
 	m_TeleCheckpoint = 0;
 	m_EndlessHook = g_Config.m_SvEndlessDrag;
 	m_Hit = g_Config.m_SvHit ? HIT_ALL : DISABLE_HIT_GRENADE|DISABLE_HIT_HAMMER|DISABLE_HIT_RIFLE|DISABLE_HIT_SHOTGUN;
@@ -1958,13 +1983,26 @@ void CCharacter::HandleRainbow()
 }
 
 void CCharacter::HandleRescue()
-{ 	// Nearly the same like IsGrounded(), but with less tolerance
-	if ((GameServer()->Collision()->CheckPoint(m_Pos.x+m_ProximityRadius/2, m_Pos.y+m_ProximityRadius/2+1) || GameServer()->Collision()->CheckPoint(m_Pos.x-m_ProximityRadius/2, m_Pos.y+m_ProximityRadius/2+1))
-			&& m_TileIndex != TILE_FREEZE
-			&& m_TileFIndex != TILE_FREEZE
+{
+	// calculate offset tiles because of random position saving at m_Pos
+	int MapIndexRescueR = GameServer()->Collision()->GetPureMapIndex(vec2(m_Pos.x + 2, m_Pos.y));
+	int MapIndexRescueL = GameServer()->Collision()->GetPureMapIndex(vec2(m_Pos.x - 2, m_Pos.y));
+
+	int m_TileIndexRescueOffsetR = GameServer()->Collision()->GetTileIndex(MapIndexRescueR);
+	int m_TileFIndexRescueOffsetR = GameServer()->Collision()->GetFTileIndex(MapIndexRescueR);
+	int m_TileIndexRescueOffsetL = GameServer()->Collision()->GetTileIndex(MapIndexRescueL);
+	int m_TileFIndexRescueOffsetL = GameServer()->Collision()->GetFTileIndex(MapIndexRescueL);
+
+	// check if the rescue pos should be saved
+	if (!m_LastRescueSave
 			&& !m_FreezeTime
 			&& !m_DeepFreeze
-			&& !m_LastRescueSave)
+			&& m_TileIndexRescueOffsetR != TILE_FREEZE
+			&& m_TileFIndexRescueOffsetR != TILE_FREEZE
+			&& m_TileIndexRescueOffsetL != TILE_FREEZE
+			&& m_TileFIndexRescueOffsetL != TILE_FREEZE
+			// nearly the same like IsGrounded(), but with less tolerance
+			&& (GameServer()->Collision()->CheckPoint(m_Pos.x+m_ProximityRadius/2, m_Pos.y+m_ProximityRadius/2+1) || GameServer()->Collision()->CheckPoint(m_Pos.x-m_ProximityRadius/2, m_Pos.y+m_ProximityRadius/2+1)))
 	{
 		m_RescuePos = m_Pos;
 		m_LastRescueSave = 7; // not every point will be stored
@@ -1973,14 +2011,14 @@ void CCharacter::HandleRescue()
 
 void CCharacter::HandleJumps()
 {
-	if (m_Core.m_Jumped > 1 && m_Core.m_max_jumps > m_Core.m_jump_count+2)
+	if (m_Core.m_Jumped > 1 && m_Core.m_MaxJumps > m_Core.m_JumpCount + 2)
 	{
 		m_Core.m_Jumped = 1;
-		m_Core.m_jump_count++;
+		m_Core.m_JumpCount++;
 	}
-	else if (m_Core.m_max_jumps == 1)
+	else if (m_Core.m_MaxJumps == 1)
 		m_Core.m_Jumped = 2; //1 Jump
-	else if (m_Core.m_max_jumps == 0)
+	else if (m_Core.m_MaxJumps == 0)
 		m_Core.m_Jumped = 1; //0 Jumps
 }
 
