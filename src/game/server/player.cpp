@@ -331,6 +331,11 @@ int CPlayer::BlockKillCheck()
 		killer = m_pCharacter->lastInteractionPlayer;
 		CAccount* killerAcc = GameServer()->m_apPlayers[killer]->GetAccount();
 
+		if (GetAccount())
+			blockScore = GetAccount()->Payload()->blockScore;
+		if (killerAcc)
+			GameServer()->m_apPlayers[killer]->blockScore = killerAcc->Payload()->blockScore;
+
 		bool scorewhore = false;
 		if (killerAcc && killerAcc->Head()->m_LastLoginDate > time_timestamp() - g_Config.m_SvFrozenBlocked / 1000)
 			scorewhore = true;
@@ -342,7 +347,7 @@ int CPlayer::BlockKillCheck()
 		if (GetAccount())
 		{
 			if (g_Config.m_SvScoringDebugLog)
-				dbg_msg("score","%s killed by %s and lost %.1f, now has %.1f", GetAccount()->Name(), GameServer()->m_apPlayers[killer]->GetAccount() ? GameServer()->m_apPlayers[killer]->GetAccount()->Name() : "(unk)", scoreStolen, blockScore);
+				dbg_msg("score","%s killed by %s and lost %.1f, now has %.1f", GetAccount()->Name(), killerAcc ? killerAcc->Name() : "(unk)", scoreStolen, blockScore);
 			GetAccount()->Payload()->blockScore = blockScore;
 			GameServer()->m_Rank.UpdateScore(GetAccount());
 			if (fabs(scoreStolen) >= .5f)
