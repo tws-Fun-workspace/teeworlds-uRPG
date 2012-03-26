@@ -880,6 +880,7 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 		// Switch team on given client and kill/respawn him
 		if (g_Config.m_SvAccEnable && g_Config.m_SvAccEnforce && !pPlayer->GetAccount())
 		{
+			char aBuf[128];
 			str_copy(aBuf, "You have to log in or register. Say /login or /reg ", sizeof aBuf);
 			SendBroadcast(aBuf, ClientID);
 		}
