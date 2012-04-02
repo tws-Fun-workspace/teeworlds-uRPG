@@ -2008,7 +2008,9 @@ void CServer::SetRconLevel(int ClientID, int Level)
 	SendMsgEx(&Msg, MSGFLAG_VITAL, ClientID, true);
 
 	m_aClients[ClientID].m_Authed = Level;
-	SendRconLine(ClientID, "Admin authentication successful. Full remote console access granted.");
+	int ConsoleAccessLevel = Level == AUTHED_ADMIN ? IConsole::ACCESS_LEVEL_ADMIN : Level == AUTHED_SUBADMIN ? IConsole::ACCESS_LEVEL_SUBADMIN : Level == AUTHED_MOD ? IConsole::ACCESS_LEVEL_MOD : IConsole::ACCESS_LEVEL_HELPER;
+
+	m_aClients[ClientID].m_pRconCmdToSend = Console()->FirstCommandInfo(ConsoleAccessLevel, CFGFLAG_SERVER);
 	char aBuf[256];
 	str_format(aBuf, sizeof(aBuf), "ClientID=%d authed (level: %i)", ClientID, Level);
 	Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);

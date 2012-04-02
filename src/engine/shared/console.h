@@ -199,6 +199,9 @@ public:
 
 	static void ConUserCommandStatus(IConsole::IResult *pResult, void *pUser);
 	void SetFlagMask(int FlagMask) { m_FlagMask = FlagMask; }
+
+	// XXLDDRace
+	static void ConSubAdminCommandStatus(IConsole::IResult *pResult, void *pUser);
 };
 
 #endif
