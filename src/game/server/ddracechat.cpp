@@ -919,6 +919,8 @@ void CGameContext::ConRescue(IConsole::IResult *pResult, void *pUserData)
 		{
 			if (pChr->m_TileIndex != TILE_FREEZE && pChr->m_TileFIndex != TILE_FREEZE)
 				pChr->UnFreeze();
+			else
+				pChr->m_LastRescue = 0;
 		}
 	}
 	else
