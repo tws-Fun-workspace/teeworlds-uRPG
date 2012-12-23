@@ -236,4 +236,6 @@ MACRO_CONFIG_INT(SvLaserScore, sv_laser_score, 0, 0, 1, CFGFLAG_SERVER, "Shows n
 MACRO_CONFIG_INT(SvRMNinjaResetVel, sv_rmninja_reset_vel, 0, 0, 1, CFGFLAG_SERVER, "Shows new score and checkpoints in laserfont above the player")
 MACRO_CONFIG_INT(SvFainbowFeet, sv_rainbow_feet, 0, 0, 1, CFGFLAG_SERVER, "The feets of the tees are rainbow")
 
+MACRO_CONFIG_INT(SvEvents, sv_events, 1, 0, 1, CFGFLAG_SERVER, "Enable triggering of server events, like the happy eyeemotes on some holidays.")
+
 #endif
