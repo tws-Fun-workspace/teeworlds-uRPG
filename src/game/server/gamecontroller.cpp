@@ -360,7 +360,7 @@ int IGameController::OnCharacterDeath(class CCharacter *pVictim, class CPlayer *
 
 void IGameController::OnCharacterSpawn(class CCharacter *pChr)
 {
-	dbg_msg("gctl", "OnCharacterSpawn()");
+	//dbg_msg("gctl", "OnCharacterSpawn()");
 	// default health
 	pChr->IncreaseHealth(10);
 
