@@ -2,6 +2,8 @@
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
 #include <new>
 #include <engine/shared/config.h>
+
+#include <game/server/bot.h>
 #include "player.h"
 
 
@@ -20,6 +22,7 @@ CPlayer::CPlayer(CGameContext *pGameServer, int ClientID, int Team)
 	m_Team = GameServer()->m_pController->ClampTeam(Team);
 	m_SpectatorID = SPEC_FREEVIEW;
 	m_LastActionTick = Server()->Tick();
+	m_Bot = 0;
 
 	int* idMap = Server()->GetIdMap(ClientID);
 	for (int i = 1;i < VANILLA_MAX_CLIENTS;i++)
@@ -42,8 +45,9 @@ void CPlayer::Tick()
 #ifdef CONF_DEBUG
 	if(!g_Config.m_DbgDummies || m_ClientID < MAX_CLIENTS-g_Config.m_DbgDummies)
 #endif
-	if(!Server()->ClientIngame(m_ClientID))
+	if(!Server()->ClientIngame(m_ClientID)) {
 		return;
+	}
 
 	Server()->SetClientScore(m_ClientID, m_Score);
 
@@ -81,6 +85,8 @@ void CPlayer::Tick()
 			if(m_pCharacter->IsAlive())
 			{
 				m_ViewPos = m_pCharacter->m_Pos;
+				if (m_Bot)
+					m_Bot->Tick();
 			}
 			else
 			{
@@ -88,8 +94,12 @@ void CPlayer::Tick()
 				m_pCharacter = 0;
 			}
 		}
-		else if(m_Spawning && m_RespawnTick <= Server()->Tick())
-			TryRespawn();
+		else
+		{
+			if(m_Spawning && m_RespawnTick <= Server()->Tick()) {
+				TryRespawn();
+			}
+		}
 	}
 	else
 	{
@@ -123,16 +133,23 @@ void CPlayer::Snap(int SnappingClient)
 #ifdef CONF_DEBUG
 	if(!g_Config.m_DbgDummies || m_ClientID < MAX_CLIENTS-g_Config.m_DbgDummies)
 #endif
-	if(!Server()->ClientIngame(m_ClientID))
+	if(!Server()->ClientIngame(m_ClientID) && !m_Bot) {
+		dbg_msg("player", "client %d not ingame, no bot, wontsnap for %d", m_ClientID, SnappingClient);
 		return;
+	}
 
 	int id = m_ClientID;
-	if (!Server()->Translate(id, SnappingClient)) return;
+	if (!Server()->Translate(id, SnappingClient)) {
+		//dbg_msg("player", "client %d for %d, bail at A", m_ClientID, SnappingClient);
+		return;
+	}
 
 	CNetObj_ClientInfo *pClientInfo = static_cast<CNetObj_ClientInfo *>(Server()->SnapNewItem(NETOBJTYPE_CLIENTINFO, id, sizeof(CNetObj_ClientInfo)));
 
-	if(!pClientInfo)
+	if(!pClientInfo) {
+		dbg_msg("player", "client %d for %d, bail at B", m_ClientID, SnappingClient);
 		return;
+	}
 
 	StrToInts(&pClientInfo->m_Name0, 4, Server()->ClientName(m_ClientID));
 	StrToInts(&pClientInfo->m_Clan0, 3, Server()->ClientClan(m_ClientID));
@@ -143,8 +160,10 @@ void CPlayer::Snap(int SnappingClient)
 	pClientInfo->m_ColorFeet = m_TeeInfos.m_ColorFeet;
 
 	CNetObj_PlayerInfo *pPlayerInfo = static_cast<CNetObj_PlayerInfo *>(Server()->SnapNewItem(NETOBJTYPE_PLAYERINFO, id, sizeof(CNetObj_PlayerInfo)));
-	if(!pPlayerInfo)
+	if(!pPlayerInfo) {
+		dbg_msg("player", "client %d for %d, bail at C", m_ClientID, SnappingClient);
 		return;
+	}
 
 	pPlayerInfo->m_Latency = SnappingClient == -1 ? m_Latency.m_Min : GameServer()->m_apPlayers[SnappingClient]->m_aActLatency[m_ClientID];
 	pPlayerInfo->m_Local = 0;
@@ -158,8 +177,10 @@ void CPlayer::Snap(int SnappingClient)
 	if(m_ClientID == SnappingClient && m_Team == TEAM_SPECTATORS)
 	{
 		CNetObj_SpectatorInfo *pSpectatorInfo = static_cast<CNetObj_SpectatorInfo *>(Server()->SnapNewItem(NETOBJTYPE_SPECTATORINFO, m_ClientID, sizeof(CNetObj_SpectatorInfo)));
-		if(!pSpectatorInfo)
+		if(!pSpectatorInfo) {
+			dbg_msg("player", "client %d for %d, bail at D", m_ClientID, SnappingClient);
 			return;
+		}
 
 		pSpectatorInfo->m_SpectatorID = m_SpectatorID;
 		pSpectatorInfo->m_X = m_ViewPos.x;
@@ -312,11 +333,17 @@ void CPlayer::TryRespawn()
 {
 	vec2 SpawnPos;
 
-	if(!GameServer()->m_pController->CanSpawn(m_Team, &SpawnPos))
+	if(!GameServer()->m_pController->CanSpawn(m_Team, &SpawnPos)) {
 		return;
+	}
 
 	m_Spawning = false;
 	m_pCharacter = new(m_ClientID) CCharacter(&GameServer()->m_World);
 	m_pCharacter->Spawn(this, SpawnPos);
 	GameServer()->CreatePlayerSpawn(SpawnPos);
+}
+
+void CPlayer::SetBot(class CBot *Bot)
+{
+	m_Bot = Bot;
 }

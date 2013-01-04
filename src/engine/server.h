@@ -23,6 +23,7 @@ public:
 		const char *m_pName;
 		int m_Latency;
 		bool m_CustClt;
+		bool m_Faek;
 	};
 
 	int Tick() const { return m_CurrentGameTick; }
@@ -173,6 +174,7 @@ public:
 
 	virtual void OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID) = 0;
 
+	virtual void OnFaek(int ClientID, int Team) = 0;
 	virtual void OnClientConnected(int ClientID) = 0;
 	virtual void OnClientEnter(int ClientID) = 0;
 	virtual void OnClientDrop(int ClientID, const char *pReason) = 0;

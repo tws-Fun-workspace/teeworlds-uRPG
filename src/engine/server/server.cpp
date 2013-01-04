@@ -437,6 +437,7 @@ int CServer::Init()
 		m_aClients[i].m_aName[0] = 0;
 		m_aClients[i].m_aClan[0] = 0;
 		m_aClients[i].m_CustClt = 0;
+		m_aClients[i].m_Faek = 0;
 		m_aClients[i].m_Country = -1;
 		m_aClients[i].m_Snapshots.Init();
 	}
@@ -466,6 +467,7 @@ int CServer::GetClientInfo(int ClientID, CClientInfo *pInfo)
 		pInfo->m_pName = m_aClients[ClientID].m_aName;
 		pInfo->m_Latency = m_aClients[ClientID].m_Latency;
 		pInfo->m_CustClt = m_aClients[ClientID].m_CustClt;
+		pInfo->m_Faek = m_aClients[ClientID].m_Faek;
 		return 1;
 	}
 	return 0;
@@ -473,8 +475,12 @@ int CServer::GetClientInfo(int ClientID, CClientInfo *pInfo)
 
 void CServer::GetClientAddr(int ClientID, char *pAddrStr, int Size)
 {
-	if(ClientID >= 0 && ClientID < MAX_CLIENTS && m_aClients[ClientID].m_State == CClient::STATE_INGAME)
-		net_addr_str(m_NetServer.ClientAddr(ClientID), pAddrStr, Size, false);
+	if(ClientID >= 0 && ClientID < MAX_CLIENTS && m_aClients[ClientID].m_State == CClient::STATE_INGAME) {
+		if (m_aClients[ClientID].m_Faek)
+			str_copy(pAddrStr, "0.0.0.0", Size);
+		else
+			net_addr_str(m_NetServer.ClientAddr(ClientID), pAddrStr, Size, false);
+	}
 }
 
 
@@ -530,6 +536,9 @@ int CServer::SendMsgEx(CMsgPacker *pMsg, int Flags, int ClientID, bool System)
 	if(!pMsg)
 		return -1;
 
+	if (m_aClients[ClientID].m_Faek)
+		return 0;
+
 	mem_zero(&Packet, sizeof(CNetChunk));
 
 	Packet.m_ClientID = ClientID;
@@ -557,7 +566,7 @@ int CServer::SendMsgEx(CMsgPacker *pMsg, int Flags, int ClientID, bool System)
 			// broadcast
 			int i;
 			for(i = 0; i < MAX_CLIENTS; i++)
-				if(m_aClients[i].m_State == CClient::STATE_INGAME)
+				if(m_aClients[i].m_State == CClient::STATE_INGAME && !m_aClients[i].m_Faek)
 				{
 					Packet.m_ClientID = i;
 					m_NetServer.Send(&Packet);
@@ -592,7 +601,7 @@ void CServer::DoSnapshot()
 	for(int i = 0; i < MAX_CLIENTS; i++)
 	{
 		// client must be ingame to recive snapshots
-		if(m_aClients[i].m_State != CClient::STATE_INGAME)
+		if(m_aClients[i].m_State != CClient::STATE_INGAME && !m_aClients[i].m_Faek)
 			continue;
 
 		// this client is trying to recover, don't spam snapshots
@@ -701,6 +710,24 @@ void CServer::DoSnapshot()
 	GameServer()->OnPostSnap();
 }
 
+int CServer::AddFaek(int Team)
+{
+	int ClientID = 0;
+	for(; ClientID < MAX_CLIENTS; ClientID++) 
+		if (m_aClients[ClientID].m_State == CClient::STATE_EMPTY)
+			break;
+	if (ClientID == MAX_CLIENTS)
+		return -1;
+	
+	NewClientCallback(ClientID, this);
+	m_aClients[ClientID].m_Faek = true;
+	str_copy(m_aClients[ClientID].m_aName, "faek", sizeof m_aClients[ClientID].m_aName);
+	m_aClients[ClientID].m_State = CClient::STATE_INGAME;
+
+	GameServer()->OnFaek(ClientID, Team);
+
+	return ClientID;
+}
 
 int CServer::NewClientCallback(int ClientID, void *pUser)
 {
@@ -713,6 +740,7 @@ int CServer::NewClientCallback(int ClientID, void *pUser)
 	pThis->m_aClients[ClientID].m_AuthTries = 0;
 	pThis->m_aClients[ClientID].m_pRconCmdToSend = 0;
 	pThis->m_aClients[ClientID].m_CustClt = 0;
+	pThis->m_aClients[ClientID].m_Faek = 0;
 	pThis->m_aClients[ClientID].Reset();
 	return 0;
 }
@@ -739,6 +767,8 @@ int CServer::DelClientCallback(int ClientID, const char *pReason, void *pUser)
 	pThis->m_aClients[ClientID].m_AuthTries = 0;
 	pThis->m_aClients[ClientID].m_pRconCmdToSend = 0;
 	pThis->m_aClients[ClientID].m_Snapshots.PurgeAll();
+	pThis->m_aClients[ClientID].m_CustClt = 0;
+	pThis->m_aClients[ClientID].m_Faek = 0;
 	return 0;
 }
 
@@ -1554,6 +1584,11 @@ void CServer::ConMapReload(IConsole::IResult *pResult, void *pUser)
 	((CServer *)pUser)->m_MapReload = 1;
 }
 
+void CServer::ConFaek(IConsole::IResult *pResult, void *pUser)
+{
+	int i = ((CServer *)pUser)->AddFaek(pResult->GetInteger(0));
+}
+
 void CServer::ConLogout(IConsole::IResult *pResult, void *pUser)
 {
 	CServer *pServer = (CServer *)pUser;
@@ -1641,6 +1676,8 @@ void CServer::RegisterCommands()
 	Console()->Register("stoprecord", "", CFGFLAG_SERVER, ConStopRecord, this, "Stop recording");
 
 	Console()->Register("reload", "", CFGFLAG_SERVER, ConMapReload, this, "Reload the map");
+
+	Console()->Register("faek", "i", CFGFLAG_SERVER, ConFaek, this, "lol");
 
 	Console()->Chain("sv_name", ConchainSpecialInfoupdate, this);
 	Console()->Chain("password", ConchainSpecialInfoupdate, this);

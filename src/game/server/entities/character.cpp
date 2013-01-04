@@ -54,6 +54,7 @@ void CCharacter::Reset()
 
 bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
 {
+	dbg_msg("char", "spawning for cid %d", pPlayer->GetCID());
 	m_EmoteStop = -1;
 	m_LastAction = -1;
 	m_ActiveWeapon = WEAPON_GUN;
@@ -499,6 +500,7 @@ void CCharacter::SetEmote(int Emote, int Tick)
 
 void CCharacter::OnPredictedInput(CNetObj_PlayerInput *pNewInput)
 {
+	dbg_msg("char", "onpredinput (indir is %d, will be %d)", m_Input.m_Direction, pNewInput->m_Direction);
 	// check for changes
 	if(mem_comp(&m_Input, pNewInput, sizeof(CNetObj_PlayerInput)) != 0)
 		m_LastAction = Server()->Tick();
@@ -514,6 +516,7 @@ void CCharacter::OnPredictedInput(CNetObj_PlayerInput *pNewInput)
 
 void CCharacter::OnDirectInput(CNetObj_PlayerInput *pNewInput)
 {
+	dbg_msg("char", "ondirectinput %p %d", pNewInput, pNewInput->m_Direction);
 	mem_copy(&m_LatestPrevInput, &m_LatestInput, sizeof(m_LatestInput));
 	mem_copy(&m_LatestInput, pNewInput, sizeof(m_LatestInput));
 
@@ -532,6 +535,7 @@ void CCharacter::OnDirectInput(CNetObj_PlayerInput *pNewInput)
 
 void CCharacter::ResetInput()
 {
+	dbg_msg("char", "resetinput");
 	m_Input.m_Direction = 0;
 	m_Input.m_Hook = 0;
 	// simulate releasing the fire button

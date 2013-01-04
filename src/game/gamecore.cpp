@@ -76,6 +76,7 @@ void CCharacterCore::Reset()
 
 void CCharacterCore::Tick(bool UseInput)
 {
+	dbg_msg("coar", "coar tick, useinput: %d, indir: %d", UseInput, m_Input.m_Direction);
 	float PhysSize = 28.0f;
 	m_TriggeredEvents = 0;
 

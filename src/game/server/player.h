@@ -24,6 +24,8 @@ public:
 	int GetTeam() const { return m_Team; };
 	int GetCID() const { return m_ClientID; };
 
+	void SetBot(class CBot *Bot);
+
 	void Tick();
 	void PostTick();
 	void Snap(int SnappingClient);
@@ -101,13 +103,17 @@ private:
 	CCharacter *m_pCharacter;
 	CGameContext *m_pGameServer;
 
+public:
 	CGameContext *GameServer() const { return m_pGameServer; }
 	IServer *Server() const;
 
+private:
 	//
 	bool m_Spawning;
 	int m_ClientID;
 	int m_Team;
+
+	class CBot* m_Bot;
 };
 
 #endif

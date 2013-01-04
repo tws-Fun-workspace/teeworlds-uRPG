@@ -3,12 +3,14 @@
 #include <new>
 #include <base/math.h>
 #include <engine/shared/config.h>
+#include <engine/server.h>
 #include <engine/map.h>
 #include <engine/console.h>
 #include "gamecontext.h"
 #include <game/version.h>
 #include <game/collision.h>
 #include <game/gamecore.h>
+#include <game/server/bot.h>
 #include "gamemodes/dm.h"
 #include "gamemodes/tdm.h"
 #include "gamemodes/ctf.h"
@@ -552,6 +554,14 @@ void CGameContext::OnClientEnter(int ClientID)
 	Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
 
 	m_VoteUpdate = true;
+}
+
+void CGameContext::OnFaek(int ClientID, int Team)
+{
+	m_apPlayers[ClientID] = new(ClientID) CPlayer(this, ClientID, Team);
+	m_apPlayers[ClientID]->SetBot(new CBot(m_apPlayers[ClientID]));
+	(void)m_pController->CheckTeamBalance();
+	m_apPlayers[ClientID]->Respawn();
 }
 
 void CGameContext::OnClientConnected(int ClientID)
