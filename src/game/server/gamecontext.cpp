@@ -50,6 +50,7 @@ void CGameContext::Construct(int Resetting)
 	m_pVoteOptionFirst = 0;
 	m_pVoteOptionLast = 0;
 	m_NumVoteOptions = 0;
+	//m_LockTeams = 0;
 
 	if(Resetting==NO_RESET)
 	{
@@ -684,31 +685,29 @@ void CGameContext::OnClientEnter(int ClientID)
 
 		Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
 
-		time_t rawtime;
-		struct tm* timeinfo;
-		char d[16], m [16], y[16];
-		int dd, mm, yy;
-
-		time ( &rawtime );
-		timeinfo = localtime ( &rawtime );
-
-		strftime (d,sizeof(y),"%d",timeinfo);
-		strftime (m,sizeof(m),"%m",timeinfo);
-		strftime (y,sizeof(y),"%Y",timeinfo);
-		dd = atoi(d);
-		mm = atoi(m);
-		yy = atoi(y);
-		if((mm == 12 && dd >= 20))
+		if (g_Config.m_SvEvents)
 		{
-			char aBuf[128];
-			str_format(aBuf, sizeof(aBuf), "Happy %d from GreYFoX", yy+1);
-			SendBroadcast(aBuf, ClientID);
-		}
-		else if(mm == 1 && dd <= 20)
-		{
-			char aBuf[128];
-			str_format(aBuf, sizeof(aBuf), "Happy %d from GreYFoX", yy);
-			SendBroadcast(aBuf, ClientID);
+
+			time_t rawtime;
+			struct tm* timeinfo;
+			char d[16], m [16], y[16];
+			int dd, mm, yy;
+
+			time ( &rawtime );
+			timeinfo = localtime ( &rawtime );
+
+			strftime (d,sizeof(y),"%d",timeinfo);
+			strftime (m,sizeof(m),"%m",timeinfo);
+			strftime (y,sizeof(y),"%Y",timeinfo);
+			dd = atoi(d);
+			mm = atoi(m);
+			yy = atoi(y);
+			if((mm == 12 || mm == 1) && (dd == 31 || dd == 1))
+			{
+				char aBuf[128];
+				str_format(aBuf, sizeof(aBuf), "Happy %d from GreYFoX", mm==12?yy+1:yy);
+				SendBroadcast(aBuf, ClientID);
+			}
 		}
 	}
 	m_VoteUpdate = true;
@@ -860,7 +859,11 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 			else if(Censor == 2)
 				Console()->Print(IConsole::OUTPUT_LEVEL_ADDINFO, "chat", "register ***");
 			else
-				Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "chat-command", pMsg->m_pMessage);
+			{
+				char aBuf[256];
+				str_format(aBuf, sizeof(aBuf), "%d used %s", ClientID, pMsg->m_pMessage);
+				Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "chat-command", aBuf);
+			}
 
 			Console()->SetAccessLevel(IConsole::ACCESS_LEVEL_ADMIN);
 			Console()->SetFlagMask(CFGFLAG_SERVER);
@@ -1125,6 +1128,13 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 		//if(pPlayer->GetTeam() == pMsg->m_Team || (g_Config.m_SvSpamprotection && pPlayer->m_LastSetTeam && pPlayer->m_LastSetTeam+Server()->TickSpeed()*3 > Server()->Tick()))
 		if(pPlayer->GetTeam() == pMsg->m_Team || (g_Config.m_SvSpamprotection && pPlayer->m_LastSetTeam && pPlayer->m_LastSetTeam + Server()->TickSpeed() * g_Config.m_SvTeamChangeDelay > Server()->Tick()))
 			return;
+
+		/*if(pMsg->m_Team != TEAM_SPECTATORS && m_LockTeams)
+		{
+			pPlayer->m_LastSetTeam = Server()->Tick();
+			SendBroadcast("Teams are locked", ClientID);
+			return;
+		}*/
 
 		if(pPlayer->m_TeamChangeTick > Server()->Tick())
 		{
@@ -1469,6 +1479,16 @@ void CGameContext::ConTuneDump(IConsole::IResult *pResult, void *pUserData)
 	}
 }
 
+void CGameContext::ConPause(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+
+	/*if(pSelf->m_pController->IsGameOver())
+		return;*/
+
+	pSelf->m_World.m_Paused ^= 1;
+}
+
 void CGameContext::ConChangeMap(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
@@ -1577,6 +1597,16 @@ void CGameContext::ConShuffleTeams(IConsole::IResult *pResult, void *pUserData)
 	}
 
 	// (void)pSelf->m_pController->CheckTeamBalance();
+}
+
+void CGameContext::ConLockTeams(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	pSelf->m_LockTeams ^= 1;
+	if(pSelf->m_LockTeams)
+		pSelf->SendChat(-1, CGameContext::CHAT_ALL, "Teams were locked");
+	else
+		pSelf->SendChat(-1, CGameContext::CHAT_ALL, "Teams were unlocked");
 }
 */
 void CGameContext::ConAddVote(IConsole::IResult *pResult, void *pUserData)
@@ -1800,6 +1830,11 @@ void CGameContext::ConClearVotes(IConsole::IResult *pResult, void *pUserData)
 void CGameContext::ConVote(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
+
+	// check if there is a vote running
+	if(!pSelf->m_VoteCloseTime)
+		return;
+
 	if(str_comp_nocase(pResult->GetString(0), "yes") == 0)
 		pSelf->m_VoteEnforce = CGameContext::VOTE_ENFORCE_YES_ADMIN;
 	else if(str_comp_nocase(pResult->GetString(0), "no") == 0)
@@ -1842,6 +1877,7 @@ void CGameContext::OnConsoleInit()
 	Console()->Register("tune_reset", "", CFGFLAG_SERVER, ConTuneReset, this, "Reset tuning");
 	Console()->Register("tune_dump", "", CFGFLAG_SERVER, ConTuneDump, this, "Dump tuning");
 
+	Console()->Register("pause_game", "", CFGFLAG_SERVER, ConPause, this, "Pause/unpause game");
 	Console()->Register("change_map", "?r", CFGFLAG_SERVER|CFGFLAG_STORE, ConChangeMap, this, "Change map");
 	Console()->Register("restart", "?i", CFGFLAG_SERVER|CFGFLAG_STORE, ConRestart, this, "Restart in x seconds (0 = abort)");
 	Console()->Register("broadcast", "r", CFGFLAG_SERVER, ConBroadcast, this, "Broadcast message");
@@ -1850,6 +1886,7 @@ void CGameContext::OnConsoleInit()
 	Console()->Register("set_team_all", "i", CFGFLAG_SERVER, ConSetTeamAll, this, "Set team of all players to team");
 	//Console()->Register("swap_teams", "", CFGFLAG_SERVER, ConSwapTeams, this, "Swap the current teams");
 	//Console()->Register("shuffle_teams", "", CFGFLAG_SERVER, ConShuffleTeams, this, "Shuffle the current teams");
+	//Console()->Register("lock_teams", "", CFGFLAG_SERVER, ConLockTeams, this, "Lock/unlock teams");
 
 	Console()->Register("add_vote", "sr", CFGFLAG_SERVER, ConAddVote, this, "Add a voting option");
 	Console()->Register("remove_vote", "s", CFGFLAG_SERVER, ConRemoveVote, this, "remove a voting option");
@@ -2069,6 +2106,17 @@ void CGameContext::OnShutdown()
 
 void CGameContext::OnSnap(int ClientID)
 {
+	// add tuning to demo
+	CTuningParams StandardTuning;
+	if(ClientID == -1 && Server()->DemoRecorder_IsRecording() && mem_comp(&StandardTuning, &m_Tuning, sizeof(CTuningParams)) != 0)
+	{
+		CMsgPacker Msg(NETMSGTYPE_SV_TUNEPARAMS);
+		int *pParams = (int *)&m_Tuning;
+		for(unsigned i = 0; i < sizeof(m_Tuning)/sizeof(int); i++)
+			Msg.AddInt(pParams[i]);
+		Server()->SendMsg(&Msg, MSGFLAG_RECORD|MSGFLAG_NOSEND, ClientID);
+	}
+
 	m_World.Snap(ClientID);
 	m_pController->Snap(ClientID);
 	m_Events.Snap(ClientID);
