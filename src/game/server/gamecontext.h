@@ -84,7 +84,10 @@ class CGameContext : public IGameServer
 	static void ConMutes(IConsole::IResult *pResult, void *pUserData);
 	static void ConchainSpecialMotdupdate(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData);
 
-	//static void ConGive(IConsole::IResult *pResult, void *pUserData);
+	static void ConSayTo(IConsole::IResult *pResult, void *pUserData);
+	static void ConSetScore(IConsole::IResult *pResult, void *pUserData);
+	static void ConLolText(IConsole::IResult *pResult, void *pUserData);
+	static void ConLogin(IConsole::IResult *pResult, void *pUserData);
 
 	CGameContext(int Resetting);
 	void Construct(int Resetting);

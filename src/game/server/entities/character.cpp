@@ -8,6 +8,7 @@
 #include "character.h"
 #include "laser.h"
 #include "projectile.h"
+#include "loltext.h"
 
 //input count
 struct CInputCount
@@ -1188,7 +1189,7 @@ void CCharacter::BlockKill(bool dead)
 		vec2 vel;
 		vel.x = 0;
 		vel.y = 0;
-		//CLoltext::Create(&GameServer()->m_World, this, pos, vel, 200, "CHATKILL", 1, 0);
+		CLoltext::Create(&GameServer()->m_World, this, pos, vel, 200, "CHATKILL", 1, 0);
 		if (g_Config.m_SvChatblockPunish != 0)
 		{
 			m_CKPunish = m_Killer;
@@ -1198,7 +1199,9 @@ void CCharacter::BlockKill(bool dead)
 	}
 	else
 	{
-		//((CGameControllerDDRace*)GameServer()->m_pController)->Blocked(this, killer);
+		char buf[300];
+		str_format(buf, sizeof(buf), "player %d has /killed %d", m_Killer, GetPlayer()->GetCUID());
+		GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_ADDINFO, "hook", buf);
 	}
 
 	CNetMsg_Sv_KillMsg Msg;

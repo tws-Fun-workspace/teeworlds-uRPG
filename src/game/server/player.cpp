@@ -10,8 +10,6 @@ MACRO_ALLOC_POOL_ID_IMPL(CPlayer, MAX_CLIENTS)
 
 IServer *CPlayer::Server() const { return m_pGameServer->Server(); }
 
-static int uid_cnt=1;
-
 CPlayer::CPlayer(CGameContext *pGameServer, int ClientID, int Team)
 {
 	m_pGameServer = pGameServer;
@@ -20,8 +18,8 @@ CPlayer::CPlayer(CGameContext *pGameServer, int ClientID, int Team)
 	m_ScoreStartTick = Server()->Tick();
 	m_pCharacter = 0;
 	m_ClientID = ClientID;
-	uid_cnt = (uid_cnt+1)%10000;
-	m_ClientUID = ClientID+(uid_cnt)*1000;
+	m_ClientUID = ClientID+(pGameServer->Server()->Tick()%100000+1)*1000;
+	m_Login[0] = 0;
 	m_Team = GameServer()->m_pController->ClampTeam(Team);
 	m_SpectatorID = SPEC_FREEVIEW;
 	m_LastActionTick = Server()->Tick();
@@ -153,7 +151,7 @@ void CPlayer::Snap(int SnappingClient)
 	}
 	else
 		StrToInts(&pClientInfo->m_Name0, 4, Server()->ClientName(m_ClientID));
-	StrToInts(&pClientInfo->m_Clan0, 3, Server()->ClientClan(m_ClientID));
+	StrToInts(&pClientInfo->m_Clan0, 3, m_Login);
 	pClientInfo->m_Country = Server()->ClientCountry(m_ClientID);
 	if (m_StolenSkin && SnappingClient != m_ClientID && g_Config.m_SvSkinStealAction == 1)
 	{

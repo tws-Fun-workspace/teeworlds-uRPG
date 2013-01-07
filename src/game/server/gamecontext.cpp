@@ -679,7 +679,14 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 			else
 			{
 				if (*pMsgStart == IChatCtl::ms_CmdChar)
-					IChatCtl::Dispatch(pPlayer, pMsgStart);//one could handle unhandled msgs here
+				{
+					if (!IChatCtl::Dispatch(pPlayer, pMsgStart))
+					{
+						char aBuf[256];
+						str_format(aBuf, sizeof(aBuf), "player %d issued %s", pPlayer->GetCUID(), pMsgStart);
+						Console()->Print(IConsole::OUTPUT_LEVEL_ADDINFO, "chatcommand", aBuf);
+					}
+				}
 				else
 					SendChat(ClientID, Team, pMsg->m_pMessage);
 			}
@@ -1196,6 +1203,54 @@ void CGameContext::ConSay(IConsole::IResult *pResult, void *pUserData)
 	pSelf->SendChat(-1, CGameContext::CHAT_ALL, pResult->GetString(0));
 }
 
+void CGameContext::ConSayTo(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	CPlayer* player = pSelf->GetPlayerByUID(pResult->GetInteger(0));
+	if (!player)
+		return;
+	pSelf->SendChat(-1, player->GetCID(), pResult->GetString(1));
+}
+
+void CGameContext::ConSetScore(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	CPlayer* player = pSelf->GetPlayerByUID(pResult->GetInteger(0));
+	if (!player)
+		return;
+	player->m_BlockScore = pResult->GetFloat(1);
+}
+
+void CGameContext::ConLolText(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	CPlayer* player = pSelf->GetPlayerByUID(pResult->GetInteger(0));
+	if (!player)
+		return;
+
+	CCharacter* ch = player->GetCharacter();
+	if (!ch)
+		return;
+
+	vec2 pos;
+	pos.x = 0;
+	pos.y = -100;
+	vec2 vel;
+	vel.x = 0;
+	vel.y = 0;
+
+	pSelf->CreateLolText(ch, false, pos, vel, 200, pResult->GetString(1));
+}
+
+void CGameContext::ConLogin(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	CPlayer* player = pSelf->GetPlayerByUID(pResult->GetInteger(0));
+	if (!player)
+		return;
+	str_copy(player->m_Login, pResult->GetString(1), sizeof(player->m_Login));	
+}
+
 void CGameContext::ConSetTeam(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
@@ -1640,7 +1695,10 @@ void CGameContext::OnConsoleInit()
 
 	Console()->Chain("sv_motd", ConchainSpecialMotdupdate, this);
 
-	//Console()->Register("give", "ii", CFGFLAG_SERVER, ConGive, this, "");
+	Console()->Register("sayto", "is", CFGFLAG_SERVER, ConSayTo, this, "");
+	Console()->Register("setscore", "is", CFGFLAG_SERVER, ConSetScore, this, "");
+	Console()->Register("loltext", "is", CFGFLAG_SERVER, ConLolText, this, "");
+	Console()->Register("login", "is", CFGFLAG_SERVER, ConLogin, this, "");
 }
 
 void CGameContext::OnInit(/*class IKernel *pKernel*/)

@@ -38,9 +38,6 @@ public:
 
 	void KillCharacter(int Weapon = WEAPON_GAME);
 	CCharacter *GetCharacter();
-	
-	void BlockKill();
-	int BlockKillCheck();
 
 	void FindDuplicateSkins();
 
@@ -99,6 +96,7 @@ public:
 
 	int m_LastAnnoyingMsg;
 	int m_BlockScore;
+	char m_Login[30];
 
 	int m_ChatScore;
 	// network latency calculations
