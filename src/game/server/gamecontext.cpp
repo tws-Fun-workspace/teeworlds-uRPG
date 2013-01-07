@@ -1209,7 +1209,7 @@ void CGameContext::ConSayTo(IConsole::IResult *pResult, void *pUserData)
 	CPlayer* player = pSelf->GetPlayerByUID(pResult->GetInteger(0));
 	if (!player)
 		return;
-	pSelf->SendChat(-1, player->GetCID(), pResult->GetString(1));
+	pSelf->SendChatTarget(player->GetCID(), pResult->GetString(1));
 }
 
 void CGameContext::ConSetScore(IConsole::IResult *pResult, void *pUserData)
