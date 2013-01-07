@@ -178,7 +178,7 @@ void CCharacter::HandleNinja()
 				if(m_NumObjectsHit < 10)
 					m_apHitObjects[m_NumObjectsHit++] = aEnts[i];
 
-				aEnts[i]->TakeDamage(vec2(0, 10.0f), g_pData->m_Weapons.m_Ninja.m_pBase->m_Damage, m_pPlayer->GetCID(), WEAPON_NINJA);
+				aEnts[i]->TakeDamage(vec2(0, -10.0f), g_pData->m_Weapons.m_Ninja.m_pBase->m_Damage, m_pPlayer->GetCID(), WEAPON_NINJA);
 			}
 		}
 
@@ -491,7 +491,8 @@ void CCharacter::GiveNinja(bool Silent)
 	m_Ninja.m_ActivationTick = Server()->Tick();
 	m_aWeapons[WEAPON_NINJA].m_Got = true;
 	m_aWeapons[WEAPON_NINJA].m_Ammo = -1;
-	m_LastWeapon = m_ActiveWeapon;
+	if (m_ActiveWeapon != WEAPON_NINJA)
+		m_LastWeapon = m_ActiveWeapon;
 	m_ActiveWeapon = WEAPON_NINJA;
 	
 	if (!Silent)
@@ -526,7 +527,7 @@ void CCharacter::OnPredictedInput(CNetObj_PlayerInput *pNewInput)
 	mem_copy(&m_Input, pNewInput, sizeof(m_Input));
 	m_NumInputs++;
 
-	// or are not allowed to aim in the center
+	// it is not allowed to aim in the center
 	if(m_Input.m_TargetX == 0 && m_Input.m_TargetY == 0)
 		m_Input.m_TargetY = -1;
 }
@@ -536,6 +537,10 @@ void CCharacter::OnDirectInput(CNetObj_PlayerInput *pNewInput)
 	mem_copy(&m_LatestPrevInput, &m_LatestInput, sizeof(m_LatestInput));
 	mem_copy(&m_LatestInput, pNewInput, sizeof(m_LatestInput));
 
+	// it is not allowed to aim in the center
+	if(m_LatestInput.m_TargetX == 0 && m_LatestInput.m_TargetY == 0)
+		m_LatestInput.m_TargetY = -1;
+
 	if(m_NumInputs > 2 && m_pPlayer->GetTeam() != TEAM_SPECTATORS)
 	{
 		HandleWeaponSwitch();
@@ -543,6 +548,18 @@ void CCharacter::OnDirectInput(CNetObj_PlayerInput *pNewInput)
 	}
 
 	mem_copy(&m_LatestPrevInput, &m_LatestInput, sizeof(m_LatestInput));
+}
+
+void CCharacter::ResetInput()
+{
+	m_Input.m_Direction = 0;
+	m_Input.m_Hook = 0;
+	// simulate releasing the fire button
+	if((m_Input.m_Fire&1) != 0)
+		m_Input.m_Fire++;
+	m_Input.m_Fire &= INPUT_STATE_MASK;
+	m_Input.m_Jump = 0;
+	m_LatestPrevInput = m_LatestInput = m_Input;
 }
 
 void CCharacter::Tick()
@@ -692,6 +709,20 @@ void CCharacter::TickDefered()
 	}
 }
 
+void CCharacter::TickPaused()
+{
+	++m_AttackTick;
+	++m_DamageTakenTick;
+	++m_Ninja.m_ActivationTick;
+	++m_ReckoningTick;
+	if(m_LastAction != -1)
+		++m_LastAction;
+	if(m_aWeapons[m_ActiveWeapon].m_AmmoRegenStart > -1)
+		++m_aWeapons[m_ActiveWeapon].m_AmmoRegenStart;
+	if(m_EmoteStop > -1)
+		++m_EmoteStop;
+}
+
 bool CCharacter::IncreaseHealth(int Amount)
 {
 	if(m_Health >= 10)
@@ -794,7 +825,15 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon)
 
 	// do damage Hit sound
 	if(From >= 0 && From != m_pPlayer->GetCID() && GameServer()->m_apPlayers[From])
-		GameServer()->CreateSound(GameServer()->m_apPlayers[From]->m_ViewPos, SOUND_HIT, CmaskOne(From));
+	{
+		int Mask = CmaskOne(From);
+		for(int i = 0; i < MAX_CLIENTS; i++)
+		{
+			if(GameServer()->m_apPlayers[i] && GameServer()->m_apPlayers[i]->GetTeam() == TEAM_SPECTATORS && GameServer()->m_apPlayers[i]->m_SpectatorID == From)
+				Mask |= CmaskOne(i);
+		}
+		GameServer()->CreateSound(GameServer()->m_apPlayers[From]->m_ViewPos, SOUND_HIT, Mask);
+	}
 
 	// check for death
 	if(m_Health <= 0)
@@ -882,7 +921,8 @@ void CCharacter::Snap(int SnappingClient)
 
 	pCharacter->m_Direction = m_Input.m_Direction;
 
-	if(m_pPlayer->GetCID() == SnappingClient || SnappingClient == -1 || m_pPlayer->GetCID() == GameServer()->m_apPlayers[SnappingClient]->m_SpectatorID)
+	if(m_pPlayer->GetCID() == SnappingClient || SnappingClient == -1 ||
+		(!g_Config.m_SvStrictSpectateMode && m_pPlayer->GetCID() == GameServer()->m_apPlayers[SnappingClient]->m_SpectatorID))
 	{
 		pCharacter->m_Health = m_Health;
 		pCharacter->m_Armor = m_Armor;

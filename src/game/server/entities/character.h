@@ -30,6 +30,7 @@ public:
 	virtual void Destroy();
 	virtual void Tick();
 	virtual void TickDefered();
+	virtual void TickPaused();
 	virtual void Snap(int SnappingClient);
 
 	bool IsGrounded();
@@ -43,6 +44,7 @@ public:
 
 	void OnPredictedInput(CNetObj_PlayerInput *pNewInput);
 	void OnDirectInput(CNetObj_PlayerInput *pNewInput);
+	void ResetInput();
 	void FireWeapon();
 
 	void Die(int Killer, int Weapon);

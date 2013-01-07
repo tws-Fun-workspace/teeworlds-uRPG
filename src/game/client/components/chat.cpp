@@ -41,6 +41,11 @@ void CChat::OnReset()
 	m_PlaceholderOffset = 0;
 	m_PlaceholderLength = 0;
 	m_pHistoryEntry = 0x0;
+	m_PendingChatCounter = 0;
+	m_LastChatSend = 0;
+
+	for(int i = 0; i < CHAT_NUM; ++i)
+		m_aLastSoundPlayed[i] = 0;
 }
 
 void CChat::OnRelease()
@@ -107,9 +112,13 @@ bool CChat::OnInput(IInput::CEvent Event)
 	{
 		if(m_Input.GetString()[0])
 		{
-			Say(m_Mode == MODE_ALL ? 0 : 1, m_Input.GetString());
-			char *pEntry = m_History.Allocate(m_Input.GetLength()+1);
-			mem_copy(pEntry, m_Input.GetString(), m_Input.GetLength()+1);
+			if(m_LastChatSend+time_freq() < time_get())
+				Say(m_Mode == MODE_ALL ? 0 : 1, m_Input.GetString());
+			else
+				++m_PendingChatCounter;
+			CHistoryEntry *pEntry = m_History.Allocate(sizeof(CHistoryEntry)+m_Input.GetLength());
+			pEntry->m_Team = m_Mode == MODE_ALL ? 0 : 1;
+			mem_copy(pEntry->m_aText, m_Input.GetString(), m_Input.GetLength()+1);
 		}
 		m_pHistoryEntry = 0x0;
 		m_Mode = MODE_NONE;
@@ -132,17 +141,28 @@ bool CChat::OnInput(IInput::CEvent Event)
 
 		// find next possible name
 		const char *pCompletionString = 0;
-		m_CompletionChosen = (m_CompletionChosen+1)%MAX_CLIENTS;
-		for(int i = 0; i < MAX_CLIENTS; ++i)
+		m_CompletionChosen = (m_CompletionChosen+1)%(2*MAX_CLIENTS);
+		for(int i = 0; i < 2*MAX_CLIENTS; ++i)
 		{
+			int SearchType = ((m_CompletionChosen+i)%(2*MAX_CLIENTS))/MAX_CLIENTS;
 			int Index = (m_CompletionChosen+i)%MAX_CLIENTS;
 			if(!m_pClient->m_Snap.m_paPlayerInfos[Index])
 				continue;
 
-			if(str_find_nocase(m_pClient->m_aClients[Index].m_aName, m_aCompletionBuffer))
+			bool Found = false;
+			if(SearchType == 1)
+			{
+				if(str_comp_nocase_num(m_pClient->m_aClients[Index].m_aName, m_aCompletionBuffer, str_length(m_aCompletionBuffer)) &&
+					str_find_nocase(m_pClient->m_aClients[Index].m_aName, m_aCompletionBuffer))
+					Found = true;
+			}
+			else if(!str_comp_nocase_num(m_pClient->m_aClients[Index].m_aName, m_aCompletionBuffer, str_length(m_aCompletionBuffer)))
+				Found = true;
+
+			if(Found)
 			{
 				pCompletionString = m_pClient->m_aClients[Index].m_aName;
-				m_CompletionChosen = Index;
+				m_CompletionChosen = Index+SearchType*MAX_CLIENTS;
 				break;
 			}
 		}
@@ -151,10 +171,25 @@ bool CChat::OnInput(IInput::CEvent Event)
 		if(pCompletionString)
 		{
 			char aBuf[256];
+			// add part before the name
 			str_copy(aBuf, m_Input.GetString(), min(static_cast<int>(sizeof(aBuf)), m_PlaceholderOffset+1));
+
+			// add the name
 			str_append(aBuf, pCompletionString, sizeof(aBuf));
+
+			// add seperator
+			const char *pSeparator = "";
+			if(*(m_Input.GetString()+m_PlaceholderOffset+m_PlaceholderLength) != ' ')
+				pSeparator = m_PlaceholderOffset == 0 ? ": " : " ";
+			else if(m_PlaceholderOffset == 0)
+				pSeparator = ":";
+			if(*pSeparator)
+				str_append(aBuf, pSeparator, sizeof(aBuf));
+
+			// add part after the name
 			str_append(aBuf, m_Input.GetString()+m_PlaceholderOffset+m_PlaceholderLength, sizeof(aBuf));
-			m_PlaceholderLength = str_length(pCompletionString);
+
+			m_PlaceholderLength = str_length(pSeparator)+str_length(pCompletionString);
 			m_OldChatStringLength = m_Input.GetLength();
 			m_Input.Set(aBuf);
 			m_Input.SetCursorOffset(m_PlaceholderOffset+m_PlaceholderLength);
@@ -173,34 +208,26 @@ bool CChat::OnInput(IInput::CEvent Event)
 	}
 	if(Event.m_Flags&IInput::FLAG_PRESS && Event.m_Key == KEY_UP)
 	{
-		if (m_pHistoryEntry)
+		if(m_pHistoryEntry)
 		{
-			char *pTest = m_History.Prev(m_pHistoryEntry);
+			CHistoryEntry *pTest = m_History.Prev(m_pHistoryEntry);
 
-			if (pTest)
+			if(pTest)
 				m_pHistoryEntry = pTest;
 		}
 		else
 			m_pHistoryEntry = m_History.Last();
 
-		if (m_pHistoryEntry)
-		{
-			unsigned int Len = str_length(m_pHistoryEntry);
-			if (Len < sizeof(m_Input) - 1) // TODO: WTF?
-				m_Input.Set(m_pHistoryEntry);
-		}
+		if(m_pHistoryEntry)
+			m_Input.Set(m_pHistoryEntry->m_aText);
 	}
 	else if (Event.m_Flags&IInput::FLAG_PRESS && Event.m_Key == KEY_DOWN)
 	{
-		if (m_pHistoryEntry)
+		if(m_pHistoryEntry)
 			m_pHistoryEntry = m_History.Next(m_pHistoryEntry);
 
 		if (m_pHistoryEntry)
-		{
-			unsigned int Len = str_length(m_pHistoryEntry);
-			if (Len < sizeof(m_Input) - 1) // TODO: WTF?
-				m_Input.Set(m_pHistoryEntry);
-		}
+			m_Input.Set(m_pHistoryEntry->m_aText);
 		else
 			m_Input.Clear();
 	}
@@ -239,13 +266,15 @@ void CChat::OnMessage(int MsgType, void *pRawMsg)
 void CChat::AddLine(int ClientID, int Team, const char *pLine)
 {
 	if(ClientID != -1 && (m_pClient->m_aClients[ClientID].m_aName[0] == '\0' || // unknown client
-		m_pClient->m_aClients[ClientID].m_ChatIgnore))
+		m_pClient->m_aClients[ClientID].m_ChatIgnore ||
+		(m_pClient->m_Snap.m_LocalClientID != ClientID && g_Config.m_ClShowChatFriends && !m_pClient->m_aClients[ClientID].m_Friend)))
 		return;
 
 	bool Highlighted = false;
 	char *p = const_cast<char*>(pLine);
 	while(*p)
 	{
+		Highlighted = false;
 		pLine = p;
 		// find line seperator and strip multiline
 		while(*p)
@@ -264,9 +293,16 @@ void CChat::AddLine(int ClientID, int Team, const char *pLine)
 		m_aLines[m_CurrentLine].m_ClientID = ClientID;
 		m_aLines[m_CurrentLine].m_Team = Team;
 		m_aLines[m_CurrentLine].m_NameColor = -2;
-		m_aLines[m_CurrentLine].m_Highlighted = str_find_nocase(pLine, m_pClient->m_aClients[m_pClient->m_Snap.m_LocalClientID].m_aName) != 0;
-		if(m_aLines[m_CurrentLine].m_Highlighted)
-			Highlighted = true;
+
+		// check for highlighted name
+		const char *pHL = str_find_nocase(pLine, m_pClient->m_aClients[m_pClient->m_Snap.m_LocalClientID].m_aName);
+		if(pHL)
+		{
+			int Length = str_length(m_pClient->m_aClients[m_pClient->m_Snap.m_LocalClientID].m_aName);
+			if((pLine == pHL || pHL[-1] == ' ') && (pHL[Length] == 0 || pHL[Length] == ' ' || (pHL[Length] == ':' && pHL[Length+1] == ' ')))
+				Highlighted = true;
+		}
+		m_aLines[m_CurrentLine].m_Highlighted =  Highlighted;
 
 		if(ClientID == -1) // server message
 		{
@@ -296,16 +332,50 @@ void CChat::AddLine(int ClientID, int Team, const char *pLine)
 	}
 
 	// play sound
+	int64 Now = time_get();
 	if(ClientID == -1)
-		m_pClient->m_pSounds->Play(CSounds::CHN_GUI, SOUND_CHAT_SERVER, 0, vec2(0,0));
+	{
+		if(Now-m_aLastSoundPlayed[CHAT_SERVER] >= time_freq()*3/10)
+		{
+			m_pClient->m_pSounds->Play(CSounds::CHN_GUI, SOUND_CHAT_SERVER, 0);
+			m_aLastSoundPlayed[CHAT_SERVER] = Now;
+		}
+	}
 	else if(Highlighted)
-		m_pClient->m_pSounds->Play(CSounds::CHN_GUI, SOUND_CHAT_HIGHLIGHT, 0, vec2(0.0f, 0.0f));
+	{
+		if(Now-m_aLastSoundPlayed[CHAT_HIGHLIGHT] >= time_freq()*3/10)
+		{
+			m_pClient->m_pSounds->Play(CSounds::CHN_GUI, SOUND_CHAT_CLIENT, 0);
+			m_aLastSoundPlayed[CHAT_HIGHLIGHT] = Now;
+		}
+	}
 	else
-		m_pClient->m_pSounds->Play(CSounds::CHN_GUI, SOUND_CHAT_CLIENT, 0, vec2(0,0));
+	{
+		if(Now-m_aLastSoundPlayed[CHAT_CLIENT] >= time_freq()*3/10)
+		{
+			m_pClient->m_pSounds->Play(CSounds::CHN_GUI, SOUND_CHAT_HIGHLIGHT, 0);
+			m_aLastSoundPlayed[CHAT_CLIENT] = Now;
+		}
+	}
 }
 
 void CChat::OnRender()
 {
+	// send pending chat messages
+	if(m_PendingChatCounter > 0 && m_LastChatSend+time_freq() < time_get())
+	{
+		CHistoryEntry *pEntry = m_History.Last();
+		for(int i = m_PendingChatCounter-1; pEntry; --i, pEntry = m_History.Prev(pEntry))
+		{
+			if(i == 0)
+			{
+				Say(pEntry->m_Team, pEntry->m_aText);
+				break;
+			}
+		}
+		--m_PendingChatCounter;
+	}
+
 	float Width = 300.0f*Graphics()->ScreenAspect();
 	Graphics()->MapScreen(0.0f, 0.0f, Width, 300.0f);
 	float x = 5.0f;
@@ -354,7 +424,9 @@ void CChat::OnRender()
 		}
 
 		TextRender()->TextEx(&Cursor, m_Input.GetString()+m_ChatStringOffset, m_Input.GetCursorOffset()-m_ChatStringOffset);
+		static float MarkerOffset = TextRender()->TextWidth(0, 8.0f, "|", -1)/3;
 		CTextCursor Marker = Cursor;
+		Marker.m_X -= MarkerOffset;
 		TextRender()->TextEx(&Marker, "|", -1);
 		TextRender()->TextEx(&Cursor, m_Input.GetString()+m_Input.GetCursorOffset(), -1);
 	}
@@ -429,6 +501,8 @@ void CChat::OnRender()
 
 void CChat::Say(int Team, const char *pLine)
 {
+	m_LastChatSend = time_get();
+
 	// send chat message
 	CNetMsg_Cl_Say Msg;
 	Msg.m_Team = Team;

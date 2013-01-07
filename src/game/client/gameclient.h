@@ -89,6 +89,7 @@ public:
 	bool m_SuppressEvents;
 	bool m_NewTick;
 	bool m_NewPredictedTick;
+	int m_FlagDropTick[2];
 
 	// TODO: move this
 	CTuningParams m_Tuning;
@@ -124,6 +125,7 @@ public:
 
 		const CNetObj_PlayerInfo *m_paPlayerInfos[MAX_CLIENTS];
 		const CNetObj_PlayerInfo *m_paInfoByScore[MAX_CLIENTS];
+		const CNetObj_PlayerInfo *m_paInfoByTeam[MAX_CLIENTS];
 
 		int m_LocalClientID;
 		int m_NumPlayers;
@@ -211,7 +213,6 @@ public:
 	virtual void OnStartGame();
 
 	virtual const char *GetItemName(int Type);
-	virtual int GetCountryIndex(int Code);
 	virtual const char *Version();
 	virtual const char *NetVersion();
 
@@ -241,6 +242,8 @@ public:
 	class CVoting *m_pVoting;
 	class CScoreboard *m_pScoreboard;
 	class CItems *m_pItems;
+	class CMapLayers *m_pMapLayersBackGround;
+	class CMapLayers *m_pMapLayersForeGround;
 };
 
 

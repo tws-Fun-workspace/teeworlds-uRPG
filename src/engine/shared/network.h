@@ -49,6 +49,7 @@ enum
 	NET_MAX_CHUNKHEADERSIZE = 5,
 	NET_PACKETHEADERSIZE = 3,
 	NET_MAX_CLIENTS = 16,
+	NET_MAX_CONSOLE_CLIENTS = 4,
 	NET_MAX_SEQUENCE = 1<<10,
 	NET_SEQUENCE_MASK = NET_MAX_SEQUENCE-1,
 
@@ -71,8 +72,6 @@ enum
 	NET_CTRLMSG_CONNECTACCEPT=2,
 	NET_CTRLMSG_ACCEPT=3,
 	NET_CTRLMSG_CLOSE=4,
-
-	NET_SERVER_MAXBANS=1024,
 
 	NET_CONN_BUFFERSIZE=1024*32,
 
@@ -181,7 +180,7 @@ public:
 	const char *ErrorString();
 	void SignalResend();
 	int State() const { return m_State; }
-	NETADDR PeerAddress() const { return m_PeerAddr; }
+	const NETADDR *PeerAddress() const { return &m_PeerAddr; }
 
 	void ResetErrorString() { m_ErrorString[0] = 0; }
 	const char *ErrorString() const { return m_ErrorString; }
@@ -190,6 +189,36 @@ public:
 	int64 LastRecvTime() const { return m_LastRecvTime; }
 
 	int AckSequence() const { return m_Ack; }
+};
+
+class CConsoleNetConnection
+{
+private:
+	int m_State;
+
+	NETADDR m_PeerAddr;
+	NETSOCKET m_Socket;
+
+	char m_aBuffer[NET_MAX_PACKETSIZE];
+	int m_BufferOffset;
+
+	char m_aErrorString[256];
+
+	bool m_LineEndingDetected;
+	char m_aLineEnding[3];
+
+public:
+	void Init(NETSOCKET Socket, const NETADDR *pAddr);
+	void Disconnect(const char *pReason);
+
+	int State() const { return m_State; }
+	const NETADDR *PeerAddress() const { return &m_PeerAddr; }
+	const char *ErrorString() const { return m_aErrorString; }
+
+	void Reset();
+	int Update();
+	int Send(const char *pLine);
+	int Recv(char *pLine, int MaxLength);
 };
 
 class CNetRecvUnpacker
@@ -213,45 +242,17 @@ public:
 // server side
 class CNetServer
 {
-public:
-	struct CBanInfo
-	{
-		NETADDR m_Addr;
-		int m_Expires;
-		char m_Reason[128];
-	};
-
-private:
 	struct CSlot
 	{
 	public:
 		CNetConnection m_Connection;
 	};
 
-	struct CBan
-	{
-	public:
-		CBanInfo m_Info;
-
-		// hash list
-		CBan *m_pHashNext;
-		CBan *m_pHashPrev;
-
-		// used or free list
-		CBan *m_pNext;
-		CBan *m_pPrev;
-	};
-
-
 	NETSOCKET m_Socket;
+	class CNetBan *m_pNetBan;
 	CSlot m_aSlots[NET_MAX_CLIENTS];
 	int m_MaxClients;
 	int m_MaxClientsPerIP;
-
-	CBan *m_aBans[256];
-	CBan m_BanPool[NET_SERVER_MAXBANS];
-	CBan *m_BanPool_FirstFree;
-	CBan *m_BanPool_FirstUsed;
 
 	NETFUNC_NEWCLIENT m_pfnNewClient;
 	NETFUNC_DELCLIENT m_pfnDelClient;
@@ -259,13 +260,11 @@ private:
 
 	CNetRecvUnpacker m_RecvUnpacker;
 
-	void BanRemoveByObject(CBan *pBan);
-
 public:
 	int SetCallbacks(NETFUNC_NEWCLIENT pfnNewClient, NETFUNC_DELCLIENT pfnDelClient, void *pUser);
 
 	//
-	bool Open(NETADDR BindAddr, int MaxClients, int MaxClientsPerIP, int Flags);
+	bool Open(NETADDR BindAddr, class CNetBan *pNetBan, int MaxClients, int MaxClientsPerIP, int Flags);
 	int Close();
 
 	//
@@ -276,19 +275,53 @@ public:
 	//
 	int Drop(int ClientID, const char *pReason);
 
-	// banning
-	int BanAdd(NETADDR Addr, int Seconds, const char *pReason);
-	int BanRemove(NETADDR Addr);
-	int BanNum(); // caution, slow
-	int BanGet(int Index, CBanInfo *pInfo); // caution, slow
-
 	// status requests
-	NETADDR ClientAddr(int ClientID) const { return m_aSlots[ClientID].m_Connection.PeerAddress(); }
+	const NETADDR *ClientAddr(int ClientID) const { return m_aSlots[ClientID].m_Connection.PeerAddress(); }
 	NETSOCKET Socket() const { return m_Socket; }
+	class CNetBan *NetBan() const { return m_pNetBan; }
+	int NetType() const { return m_Socket.type; }
 	int MaxClients() const { return m_MaxClients; }
 
 	//
 	void SetMaxClientsPerIP(int Max);
+};
+
+class CNetConsole
+{
+	struct CSlot
+	{
+		CConsoleNetConnection m_Connection;
+	};
+
+	NETSOCKET m_Socket;
+	class CNetBan *m_pNetBan;
+	CSlot m_aSlots[NET_MAX_CONSOLE_CLIENTS];
+
+	NETFUNC_NEWCLIENT m_pfnNewClient;
+	NETFUNC_DELCLIENT m_pfnDelClient;
+	void *m_UserPtr;
+
+	CNetRecvUnpacker m_RecvUnpacker;
+
+public:
+	void SetCallbacks(NETFUNC_NEWCLIENT pfnNewClient, NETFUNC_DELCLIENT pfnDelClient, void *pUser);
+
+	//
+	bool Open(NETADDR BindAddr, class CNetBan *pNetBan, int Flags);
+	int Close();
+
+	//
+	int Recv(char *pLine, int MaxLength, int *pClientID = 0);
+	int Send(int ClientID, const char *pLine);
+	int Update();
+
+	//
+	int AcceptClient(NETSOCKET Socket, const NETADDR *pAddr);
+	int Drop(int ClientID, const char *pReason);
+
+	// status requests
+	const NETADDR *ClientAddr(int ClientID) const { return m_aSlots[ClientID].m_Connection.PeerAddress(); }
+	class CNetBan *NetBan() const { return m_pNetBan; }
 };
 
 
@@ -320,6 +353,7 @@ public:
 	int ResetErrorString();
 
 	// error and state
+	int NetType() { return m_Socket.type; }
 	int State();
 	int GotProblems();
 	const char *ErrorString();

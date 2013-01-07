@@ -23,7 +23,7 @@ protected:
 	float m_PredIntraTick;
 
 	float m_LocalTime;
-	float m_FrameTime;
+	float m_RenderFrameTime;
 
 	int m_GameTickSpeed;
 public:
@@ -68,7 +68,7 @@ public:
 	inline int GameTickSpeed() const { return m_GameTickSpeed; }
 
 	// other time access
-	inline float FrameTime() const { return m_FrameTime; }
+	inline float RenderFrameTime() const { return m_RenderFrameTime; }
 	inline float LocalTime() const { return m_LocalTime; }
 
 	// actions
@@ -95,6 +95,7 @@ public:
 	// remote console
 	virtual void RconAuth(const char *pUsername, const char *pPassword) = 0;
 	virtual bool RconAuthed() = 0;
+	virtual bool UseTempRconCommands() = 0;
 	virtual void Rcon(const char *pLine) = 0;
 
 	// server info
@@ -159,7 +160,6 @@ public:
 	virtual int OnSnapInput(int *pData) = 0;
 
 	virtual const char *GetItemName(int Type) = 0;
-	virtual int GetCountryIndex(int Code) = 0;
 	virtual const char *Version() = 0;
 	virtual const char *NetVersion() = 0;
 

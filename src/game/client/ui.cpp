@@ -53,6 +53,13 @@ int CUI::MouseInside(const CUIRect *r)
 	return 0;
 }
 
+void CUI::ConvertMouseMove(float *x, float *y)
+{
+	float Fac = (float)(g_Config.m_UiMousesens)/g_Config.m_InpMousesens;
+	*x = *x*Fac;
+	*y = *y*Fac;
+}
+
 CUIRect *CUI::Screen()
 {
 	float Aspect = Graphics()->ScreenAspect();
@@ -65,6 +72,11 @@ CUIRect *CUI::Screen()
 	m_Screen.h = h;
 
 	return &m_Screen;
+}
+
+float CUI::PixelSize()
+{
+	return Screen()->w/Graphics()->ScreenWidth();
 }
 
 void CUI::SetScale(float s)

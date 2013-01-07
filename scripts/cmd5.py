@@ -32,3 +32,4 @@ hash = hashlib.md5(f).hexdigest().lower()[16:]
 #TODO 0.7: improve nethash creation
 print('#define GAME_NETVERSION_HASH "626fce9a778df4d4"')
 print('#define GAME_NETVERSION_HASH_CUST "%s"' % hash)
+>>>>>>> master06

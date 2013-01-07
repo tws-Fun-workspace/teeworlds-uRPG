@@ -79,8 +79,10 @@ public:
 	const void *LastActiveItem() const { return m_pLastActiveItem; }
 
 	int MouseInside(const CUIRect *pRect);
+	void ConvertMouseMove(float *x, float *y);
 
 	CUIRect *Screen();
+	float PixelSize();
 	void ClipEnable(const CUIRect *pRect);
 	void ClipDisable();
 

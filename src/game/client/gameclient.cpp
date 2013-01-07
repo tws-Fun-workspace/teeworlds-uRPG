@@ -90,23 +90,11 @@ void CGameClient::CStack::Add(class CComponent *pComponent) { m_paComponents[m_N
 const char *CGameClient::Version() { return GAME_VERSION; }
 const char *CGameClient::NetVersion() { return GAME_NETVERSION_CUST; }
 const char *CGameClient::GetItemName(int Type) { return m_NetObjHandler.GetObjName(Type); }
-int CGameClient::GetCountryIndex(int Code)
-{
-	int Index = g_GameClient.m_pCountryFlags->Find(Code);
-	if(Index < 0)
-	{
-		Index = g_GameClient.m_pCountryFlags->Find(-1);
-		if(Index < 0)
-			Index = 0;
-	}
-	return Index;
-}
 
 void CGameClient::OnConsoleInit()
 {
 	m_pEngine = Kernel()->RequestInterface<IEngine>();
 	m_pClient = Kernel()->RequestInterface<IClient>();
-	m_pGraphics = Kernel()->RequestInterface<IGraphics>();
 	m_pTextRender = Kernel()->RequestInterface<ITextRender>();
 	m_pSound = Kernel()->RequestInterface<ISound>();
 	m_pInput = Kernel()->RequestInterface<IInput>();
@@ -137,6 +125,8 @@ void CGameClient::OnConsoleInit()
 	m_pVoting = &::gs_Voting;
 	m_pScoreboard = &::gs_Scoreboard;
 	m_pItems = &::gs_Items;
+	m_pMapLayersBackGround = &::gs_MapLayersBackGround;
+	m_pMapLayersForeGround = &::gs_MapLayersForeGround;
 
 	// make a list of all the systems, make sure to add them in the corrent render order
 	m_All.Add(m_pSkins);
@@ -196,19 +186,17 @@ void CGameClient::OnConsoleInit()
 	Console()->Register("restart", "?i", CFGFLAG_SERVER, 0, 0, "Restart in x seconds");
 	Console()->Register("broadcast", "r", CFGFLAG_SERVER, 0, 0, "Broadcast message");
 	Console()->Register("say", "r", CFGFLAG_SERVER, 0, 0, "Say in chat");
-	Console()->Register("set_team", "ii", CFGFLAG_SERVER, 0, 0, "Set team of player to team");
+	Console()->Register("set_team", "ii?i", CFGFLAG_SERVER, 0, 0, "Set team of player to team");
 	Console()->Register("set_team_all", "i", CFGFLAG_SERVER, 0, 0, "Set team of all players to team");
 	Console()->Register("add_vote", "sr", CFGFLAG_SERVER, 0, 0, "Add a voting option");
 	Console()->Register("remove_vote", "s", CFGFLAG_SERVER, 0, 0, "remove a voting option");
 	Console()->Register("force_vote", "ss?r", CFGFLAG_SERVER, 0, 0, "Force a voting option");
 	Console()->Register("clear_votes", "", CFGFLAG_SERVER, 0, 0, "Clears the voting options");
 	Console()->Register("vote", "r", CFGFLAG_SERVER, 0, 0, "Force a vote to yes/no");
+	Console()->Register("swap_teams", "", CFGFLAG_SERVER, 0, 0, "Swap the current teams");
+	Console()->Register("shuffle_teams", "", CFGFLAG_SERVER, 0, 0, "Shuffle the current teams");
 
 
-	// propagate pointers
-	m_UI.SetGraphics(Graphics(), TextRender());
-	m_RenderTools.m_pGraphics = Graphics();
-	m_RenderTools.m_pUI = UI();
 	for(int i = 0; i < m_All.m_Num; i++)
 		m_All.m_paComponents[i]->m_pClient = this;
 
@@ -232,6 +220,13 @@ void CGameClient::OnConsoleInit()
 
 void CGameClient::OnInit()
 {
+	m_pGraphics = Kernel()->RequestInterface<IGraphics>();
+
+	// propagate pointers
+	m_UI.SetGraphics(Graphics(), TextRender());
+	m_RenderTools.m_pGraphics = Graphics();
+	m_RenderTools.m_pUI = UI();
+	
 	int64 Start = time_get();
 
 	// set the language
@@ -352,6 +347,9 @@ void CGameClient::OnReset()
 		m_All.m_paComponents[i]->OnReset();
 
 	m_DemoSpecID = SPEC_FREEVIEW;
+	m_FlagDropTick[TEAM_RED] = 0;
+	m_FlagDropTick[TEAM_BLUE] = 0;
+	m_Tuning = CTuningParams();
 }
 
 
@@ -451,7 +449,7 @@ void CGameClient::OnRender()
 	m_NewPredictedTick = false;
 
 	// check if client info has to be resent
-	if(m_LastSendInfo && Client()->State() == IClient::STATE_ONLINE && !m_pMenus->IsActive() && m_LastSendInfo+time_freq()*5 < time_get())
+	if(m_LastSendInfo && Client()->State() == IClient::STATE_ONLINE && m_Snap.m_LocalClientID >= 0 && !m_pMenus->IsActive() && m_LastSendInfo+time_freq()*5 < time_get())
 	{
 		// resend if client info differs
 		if(str_comp(g_Config.m_PlayerName, m_aClients[m_Snap.m_LocalClientID].m_aName) ||
@@ -553,7 +551,7 @@ void CGameClient::OnMessage(int MsgId, CUnpacker *pUnpacker)
 			pMsg->m_SoundID == SOUND_CTF_GRAB_PL)
 			g_GameClient.m_pSounds->Enqueue(CSounds::CHN_GLOBAL, pMsg->m_SoundID);
 		else
-			g_GameClient.m_pSounds->Play(CSounds::CHN_GLOBAL, pMsg->m_SoundID, 1.0f, vec2(0,0));
+			g_GameClient.m_pSounds->Play(CSounds::CHN_GLOBAL, pMsg->m_SoundID, 1.0f);
 	}
 }
 
@@ -602,33 +600,33 @@ void CGameClient::ProcessEvents()
 
 		if(Item.m_Type == NETEVENTTYPE_DAMAGEIND)
 		{
-			NETEVENT_DAMAGEIND *ev = (NETEVENT_DAMAGEIND *)pData;
+			CNetEvent_DamageInd *ev = (CNetEvent_DamageInd *)pData;
 			g_GameClient.m_pEffects->DamageIndicator(vec2(ev->m_X, ev->m_Y), GetDirection(ev->m_Angle));
 		}
 		else if(Item.m_Type == NETEVENTTYPE_EXPLOSION)
 		{
-			NETEVENT_EXPLOSION *ev = (NETEVENT_EXPLOSION *)pData;
+			CNetEvent_Explosion *ev = (CNetEvent_Explosion *)pData;
 			g_GameClient.m_pEffects->Explosion(vec2(ev->m_X, ev->m_Y));
 		}
 		else if(Item.m_Type == NETEVENTTYPE_HAMMERHIT)
 		{
-			NETEVENT_HAMMERHIT *ev = (NETEVENT_HAMMERHIT *)pData;
+			CNetEvent_HammerHit *ev = (CNetEvent_HammerHit *)pData;
 			g_GameClient.m_pEffects->HammerHit(vec2(ev->m_X, ev->m_Y));
 		}
 		else if(Item.m_Type == NETEVENTTYPE_SPAWN)
 		{
-			NETEVENT_SPAWN *ev = (NETEVENT_SPAWN *)pData;
+			CNetEvent_Spawn *ev = (CNetEvent_Spawn *)pData;
 			g_GameClient.m_pEffects->PlayerSpawn(vec2(ev->m_X, ev->m_Y));
 		}
 		else if(Item.m_Type == NETEVENTTYPE_DEATH)
 		{
-			NETEVENT_DEATH *ev = (NETEVENT_DEATH *)pData;
+			CNetEvent_Death *ev = (CNetEvent_Death *)pData;
 			g_GameClient.m_pEffects->PlayerDeath(vec2(ev->m_X, ev->m_Y), ev->m_ClientID);
 		}
 		else if(Item.m_Type == NETEVENTTYPE_SOUNDWORLD)
 		{
-			NETEVENT_SOUNDWORLD *ev = (NETEVENT_SOUNDWORLD *)pData;
-			g_GameClient.m_pSounds->Play(CSounds::CHN_WORLD, ev->m_SoundID, 1.0f, vec2(ev->m_X, ev->m_Y));
+			CNetEvent_SoundWorld *ev = (CNetEvent_SoundWorld *)pData;
+			g_GameClient.m_pSounds->PlayAt(CSounds::CHN_WORLD, ev->m_SoundID, 1.0f, vec2(ev->m_X, ev->m_Y));
 		}
 	}
 }
@@ -696,7 +694,7 @@ void CGameClient::OnNewSnapshot()
 				int ClientID = Item.m_ID;
 				IntsToStr(&pInfo->m_Name0, 4, m_aClients[ClientID].m_aName);
 				IntsToStr(&pInfo->m_Clan0, 3, m_aClients[ClientID].m_aClan);
-				m_aClients[ClientID].m_Country = GetCountryIndex(pInfo->m_Country);
+				m_aClients[ClientID].m_Country = pInfo->m_Country;
 				IntsToStr(&pInfo->m_Skin0, 6, m_aClients[ClientID].m_aSkinName);
 
 				m_aClients[ClientID].m_UseCustomColor = pInfo->m_UseCustomColor;
@@ -794,6 +792,20 @@ void CGameClient::OnNewSnapshot()
 			{
 				m_Snap.m_pGameDataObj = (const CNetObj_GameData *)pData;
 				m_Snap.m_GameDataSnapID = Item.m_ID;
+				if(m_Snap.m_pGameDataObj->m_FlagCarrierRed == FLAG_TAKEN)
+				{
+					if(m_FlagDropTick[TEAM_RED] == 0)
+						m_FlagDropTick[TEAM_RED] = Client()->GameTick();
+				}
+				else if(m_FlagDropTick[TEAM_RED] != 0)
+						m_FlagDropTick[TEAM_RED] = 0;
+				if(m_Snap.m_pGameDataObj->m_FlagCarrierBlue == FLAG_TAKEN)
+				{
+					if(m_FlagDropTick[TEAM_BLUE] == 0)
+						m_FlagDropTick[TEAM_BLUE] = Client()->GameTick();
+				}
+				else if(m_FlagDropTick[TEAM_BLUE] != 0)
+						m_FlagDropTick[TEAM_BLUE] = 0;
 			}
 			else if(Item.m_Type == NETOBJTYPE_FLAG)
 				m_Snap.m_paFlags[Item.m_ID%2] = (const CNetObj_Flag *)pData;
@@ -856,6 +868,17 @@ void CGameClient::OnNewSnapshot()
 			}
 		}
 	}
+	// sort player infos by team
+	int Teams[3] = { TEAM_RED, TEAM_BLUE, TEAM_SPECTATORS };
+	int Index = 0;
+	for(int Team = 0; Team < 3; ++Team)
+	{
+		for(int i = 0; i < MAX_CLIENTS && Index < MAX_CLIENTS; ++i)
+		{
+			if(m_Snap.m_paPlayerInfos[i] && m_Snap.m_paPlayerInfos[i]->m_Team == Teams[Team])
+				m_Snap.m_paInfoByTeam[Index++] = m_Snap.m_paPlayerInfos[i];
+		}
+	}
 
 	CTuningParams StandardTuning;
 	CServerInfo CurrentServerInfo;
@@ -870,6 +893,15 @@ void CGameClient::OnNewSnapshot()
 			m_ServerMode = SERVERMODE_PUREMOD;
 	}
 
+	// add tuning to demo
+	if(DemoRecorder()->IsRecording() && mem_comp(&StandardTuning, &m_Tuning, sizeof(CTuningParams)) != 0)
+	{
+		CMsgPacker Msg(NETMSGTYPE_SV_TUNEPARAMS);
+		int *pParams = (int *)&m_Tuning;
+		for(unsigned i = 0; i < sizeof(m_Tuning)/sizeof(int); i++)
+			Msg.AddInt(pParams[i]);
+		Client()->SendMsg(&Msg, MSGFLAG_RECORD|MSGFLAG_NOSEND);
+	}
 }
 
 void CGameClient::OnPredict()

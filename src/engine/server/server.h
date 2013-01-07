@@ -5,6 +5,7 @@
 
 #include <engine/server.h>
 
+
 class CSnapIDPool
 {
 	enum
@@ -39,6 +40,25 @@ public:
 	void FreeID(int ID);
 };
 
+
+class CServerBan : public CNetBan
+{
+	class CServer *m_pServer;
+
+	template<class T> int BanExt(T *pBanPool, const typename T::CDataType *pData, int Seconds, const char *pReason);
+
+public:
+	class CServer *Server() const { return m_pServer; }
+
+	void Init(class IConsole *pConsole, class IStorage *pStorage, class CServer* pServer);
+
+	int BanAddr(const NETADDR *pAddr, int Seconds, const char *pReason);
+	int BanRange(const CNetRange *pRange, int Seconds, const char *pReason);
+
+	static void ConBanExt(class IConsole::IResult *pResult, void *pUser);
+};
+
+
 class CServer : public IServer
 {
 	class IGameServer *m_pGameServer;
@@ -48,6 +68,15 @@ public:
 	class IGameServer *GameServer() { return m_pGameServer; }
 	class IConsole *Console() { return m_pConsole; }
 	class IStorage *Storage() { return m_pStorage; }
+
+	enum
+	{
+		AUTHED_NO=0,
+		AUTHED_MOD,
+		AUTHED_ADMIN,
+
+		MAX_RCONCMD_SEND=16,
+	};
 
 	class CClient
 	{
@@ -95,6 +124,8 @@ public:
 		
 		bool m_CustClt;
 
+		const IConsole::CCommandInfo *m_pRconCmdToSend;
+
 		void Reset();
 	};
 
@@ -104,6 +135,8 @@ public:
 	CSnapshotBuilder m_SnapshotBuilder;
 	CSnapIDPool m_IDPool;
 	CNetServer m_NetServer;
+	CEcon m_Econ;
+	CServerBan m_ServerBan;
 
 	IEngineMap *m_pMap;
 
@@ -112,6 +145,8 @@ public:
 	int m_RunServer;
 	int m_MapReload;
 	int m_RconClientID;
+	int m_RconAuthLevel;
+	int m_PrintCBIndex;
 
 	int64 m_Lastheartbeat;
 	//static NETADDR4 master_server;
@@ -136,12 +171,16 @@ public:
 
 	void Kick(int ClientID, const char *pReason);
 
+	void DemoRecorder_HandleAutoStart();
+	bool DemoRecorder_IsRecording();
+
 	//int Tick()
 	int64 TickStartTime(int Tick);
 	//int TickSpeed()
 
 	int Init();
 
+	void SetRconCID(int ClientID);
 	bool IsAuthed(int ClientID);
 	int GetClientInfo(int ClientID, CClientInfo *pInfo);
 	void GetClientAddr(int ClientID, char *pAddrStr, int Size);
@@ -149,6 +188,7 @@ public:
 	const char *ClientClan(int ClientID);
 	int ClientCountry(int ClientID);
 	bool ClientIngame(int ClientID);
+	int MaxClients() const;
 
 	virtual int SendMsg(CMsgPacker *pMsg, int Flags, int ClientID);
 	int SendMsgEx(CMsgPacker *pMsg, int Flags, int ClientID, bool System);
@@ -163,14 +203,14 @@ public:
 	void SendRconLine(int ClientID, const char *pLine);
 	static void SendRconLineAuthed(const char *pLine, void *pUser);
 
+	void SendRconCmdAdd(const IConsole::CCommandInfo *pCommandInfo, int ClientID);
+	void SendRconCmdRem(const IConsole::CCommandInfo *pCommandInfo, int ClientID);
+	void UpdateClientRconCommands();
+
 	void ProcessClientPacket(CNetChunk *pPacket);
 
-	void SendServerInfo(NETADDR *pAddr, int Token);
+	void SendServerInfo(const NETADDR *pAddr, int Token);
 	void UpdateServerInfo();
-
-	int BanAdd(NETADDR Addr, int Seconds, const char *pReason);
-	int BanRemove(NETADDR Addr);
-
 
 	void PumpNetwork();
 
@@ -181,16 +221,16 @@ public:
 	int Run();
 
 	static void ConKick(IConsole::IResult *pResult, void *pUser);
-	static void ConBan(IConsole::IResult *pResult, void *pUser);
-	static void ConUnban(IConsole::IResult *pResult, void *pUser);
-	static void ConBans(IConsole::IResult *pResult, void *pUser);
- 	static void ConStatus(IConsole::IResult *pResult, void *pUser);
+	static void ConStatus(IConsole::IResult *pResult, void *pUser);
 	static void ConShutdown(IConsole::IResult *pResult, void *pUser);
 	static void ConRecord(IConsole::IResult *pResult, void *pUser);
 	static void ConStopRecord(IConsole::IResult *pResult, void *pUser);
 	static void ConMapReload(IConsole::IResult *pResult, void *pUser);
+	static void ConLogout(IConsole::IResult *pResult, void *pUser);
 	static void ConchainSpecialInfoupdate(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData);
 	static void ConchainMaxclientsperipUpdate(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData);
+	static void ConchainModCommandUpdate(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData);
+	static void ConchainConsoleOutputLevelUpdate(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData);
 
 	void RegisterCommands();
 
