@@ -21,13 +21,13 @@ function Script(name)
 	return "python " .. name
 end
 
-function CHash(output, defname, ...)
+function CHash(output, ...)
 	local inputs = TableFlatten({...})
 
 	output = Path(output)
 
 	-- compile all the files
-	local cmd = Script("scripts/cmd5.py") .. " " .. defname .. " "
+	local cmd = Script("scripts/cmd5.py") .. " "
 	for index, inname in ipairs(inputs) do
 		cmd = cmd .. Path(inname) .. " "
 	end
@@ -106,9 +106,7 @@ AddDependency(network_source, network_header)
 AddDependency(client_content_source, client_content_header)
 AddDependency(server_content_source, server_content_header)
 
-nethash = CHash("src/game/generated/nethash.cpp", "GAME_NETVERSION_HASH", "src/engine/shared/protocol.h", "src/game/generated/protocol.h", "src/game/tuning.h", "src/game/gamecore.cpp", network_header)
-custnethash = CHash("src/game/generated/nethash_cust.c", "GAME_NETVERSION_HASH_CUST", "src/engine/shared/protocol.h", "src/game/generated/protocol.h", "src/game/tuning.h", "src/game/gamecore.cpp", network_header)
-acchash = CHash("src/game/generated/acchash.c", "GAME_ACCVERSION_HASH", "src/game/server/acc_payload.h")
+nethash = CHash("src/game/generated/nethash.cpp", "src/engine/shared/protocol.h", "src/game/generated/protocol.h", "src/game/tuning.h", "src/game/gamecore.cpp", network_header)
 
 client_link_other = {}
 client_depends = {}
@@ -197,8 +195,7 @@ function build(settings)
 	-- build the small libraries
 	wavpack = Compile(settings, Collect("src/engine/external/wavpack/*.c"))
 	pnglite = Compile(settings, Collect("src/engine/external/pnglite/*.c"))
-	md5 = Compile(settings, "src/engine/external/md5/md5.c")
-	
+
 	-- build game components
 	engine_settings = settings:Copy()
 	server_settings = engine_settings:Copy()
@@ -235,7 +232,7 @@ function build(settings)
 
 	versionserver = Compile(settings, Collect("src/versionsrv/*.cpp"))
 	masterserver = Compile(settings, Collect("src/mastersrv/*.cpp"))
-	game_shared = Compile(settings, Collect("src/game/*.cpp"), nethash, network_source, acchash)
+	game_shared = Compile(settings, Collect("src/game/*.cpp"), nethash, network_source)
 	game_client = Compile(settings, CollectRecursive("src/game/client/*.cpp"), client_content_source)
 	game_server = Compile(settings, CollectRecursive("src/game/server/*.cpp"), server_content_source)
 	game_editor = Compile(settings, Collect("src/game/editor/*.cpp"))
@@ -262,7 +259,7 @@ function build(settings)
 		client_link_other, client_osxlaunch)
 
 	server_exe = Link(server_settings, "teeworlds_srv", engine, server,
-		game_shared, game_server, zlib, md5, server_link_other)
+		game_shared, game_server, zlib, server_link_other)
 
 	serverlaunch = {}
 	if platform == "macosx" then

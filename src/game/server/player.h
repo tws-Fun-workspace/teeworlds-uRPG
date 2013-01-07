@@ -23,6 +23,7 @@ public:
 	void SetTeam(int Team, bool DoChatMsg=true);
 	int GetTeam() const { return m_Team; };
 	int GetCID() const { return m_ClientID; };
+	int GetCUID() const { return m_ClientUID; };
 
 	void Tick();
 	void PostTick();
@@ -38,9 +39,6 @@ public:
 	void KillCharacter(int Weapon = WEAPON_GAME);
 	CCharacter *GetCharacter();
 	
-	CAccount *GetAccount() { return m_pAccount; }
-	void SetAccount(CAccount *pAcc) { m_pAccount = pAcc; }
-
 	void BlockKill();
 	int BlockKillCheck();
 
@@ -100,7 +98,7 @@ public:
 	} m_LatestActivity;
 
 	int m_LastAnnoyingMsg;
-	double blockScore;
+	int m_BlockScore;
 
 	int m_ChatScore;
 	// network latency calculations
@@ -125,9 +123,8 @@ private:
 	//
 	bool m_Spawning;
 	int m_ClientID;
+	int m_ClientUID;
 	int m_Team;
-
-	CAccount *m_pAccount;
 };
 
 #endif

@@ -5,7 +5,6 @@
 #include <engine/shared/config.h>
 
 #include "mod.h"
-#include "rank.h"
 
 #include <engine/shared/protocol.h>
 #include <engine/shared/config.h>
@@ -76,6 +75,6 @@ void CGameControllerMOD::Tick()
 			pChr->GiveWeapon(WEAPON_HAMMER, -1);
 			pChr->SetWeapon(WEAPON_HAMMER); // XXX
 			GameServer()->SendChatTarget(i, "Here you got your hammer back, this time do not overuse it!");
-		}
+		}                                                                                                      
 	}
 }

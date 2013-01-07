@@ -10,6 +10,8 @@ MACRO_ALLOC_POOL_ID_IMPL(CPlayer, MAX_CLIENTS)
 
 IServer *CPlayer::Server() const { return m_pGameServer->Server(); }
 
+static int uid_cnt=1;
+
 CPlayer::CPlayer(CGameContext *pGameServer, int ClientID, int Team)
 {
 	m_pGameServer = pGameServer;
@@ -18,12 +20,12 @@ CPlayer::CPlayer(CGameContext *pGameServer, int ClientID, int Team)
 	m_ScoreStartTick = Server()->Tick();
 	m_pCharacter = 0;
 	m_ClientID = ClientID;
+	uid_cnt = (uid_cnt+1)%10000;
+	m_ClientUID = ClientID+(uid_cnt)*1000;
 	m_Team = GameServer()->m_pController->ClampTeam(Team);
 	m_SpectatorID = SPEC_FREEVIEW;
 	m_LastActionTick = Server()->Tick();
 
-	m_pAccount = 0;
-	blockScore = 0;
 	m_LastAnnoyingMsg = 0;
 
 	int* idMap = Server()->GetIdMap(ClientID);
@@ -50,13 +52,6 @@ void CPlayer::Tick()
 #endif
 	if(!Server()->ClientIngame(m_ClientID))
 		return;
-
-	if (GetAccount())
-	{
-		blockScore = GetAccount()->Payload()->blockScore;
-	}
-
-	Server()->SetClientScore(m_ClientID, blockScore);
 
 	if (m_ChatScore > 0)
 		m_ChatScore--;
@@ -153,14 +148,12 @@ void CPlayer::Snap(int SnappingClient)
 	if (g_Config.m_SvScoringDebug && m_pCharacter)
 	{
 		char dbgName[200];
-		str_format(dbgName, sizeof(dbgName), "%c%d::%d%s", DbgStateChars[m_pCharacter->State], m_pCharacter->lastInteractionPlayer, m_ClientID, Server()->ClientName(m_ClientID));
+		str_format(dbgName, sizeof(dbgName), "%c%d::%d%s", DbgStateChars[m_pCharacter->m_State], m_pCharacter->m_Killer, m_ClientID, Server()->ClientName(m_ClientID));
 		StrToInts(&pClientInfo->m_Name0, 4, dbgName);
 	}
 	else
 		StrToInts(&pClientInfo->m_Name0, 4, Server()->ClientName(m_ClientID));
-	if (!g_Config.m_SvLoginClan || !GetAccount())
-		StrToInts(&pClientInfo->m_Clan0, 3, Server()->ClientClan(m_ClientID));
-	else StrToInts(&pClientInfo->m_Clan0, 3, GetAccount()->Name());
+	StrToInts(&pClientInfo->m_Clan0, 3, Server()->ClientClan(m_ClientID));
 	pClientInfo->m_Country = Server()->ClientCountry(m_ClientID);
 	if (m_StolenSkin && SnappingClient != m_ClientID && g_Config.m_SvSkinStealAction == 1)
 	{
@@ -182,7 +175,7 @@ void CPlayer::Snap(int SnappingClient)
 
 	pPlayerInfo->m_Latency = SnappingClient == -1 ? m_Latency.m_Min : GameServer()->m_apPlayers[SnappingClient]->m_aActLatency[m_ClientID];
 	pPlayerInfo->m_Local = 0;
-	pPlayerInfo->m_Score = blockScore;
+	pPlayerInfo->m_Score = m_BlockScore;
 	pPlayerInfo->m_ClientID = id;
 	pPlayerInfo->m_Team = m_Team;
 
@@ -317,116 +310,11 @@ CCharacter *CPlayer::GetCharacter()
 	return 0;
 }
 
-int CPlayer::BlockKillCheck()
-{
-	int killer = m_ClientID;
-	if (m_pCharacter->State != BS_FROZEN)
-		return killer;
-
-	if (Server()->ClientIngame(m_pCharacter->lastInteractionPlayer))
-	{
-		char aVictimText[16] = {0};//for loltext
-		char aKillerText[16] = {0};
-
-		killer = m_pCharacter->lastInteractionPlayer;
-		CAccount* killerAcc = GameServer()->m_apPlayers[killer]->GetAccount();
-
-		if (GetAccount())
-			blockScore = GetAccount()->Payload()->blockScore;
-		if (killerAcc)
-			GameServer()->m_apPlayers[killer]->blockScore = killerAcc->Payload()->blockScore;
-
-		bool scorewhore = false;
-		if (killerAcc && killerAcc->Head()->m_LastLoginDate > time_timestamp() - g_Config.m_SvFrozenBlocked / 1000)
-			scorewhore = true;
-
-		double scoreStolen = min(blockScore * g_Config.m_SvScoreSteal, GameServer()->m_apPlayers[killer]->blockScore * g_Config.m_SvScoreStealLimit) / 100;
-		if (scorewhore) scoreStolen *= -3;
-		blockScore -= scoreStolen;
-
-		if (GetAccount())
-		{
-			if (g_Config.m_SvScoringDebugLog)
-				dbg_msg("score","%s killed by %s and lost %.1f, now has %.1f", GetAccount()->Name(), killerAcc ? killerAcc->Name() : "(unk)", scoreStolen, blockScore);
-			GetAccount()->Payload()->blockScore = blockScore;
-			GameServer()->m_Rank.UpdateScore(GetAccount());
-			if (fabs(scoreStolen) >= .5f)
-				str_format(aVictimText, sizeof aVictimText, "%+.1f", -scoreStolen);
-		}
-
-		if (killerAcc)
-		{
-			double minSteal = (double)g_Config.m_SvScoreCreep / 1000;
-			if (!scorewhore && scoreStolen < minSteal) // if killer has account, give him score for unreg creeps
-				scoreStolen = minSteal;
-
-			GameServer()->m_apPlayers[killer]->blockScore = max(scoreStolen + GameServer()->m_apPlayers[killer]->blockScore, 0.);
-
-			if (g_Config.m_SvScoringDebugLog)
-				dbg_msg("score","%s killed %s and gained %.1f, now has %.1f", killerAcc->Name(), GetAccount() ? GetAccount()->Name() : "(unk)", scoreStolen, GameServer()->m_apPlayers[killer]->blockScore);
-			killerAcc->Payload()->blockScore = GameServer()->m_apPlayers[killer]->blockScore;
-			GameServer()->m_Rank.UpdateScore(killerAcc);
-			if (fabs(scoreStolen) >= .5f)
-				str_format(aKillerText, sizeof aKillerText, "%+.1f", scoreStolen);
-		}
-		else
-		{
-			if (g_Config.m_SvRegisterMessageInterval != 0 && (m_LastAnnoyingMsg == 0 || Server()->Tick() - m_LastAnnoyingMsg > Server()->TickSpeed()*g_Config.m_SvRegisterMessageInterval))
-			{
-				char aBuf[512];
-				str_format(aBuf, sizeof(aBuf), "%s, say /reg in chat to register and gain score for killing %s", Server()->ClientName(killer), Server()->ClientName(m_ClientID));
-				GameServer()->SendChatTarget(killer, aBuf);
-				m_LastAnnoyingMsg = Server()->Tick();
-			}
-			str_copy(aKillerText, "!", sizeof aKillerText);
-		}
-
-		CCharacter *killerchar = GameServer()->GetPlayerChar(killer);
-
-		if (*aVictimText && *aKillerText && killerchar)
-		{
-			vec2 Vs = CLoltext::TextSize(aVictimText);
-			vec2 Ks = CLoltext::TextSize(aKillerText);
-			// no full overlap check here, its way cheaper to disregard Y and just consider size vs dx
-
-			float XDiff = absolute(m_pCharacter->m_Pos.x - killerchar->m_Pos.x);
-			float YDiff = absolute(m_pCharacter->m_Pos.y - killerchar->m_Pos.y);
-
-			if (XDiff < 0.5f*(Vs.x + Ks.x) && YDiff < 0.5f*(Vs.y + Ks.y))
-			{
-				*aVictimText = 0;
-				str_append(aKillerText, "-", sizeof aKillerText);
-			}
-		}
-		if (*aKillerText && killerchar)
-			GameServer()->CreateLolText(GameServer()->GetPlayerChar(killer), false, vec2(0,-100), vec2(0.f,0.f), 50, aKillerText);
-		if (*aVictimText)
-			GameServer()->CreateLolText(m_pCharacter, false, vec2(0,-100), vec2(0.f,0.f), 50, aVictimText);
-
-		if (killerchar) //TODO find out why, i think it needs well-timed kill just when scoring
-		{
-			killerchar->BlockScored();
-			if (m_pCharacter->m_chatFrozen)
-				killerchar->ChatBlockScored();
-		}
-	}
-	return killer;
-}
-
-void CPlayer::BlockKill()
-{
-	if (!m_pCharacter) return;
-	int killer = BlockKillCheck();
-	if (killer == m_ClientID) return;
-	m_pCharacter->SendKillMsg(killer, WEAPON_HAMMER, 0);
-}
-
 void CPlayer::KillCharacter(int Weapon)
 {
 	if(m_pCharacter)
-	{
-		int killer = BlockKillCheck();
-		m_pCharacter->Die(killer, killer == m_ClientID ? Weapon : WEAPON_NINJA);
+	{		
+		m_pCharacter->Die(m_ClientID, Weapon);
 		delete m_pCharacter;
 		m_pCharacter = 0;
 	}

@@ -13,10 +13,7 @@
 #include "eventhandler.h"
 #include "gamecontroller.h"
 #include "gameworld.h"
-#include "account.h"
 #include "player.h"
-
-#include "gamemodes/rank.h"
 
 #define MAX_MUTES 32
 
@@ -87,7 +84,7 @@ class CGameContext : public IGameServer
 	static void ConMutes(IConsole::IResult *pResult, void *pUserData);
 	static void ConchainSpecialMotdupdate(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData);
 
-	static void ConGive(IConsole::IResult *pResult, void *pUserData);
+	//static void ConGive(IConsole::IResult *pResult, void *pUserData);
 
 	CGameContext(int Resetting);
 	void Construct(int Resetting);
@@ -113,10 +110,9 @@ public:
 	IGameController *m_pController;
 	CGameWorld m_World;
 
-	CRank m_Rank;
-
 	// helper functions
 	class CCharacter *GetPlayerChar(int ClientID);
+	CPlayer* GetPlayerByUID(int uid);
 
 	int m_LockTeams;
 

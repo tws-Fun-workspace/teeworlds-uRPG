@@ -338,7 +338,7 @@ void CCharacter::FireWeapon()
 					pTarget->m_Core.m_Frozen = 0;
 
 				Hits++;
-				pTarget->Interaction(m_pPlayer->GetCID(), g_Config.m_SvDmgIntMask);
+				pTarget->Interaction(m_pPlayer->GetCID());
 			}
 
 			// if we Hit anything, we have to wait for the reload
@@ -634,23 +634,21 @@ void CCharacter::Tick()
 
 		if ((m_Core.m_Frozen+1) % Server()->TickSpeed() == 0)
 			GameServer()->CreateDamageInd(m_Pos, 0, (m_Core.m_Frozen+1) / Server()->TickSpeed());
-		Frozen();
 	}
 	else
 	{
 		if (m_ActiveWeapon == WEAPON_NINJA)
 			TakeNinja();
-		UnFrozen();
 	}
 	if (m_Core.m_HookedPlayer != -1)
 	{
 		CCharacter* hookedChar = GameServer()->GetPlayerChar(m_Core.m_HookedPlayer);
 		if (hookedChar)
-			hookedChar->Interaction(GetPlayer()->GetCID(), 0);
-		Interaction(m_Core.m_HookedPlayer, g_Config.m_SvHookIntMask);
+			hookedChar->Interaction(GetPlayer()->GetCID());
+		Interaction(m_Core.m_HookedPlayer);
 	}
 
-	ResolveTick();
+	DDWarTick();
 
 	m_Armor = m_Core.m_Heat;
 
@@ -687,16 +685,11 @@ void CCharacter::Tick()
 		{
 			double seconds = (double)(Server()->Tick() - m_StartTick) / Server()->TickSpeed();
 			char buf[500];
-			if (g_Config.m_SvRaceFinishReward > 0 && m_pPlayer->GetAccount())
+			/*if (g_Config.m_SvRaceFinishReward > 0 && m_pPlayer->GetAccount())
 				str_format(buf, sizeof(buf), "%s finished in %.2f seconds and gained %.2f score", Server()->ClientName(m_pPlayer->GetCID()), seconds, (double)g_Config.m_SvRaceFinishReward);
-			else str_format(buf, sizeof(buf), "%s finished in %.2f seconds", Server()->ClientName(m_pPlayer->GetCID()), seconds);
+			else */str_format(buf, sizeof(buf), "%s finished in %.2f seconds", Server()->ClientName(m_pPlayer->GetCID()), seconds);
 			GameServer()->SendChat(-1, -2, buf);
-			if (m_pPlayer->GetAccount())
-			{
-				m_pPlayer->blockScore += g_Config.m_SvRaceFinishReward;
-				m_pPlayer->GetAccount()->Payload()->blockScore = m_pPlayer->blockScore;
-				GameServer()->m_Rank.UpdateScore(m_pPlayer->GetAccount());
-			}
+			// ACCSERV HANDLE FINISH
 			m_StartTick = 0;
 		}
 	}
@@ -860,7 +853,8 @@ void CCharacter::Die(int Killer, int Weapon)
 	GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
 
 	// send the kill message
-	SendKillMsg(Killer, Weapon, ModeSpecial);
+	//SendKillMsg(Killer, Weapon, ModeSpecial);
+	BlockKill(true);
 
 	// a nice sound
 	GameServer()->CreateSound(m_Pos, SOUND_PLAYER_DIE);
@@ -1055,109 +1049,164 @@ void CCharacter::Snap(int SnappingClient)
 	pCharacter->m_PlayerFlags = GetPlayer()->m_PlayerFlags;
 }
 
-void CCharacter::Frozen()
+void CCharacter::DDWarTick()
 {
-	lastFrozen = Server()->Tick();
-	isFrozen = true;
-}
-
-void CCharacter::UnFrozen()
-{
-	isFrozen = false;
-}
-
-void CCharacter::Interaction(int with, int maskmsec)
-{
-	if (maskmsec == -1) return;
-	if (!(State == BS_FREE || State == BS_INTERACTED)) return;
-	if (lastStateChange > Server()->Tick() - Server()->TickSpeed() * maskmsec / 1000) return;
-	lastInteractionPlayer = with;
-	lastStateChange = Server()->Tick();
-}
-
-bool CCharacter::Ago(int event, int millis)
-{
-	return (event < Server()->Tick()-Server()->TickSpeed()*millis/1000);
-}
-
-//const char *StateStr(int s)
-//{
-//	return s == BS_FREE ? "FREE" : 
-//	       s == BS_BLOCKED ? "BLOCKED" : 
-//	       s == BS_INTERACTED ? "INTERACT" : 
-//	       s == BS_SELFFREEZED ? "SELFFROZEN" : 
-//	       s == BS_FROZEN ? "FROZEN" :  "<unknown>";
-//}
-void CCharacter::NewState(int newState)
-{
-	if (newState == BS_FREE)
-		lastInteractionPlayer = -1;
-	if (newState == BS_BLOCKED)
-		GetPlayer()->BlockKill();
-	if (newState == BS_FROZEN && m_lastNotChattingTick < Server()->Tick() - g_Config.m_SvChatBlockDelay*Server()->TickSpeed()/1000)
-		m_chatFrozen = 1;
-//	if (State != newState)
-//		dbg_msg("char", "%d:\t%s ---> %s", m_pPlayer->GetCID(), StateStr(State), StateStr(newState));
-	State = newState;
-	lastStateChange = Server()->Tick();
-}
-
-
-void CCharacter::ResolveTick()
-{
-	if (State == BS_FREE)
+	if (Ago(m_CKPunishTick, 10000))
 	{
-		if (lastInteractionPlayer != -1) NewState(BS_INTERACTED);
-		else if (m_Core.m_Frozen > 0) NewState(BS_SELFFREEZED);
-	} else if (State == BS_SELFFREEZED)
-	{
-		if (Ago(lastStateChange, g_Config.m_SvSelfBlocked)) NewState(BS_BLOCKED);
-		else if (m_Core.m_Frozen <= 0) NewState(BS_FREE);
-	} else if (State == BS_INTERACTED)
-	{
-		if (isFrozen) NewState(BS_FROZEN);
-		else if (Ago(lastStateChange, g_Config.m_SvIntFree)) NewState(BS_FREE);
-	} else if (State == BS_FROZEN)
-	{
-		if (Ago(lastStateChange, g_Config.m_SvFrozenBlocked)) NewState(BS_BLOCKED);
-		else if (Ago(lastFrozen, g_Config.m_SvFrozenInt)) NewState(BS_INTERACTED);
-	} else if (State == BS_BLOCKED)
-	{
-		if (Ago(lastFrozen, g_Config.m_SvBlockedFree) && !Ago(m_pPlayer->m_LastActionTick, 500)) NewState(BS_FREE);
+		m_CKPunishTick = 0;
+		m_CKPunish = 0;
 	}
-
-	if (State == BS_INTERACTED || State == BS_FREE)
+	if (m_pPlayer->m_PlayerFlags&PLAYERFLAG_CHATTING)
 	{
-		if (!(m_pPlayer->m_PlayerFlags & PLAYERFLAG_CHATTING))
+		if (m_ChattingSince == 0 && m_State == BS_FREE)
+			m_ChattingSince = Server()->Tick();
+	}
+	else
+	{
+		if (m_State != BS_FROZEN)
+			m_ChattingSince = 0;
+	}
+	if (m_Core.m_HookedPlayer != -1)
+	{
+		CCharacter* hooked = GameServer()->GetPlayerChar(m_Core.m_HookedPlayer);
+		if (hooked)
+			hooked->Interaction(GetPlayer()->GetCID());
+	}
+	if (m_Core.m_Frozen)
+		m_LastFrozen = Server()->Tick();
+	if (m_State == BS_FREE)
+	{
+		if (m_Killer != -1) NewState(BS_INTERACTED);
+		else if (m_Core.m_Frozen) NewState(BS_SELFFREEZED);
+	} else if (m_State == BS_SELFFREEZED)
+	{
+		if (Ago(m_LastStateChange, g_Config.m_SvSelfBlocked)) NewState(BS_BLOCKED);
+		else if (!m_Core.m_Frozen) NewState(BS_FREE);
+	} else if (m_State == BS_INTERACTED)
+	{
+		if (m_Core.m_Frozen) NewState(BS_FROZEN);
+		else if (Ago(m_KillerTick, g_Config.m_SvIntFree)) NewState(BS_FREE);
+	} else if (m_State == BS_FROZEN)
+	{
+		if (Ago(m_LastStateChange, g_Config.m_SvFrozenBlocked)) NewState(BS_BLOCKED);
+		else if (Ago(m_LastFrozen, g_Config.m_SvFrozenInt)) NewState(BS_INTERACTED);
+	} else if (m_State == BS_BLOCKED)
+	{
+		if (Ago(m_LastFrozen, g_Config.m_SvBlockedFree) && !Ago(m_pPlayer->m_LastActionTick, 500)) NewState(BS_FREE);
+	}
+}
+
+void CCharacter::Interaction(int with)
+{
+	if (with < 0 || with >= MAX_CLIENTS) return;
+	if (!GameServer()->m_apPlayers[with]) return;
+	with = GameServer()->m_apPlayers[with]->GetCUID();
+	if (with == GetPlayer()->GetCUID()) return;
+	if (m_State == BS_FREE || m_State == BS_INTERACTED || (m_Killer == with && m_State == BS_FROZEN))
+		SetKiller(with);
+	if (m_State == BS_BLOCKED && !Ago(m_LastFrozen, 3))
+		SetHelper(with);
+}
+
+void CCharacter::SetKiller(int killerUID)
+{
+	m_Killer = killerUID;
+	m_KillerTick = Server()->Tick();
+}
+
+void CCharacter::SetHelper(int helperUID)
+{
+	m_Helper = helperUID;
+	m_HelperTick = Server()->Tick();
+}
+
+bool CCharacter::Ago(int tick, int millis)
+{
+	return (tick < Server()->Tick()-Server()->TickSpeed()*millis/1000);
+}
+
+void CCharacter::NewState(int state)
+{
+	if (state == BS_FREE)
+	{
+		BlockHelp();
+		SetKiller(-1);
+		SetHelper(-1);
+	}
+	if (state == BS_SELFFREEZED)
+	{
+		m_ChattingSince = 0;
+	}
+	if (state == BS_BLOCKED)
+	{
+		BlockKill(false);
+	}
+	m_State = state;
+	m_LastStateChange = Server()->Tick();
+}
+
+void CCharacter::BlockHelp()
+{
+	if (!Ago(m_HelperTick, 14000) && m_Helper != -1)
+	{
+		CPlayer* helper = GameServer()->GetPlayerByUID(m_Helper);
+		if (helper)
 		{
-			m_lastNotChattingTick = Server()->Tick();
-			m_chatFrozen = false;
+			CNetMsg_Sv_KillMsg Msg;
+			Msg.m_Killer = helper->GetCID();
+			Msg.m_Victim = GetPlayer()->GetCID();
+			Msg.m_Weapon = WEAPON_RIFLE;
+			Msg.m_ModeSpecial = 0;
+			Server()->SendPackMsg(&Msg, MSGFLAG_VITAL, -1);
+			//((CGameControllerDDRace*)GameServer()->m_pController)->Blocked(this, helper);
 		}
 	}
-/* problematic
-	if (m_pPlayer->GetAccount() && g_Config.m_SvTakeHammerOnChatkill)
+}
+
+void CCharacter::BlockKill(bool dead)
+{
+	bool chatblock = (m_ChattingSince!=0 && Ago(m_ChattingSince, g_Config.m_SvChatblockTime));
+	m_ChattingSince = 0;
+	if (m_Helper == m_Killer)
+		SetHelper(-1);
+	CPlayer* killer = GameServer()->GetPlayerByUID(m_Killer);
+	int killerID = GetPlayer()->GetCID();
+	if (killer)
+		killerID = killer->GetCID();
+	if (!dead && killerID == GetPlayer()->GetCID())
+		return;
+
+	if (chatblock)
 	{
-		if ((m_pPlayer->GetAccount()->Payload()->m_ChatKills >= 3) && m_pPlayer->GetAccount()->Payload()->m_Kills < m_pPlayer->GetAccount()->Payload()->m_ChatKills * 5)
+		char buf[300];
+		str_format(buf, sizeof(buf), "%s chatkilled %s", Server()->ClientName(killerID), Server()->ClientName(GetPlayer()->GetCID()));
+		GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "ddwar", buf);
+
+		vec2 pos;
+		pos.x = 0;
+		pos.y = -100;
+		vec2 vel;
+		vel.x = 0;
+		vel.y = 0;
+		//CLoltext::Create(&GameServer()->m_World, this, pos, vel, 200, "CHATKILL", 1, 0);
+		if (g_Config.m_SvChatblockPunish != 0)
 		{
-			TakeWeapon(WEAPON_HAMMER);
-			if (m_aWeapons[WEAPON_HAMMER].m_Got)
-				GameServer()->CreateLolText(this, false, vec2(0,-50), vec2(0,-0.1), 400, "noob");
+			m_CKPunish = m_Killer;
+			m_CKPunishTick = Server()->Tick();
+			//                        m_LastBroadcast = 0;
 		}
-		else
-			GiveWeapon(WEAPON_HAMMER, -1);
 	}
-*/
-}
+	else
+	{
+		//((CGameControllerDDRace*)GameServer()->m_pController)->Blocked(this, killer);
+	}
 
-void CCharacter::BlockScored()
-{
-	if (m_pPlayer->GetAccount())
-		m_pPlayer->GetAccount()->Payload()->m_Kills++;
-}
+	CNetMsg_Sv_KillMsg Msg;
+	Msg.m_Killer = killerID;
+	Msg.m_Victim = GetPlayer()->GetCID();
+	Msg.m_Weapon = dead ? WEAPON_NINJA : WEAPON_HAMMER;
+	Msg.m_ModeSpecial = 0;
+	Server()->SendPackMsg(&Msg, MSGFLAG_VITAL, -1);
 
-void CCharacter::ChatBlockScored()
-{
-	GameServer()->CreateLolText(this, false, vec2(0,-50), vec2(0.f,0.f), 200, "chat block");
-	if (m_pPlayer->GetAccount())
-		m_pPlayer->GetAccount()->Payload()->m_ChatKills++;
+	m_Killer = -1;
 }

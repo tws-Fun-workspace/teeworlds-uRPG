@@ -9,8 +9,6 @@
 #include "gamecontroller.h"
 #include "gamecontext.h"
 
-#include "gamemodes/rank.h"
-
 IGameController::IGameController(class CGameContext *pGameServer)
 {
 	m_pGameServer = pGameServer;

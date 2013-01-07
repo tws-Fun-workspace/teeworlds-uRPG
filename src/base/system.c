@@ -1740,23 +1740,15 @@ void str_hex(char *dst, int dst_size, const void *data, int data_size)
 	}
 }
 
-void str_timestamp_at(char *buffer, int buffer_size, unsigned long when)
-{
-#if defined(CONF_FAMILY_WINDOWS)
-	str_format(buffer, buffer_size, "[%lu]", when);
-#else
-	struct tm *time_info;
-	time_info = localtime((time_t*)&when);
-	strftime(buffer, buffer_size, "%Y-%m-%d_%H-%M-%S", time_info);
-	buffer[buffer_size-1] = 0;	/* assure null termination */
-#endif
-}
-
 void str_timestamp(char *buffer, int buffer_size)
 {
 	time_t time_data;
+	struct tm *time_info;
+
 	time(&time_data);
-	str_timestamp_at(buffer, buffer_size, time_data);
+	time_info = localtime(&time_data);
+	strftime(buffer, buffer_size, "%Y-%m-%d_%H-%M-%S", time_info);
+	buffer[buffer_size-1] = 0;	/* assure null termination */
 }
 
 int mem_comp(const void *a, const void *b, int size)

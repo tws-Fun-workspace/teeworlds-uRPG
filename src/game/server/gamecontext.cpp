@@ -15,7 +15,6 @@
 #include "gamemodes/tdm.h"
 #include "gamemodes/ctf.h"
 #include "gamemodes/mod.h"
-#include "gamemodes/rank.h"
 
 struct CMute CGameContext::m_aMutes[MAX_MUTES];
 
@@ -44,7 +43,6 @@ void CGameContext::Construct(int Resetting)
 	{
 		m_pVoteOptionHeap = new CHeap();
 		new CDDChatHnd();
-		new CRankHnd();
 		for(int z = 0; z < MAX_MUTES; ++z)
 			m_aMutes[z].m_IP[0] = 0;
 	}
@@ -94,6 +92,16 @@ class CCharacter *CGameContext::GetPlayerChar(int ClientID)
 	if(ClientID < 0 || ClientID >= MAX_CLIENTS || !m_apPlayers[ClientID])
 		return 0;
 	return m_apPlayers[ClientID]->GetCharacter();
+}
+
+CPlayer* CGameContext::GetPlayerByUID(int uid)
+{
+	int ClientID = uid%1000;
+	if(ClientID < 0 || ClientID >= MAX_CLIENTS || !m_apPlayers[ClientID])
+		return 0;
+	if (m_apPlayers[ClientID]->GetCUID() != uid)
+		return 0;
+	return m_apPlayers[ClientID];
 }
 
 void CGameContext::CreateDamageInd(vec2 Pos, float Angle, int Amount)
@@ -559,7 +567,7 @@ void CGameContext::OnClientEnter(int ClientID)
 void CGameContext::OnClientConnected(int ClientID)
 {
 	// Check which team the player should be on
-	const int StartTeam = (g_Config.m_SvTournamentMode || (g_Config.m_SvAccEnable && g_Config.m_SvAccEnforce)) ? TEAM_SPECTATORS : m_pController->GetAutoTeam(ClientID);
+	const int StartTeam = m_pController->GetAutoTeam(ClientID);
 
 	m_apPlayers[ClientID] = new(ClientID) CPlayer(this, ClientID, StartTeam);
 	//players[client_id].init(client_id);
@@ -590,14 +598,6 @@ void CGameContext::OnClientDrop(int ClientID, const char *pReason)
 	AbortVoteKickOnDisconnect(ClientID);
 
 	m_apPlayers[ClientID]->OnDisconnect(pReason);
-
-	if (m_apPlayers[ClientID]->GetAccount())
-	{
-		if (g_Config.m_SvAccEnable && g_Config.m_SvAccAutoSave)
-			m_apPlayers[ClientID]->GetAccount()->Write();
-		delete m_apPlayers[ClientID]->GetAccount();
-		m_apPlayers[ClientID]->SetAccount(0);
-	}
 
 	delete m_apPlayers[ClientID];
 	m_apPlayers[ClientID] = 0;
@@ -878,13 +878,7 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 		}
 
 		// Switch team on given client and kill/respawn him
-		if (g_Config.m_SvAccEnable && g_Config.m_SvAccEnforce && !pPlayer->GetAccount())
-		{
-			char aBuf[128];
-			str_copy(aBuf, "You have to log in or register. Say /login or /reg ", sizeof aBuf);
-			SendBroadcast(aBuf, ClientID);
-		}
-		else if(m_pController->CanJoinTeam(pMsg->m_Team, ClientID))
+		if(m_pController->CanJoinTeam(pMsg->m_Team, ClientID))
 		{
 			if(m_pController->CanChangeTeam(pPlayer, pMsg->m_Team))
 			{
@@ -934,10 +928,7 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 		str_copy(pPlayer->m_OrigName, pMsg->m_pName, sizeof pPlayer->m_OrigName);
 		// set start infos
 		char aNewName[MAX_NAME_LENGTH];
-		if (g_Config.m_SvAccEnable)
-			CAccount::OverrideName(aNewName, sizeof aNewName, pPlayer, pMsg->m_pName);
-		else
-			str_copy(aNewName, pMsg->m_pName, sizeof aNewName);
+		str_copy(aNewName, pMsg->m_pName, sizeof aNewName);
 			
 		Server()->SetClientName(ClientID, aNewName);
 		Server()->SetClientClan(ClientID, pMsg->m_pClan);
@@ -1049,10 +1040,7 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 
 		str_copy(pPlayer->m_OrigName, pMsg->m_pName, sizeof pPlayer->m_OrigName);
 		char aNewName[MAX_NAME_LENGTH];
-		if (g_Config.m_SvAccEnable)
-			CAccount::OverrideName(aNewName, sizeof aNewName, pPlayer, pMsg->m_pName);
-		else
-			str_copy(aNewName, pMsg->m_pName, sizeof aNewName);
+		str_copy(aNewName, pMsg->m_pName, sizeof aNewName);
 
 		Server()->SetClientName(ClientID, aNewName);
 		if(str_comp(aOldName, Server()->ClientName(ClientID)) != 0)
@@ -1599,19 +1587,6 @@ void CGameContext::ConMutes(IConsole::IResult *pResult, void *pUserData)
 		}
 }
 
-void CGameContext::ConGive(IConsole::IResult *pResult, void *pUserData)
-{
-	CGameContext *pSelf = (CGameContext *)pUserData;
-	int ClientID = pResult->GetInteger(0);
-	if (!pSelf->Server()->ClientIngame(ClientID))
-		return;
-	int Score = pResult->GetInteger(1);
-	CAccount* acc = pSelf->m_apPlayers[ClientID]->GetAccount();
-	if (!acc) return;
-	acc->Payload()->blockScore+=Score;
-	pSelf->m_Rank.UpdateScore(acc);
-}
-
 void CGameContext::CreateLolText(CEntity *pParent, bool Follow, vec2 Pos, vec2 Vel, int Lifespan, const char *pText)
 {
 	CLoltext::Create(&m_World, pParent, Pos, Vel, Lifespan, pText, true, Follow);
@@ -1665,7 +1640,7 @@ void CGameContext::OnConsoleInit()
 
 	Console()->Chain("sv_motd", ConchainSpecialMotdupdate, this);
 
-	Console()->Register("give", "ii", CFGFLAG_SERVER, ConGive, this, "");
+	//Console()->Register("give", "ii", CFGFLAG_SERVER, ConGive, this, "");
 }
 
 void CGameContext::OnInit(/*class IKernel *pKernel*/)
@@ -1741,8 +1716,6 @@ void CGameContext::OnInit(/*class IKernel *pKernel*/)
 	}
 #endif
 	IChatCtl::Init(this);
- 	CAccount::Init(AccVersion());
-	m_Rank.Init();
 }
 
 void CGameContext::OnShutdown()

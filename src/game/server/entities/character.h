@@ -77,30 +77,34 @@ public:
 	bool IsAlive() const { return m_Alive; }
 	class CPlayer *GetPlayer() { return m_pPlayer; }
 
-	/* TODO naming conventions */
-	int State;
-	int lastInteractionPlayer;
-	int lastStateChange;
-	int lastFrozen;
-	bool isFrozen;
-	int m_ActualFreezeTick;
-	int m_StartTick;
-	int m_lastNotChattingTick;
-	bool m_chatFrozen;
-	void Frozen();
-        void UnFrozen();
-        void Interaction(int with, int maskmsec);
-        void ResolveTick();
-        bool Ago(int event, int millis);
-        void NewState(int newstate);
-	int GetState() { return State; }
-
+	//ddwar stuff
 	void SendKillMsg(int Killer, int Weapon, int ModeSpecial);
-	void BlockScored();
-	void ChatBlockScored();
 
 	int GetHammerScore() { return m_HammerScore; }
 	void SetHammerScore(int s) { m_HammerScore = s; }
+
+	int m_StartTick;
+
+	int m_Killer;
+	int m_KillerTick;
+	int m_Helper;
+	int m_HelperTick;
+	int m_LastStateChange;
+	int m_LastFrozen;
+	int m_State;
+	int m_ChattingSince;
+	int m_CKPunish;
+	int m_CKPunishTick;
+
+	void DDWarTick();
+	void Interaction(int with);
+	bool Ago(int tick, int millis);
+	void NewState(int state);
+	int GetState() { return m_State; };
+	void SetKiller(int killerUID);
+	void SetHelper(int heplerUID);
+	void BlockHelp();
+	void BlockKill(bool dead);
 
 private:
 	// player controlling this character
