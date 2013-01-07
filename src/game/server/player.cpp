@@ -82,26 +82,37 @@ void CPlayer::Tick()
 		}
 	}
 
-	if(!m_pCharacter && m_Team == TEAM_SPECTATORS && m_SpectatorID == SPEC_FREEVIEW)
-		m_ViewPos -= vec2(clamp(m_ViewPos.x-m_LatestActivity.m_TargetX, -500.0f, 500.0f), clamp(m_ViewPos.y-m_LatestActivity.m_TargetY, -400.0f, 400.0f));
-
-	if(!m_pCharacter && m_DieTick+Server()->TickSpeed()*3 <= Server()->Tick())
-		m_Spawning = true;
-
-	if(m_pCharacter)
+	if(!GameServer()->m_World.m_Paused)
 	{
-		if(m_pCharacter->IsAlive())
+		if(!m_pCharacter && m_Team == TEAM_SPECTATORS && m_SpectatorID == SPEC_FREEVIEW)
+			m_ViewPos -= vec2(clamp(m_ViewPos.x-m_LatestActivity.m_TargetX, -500.0f, 500.0f), clamp(m_ViewPos.y-m_LatestActivity.m_TargetY, -400.0f, 400.0f));
+
+		if(!m_pCharacter && m_DieTick+Server()->TickSpeed()*3 <= Server()->Tick())
+			m_Spawning = true;
+
+		if(m_pCharacter)
 		{
-			m_ViewPos = m_pCharacter->m_Pos;
+			if(m_pCharacter->IsAlive())
+			{
+				m_ViewPos = m_pCharacter->m_Pos;
+			}
+			else
+			{
+				delete m_pCharacter;
+				m_pCharacter = 0;
+			}
 		}
-		else
-		{
-			delete m_pCharacter;
-			m_pCharacter = 0;
-		}
+		else if(m_Spawning && m_RespawnTick <= Server()->Tick())
+			TryRespawn();
 	}
-	else if(m_Spawning && m_RespawnTick <= Server()->Tick())
-		TryRespawn();
+	else
+	{
+		++m_RespawnTick;
+		++m_DieTick;
+		++m_ScoreStartTick;
+		++m_LastActionTick;
+		++m_TeamChangeTick;
+ 	}
 }
 
 void CPlayer::PostTick()
@@ -320,6 +331,11 @@ int CPlayer::BlockKillCheck()
 		killer = m_pCharacter->lastInteractionPlayer;
 		CAccount* killerAcc = GameServer()->m_apPlayers[killer]->GetAccount();
 
+		if (GetAccount())
+			blockScore = GetAccount()->Payload()->blockScore;
+		if (killerAcc)
+			GameServer()->m_apPlayers[killer]->blockScore = killerAcc->Payload()->blockScore;
+
 		bool scorewhore = false;
 		if (killerAcc && killerAcc->Head()->m_LastLoginDate > time_timestamp() - g_Config.m_SvFrozenBlocked / 1000)
 			scorewhore = true;
@@ -331,7 +347,7 @@ int CPlayer::BlockKillCheck()
 		if (GetAccount())
 		{
 			if (g_Config.m_SvScoringDebugLog)
-				dbg_msg("score","%s killed by %s and lost %.1f, now has %.1f", GetAccount()->Name(), GameServer()->m_apPlayers[killer]->GetAccount() ? GameServer()->m_apPlayers[killer]->GetAccount()->Name() : "(unk)", scoreStolen, blockScore);
+				dbg_msg("score","%s killed by %s and lost %.1f, now has %.1f", GetAccount()->Name(), killerAcc ? killerAcc->Name() : "(unk)", scoreStolen, blockScore);
 			GetAccount()->Payload()->blockScore = blockScore;
 			GameServer()->m_Rank.UpdateScore(GetAccount());
 			if (fabs(scoreStolen) >= .5f)
@@ -422,7 +438,7 @@ void CPlayer::Respawn()
 		m_Spawning = true;
 }
 
-void CPlayer::SetTeam(int Team)
+void CPlayer::SetTeam(int Team, bool DoChatMsg)
 {
 	// clamp the team
 	Team = GameServer()->m_pController->ClampTeam(Team);
@@ -430,8 +446,11 @@ void CPlayer::SetTeam(int Team)
 		return;
 
 	char aBuf[512];
-	str_format(aBuf, sizeof(aBuf), "'%s' joined the %s", Server()->ClientName(m_ClientID), GameServer()->m_pController->GetTeamName(Team));
-	GameServer()->SendChat(-1, CGameContext::CHAT_ALL, aBuf);
+	if(DoChatMsg)
+	{
+		str_format(aBuf, sizeof(aBuf), "'%s' joined the %s", Server()->ClientName(m_ClientID), GameServer()->m_pController->GetTeamName(Team));
+		GameServer()->SendChat(-1, CGameContext::CHAT_ALL, aBuf);
+	}
 
 	KillCharacter();
 
