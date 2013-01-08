@@ -107,7 +107,6 @@ MACRO_CONFIG_INT(SvNinja, sv_ninja, 0, 0, 1, CFGFLAG_SERVER, "allow ninja")
 MACRO_CONFIG_INT(SvUnlimitedAmmo, sv_unlimited_ammo, 1, 0, 1, CFGFLAG_SERVER, "guess what")
 
 MACRO_CONFIG_INT(SvRegisterMessageInterval, sv_register_message_interval, 120, 0, 1000, CFGFLAG_SERVER, "Min. seconds between 'pls register' chat msgs")
-MACRO_CONFIG_INT(SvLoginClan, sv_login_clan, 0, 0, 1, CFGFLAG_SERVER, "Display login in place of clan tag")
 MACRO_CONFIG_INT(SvOverrideColor, sv_override_color, 1, 0, 1, CFGFLAG_SERVER, "Override color in colored paint freeze tiles")
 
 MACRO_CONFIG_INT(SvSkinStealAction, sv_skinstealaction, 0, 0, 1, CFGFLAG_SERVER, "How to punish skin stealing (currently only 1 = force pinky)")
