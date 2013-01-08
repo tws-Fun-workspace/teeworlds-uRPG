@@ -116,6 +116,7 @@ public:
 	// helper functions
 	class CCharacter *GetPlayerChar(int ClientID);
 	CPlayer* GetPlayerByUID(int uid);
+	virtual int GetCIDByUID(int uid);
 
 	int m_LockTeams;
 

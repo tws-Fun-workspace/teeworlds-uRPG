@@ -187,6 +187,8 @@ public:
 	virtual const char *NetVersion() = 0;
 	virtual const char *NetVersionCust() = 0;
 	virtual const char *AccVersion() = 0;
+
+	virtual int GetCIDByUID(int uid) = 0;
 };
 
 extern IGameServer *CreateGameServer();
