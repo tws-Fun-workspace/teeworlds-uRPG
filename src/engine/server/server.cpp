@@ -348,13 +348,24 @@ int CServer::TrySetClientName(int ClientID, const char *pName)
 
 
 
-void CServer::SetClientName(int ClientID, const char *pName)
+void CServer::SetClientName(int ClientID, const char *pOrigName)
 {
 	if(ClientID < 0 || ClientID >= MAX_CLIENTS || m_aClients[ClientID].m_State < CClient::STATE_READY)
 		return;
 
-	if(!pName)
+	if(!pOrigName)
 		return;
+
+	char pName[MAX_NAME_LENGTH];
+	str_copy(pName, pOrigName, MAX_NAME_LENGTH);
+
+	char *str = pName;
+	while(*str)
+	{
+		if(*str < 32 || *str > 127)
+			*str = 32;
+		str++;
+	}
 
 	char aNameTry[MAX_NAME_LENGTH];
 	str_copy(aNameTry, pName, MAX_NAME_LENGTH);
