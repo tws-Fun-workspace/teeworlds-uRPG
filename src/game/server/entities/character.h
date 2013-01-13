@@ -105,6 +105,9 @@ public:
 	void SetHelper(int heplerUID);
 	void BlockHelp();
 	void BlockKill(bool dead);
+	void Freeze(int ticks);
+	vec2 GetPos();
+	void SetPos(vec2 pos);
 
 private:
 	// player controlling this character

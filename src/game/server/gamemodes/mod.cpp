@@ -51,12 +51,18 @@ void CGameControllerMOD::Tick()
 		m_NextAnnounceTick = Server()->Tick() + g_Config.m_SvAnnouncementInterval * 60 * Server()->TickSpeed();
 	}
 
-	if (*g_Config.m_SvBroadcast && m_NextBroadcastTick <= Server()->Tick())
+	if (m_NextBroadcastTick <= Server()->Tick())
 	{
 		for (int i = 0; i < MAX_CLIENTS; ++i)
 		{
 			if (GameServer()->IsClientReady(i))
-				GameServer()->SendBroadcast(g_Config.m_SvBroadcast, i);
+			{
+				if (GameServer()->m_apPlayers[i]->m_PersonalBroadcastTick > Server()->Tick())
+					GameServer()->SendBroadcast(GameServer()->m_apPlayers[i]->m_PersonalBroadcast, i);
+				else
+					if (*g_Config.m_SvBroadcast)
+						GameServer()->SendBroadcast(g_Config.m_SvBroadcast, i);
+			}
 		}
 		m_NextBroadcastTick = Server()->Tick() + (Server()->TickSpeed()<<1);
 	}

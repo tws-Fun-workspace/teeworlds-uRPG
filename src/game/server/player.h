@@ -97,6 +97,8 @@ public:
 	int m_LastAnnoyingMsg;
 	int m_BlockScore;
 	char m_Login[30];
+	char m_PersonalBroadcast[50];
+	int m_PersonalBroadcastTick;
 
 	int m_ChatScore;
 	// network latency calculations

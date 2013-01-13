@@ -9,6 +9,7 @@
 #include "laser.h"
 #include "projectile.h"
 #include "loltext.h"
+#include "../gamemodes/mod.h"
 
 //input count
 struct CInputCount
@@ -1047,6 +1048,8 @@ void CCharacter::Snap(int SnappingClient)
 			pCharacter->m_Emote = EMOTE_BLINK;
 		if(m_Core.m_Frozen || m_State == BS_BLOCKED)
 			pCharacter->m_Emote = EMOTE_BLINK;
+		if (m_ChattingSince!=0 && Ago(m_ChattingSince, g_Config.m_SvChatblockTime - g_Config.m_SvFrozenBlocked))
+			pCharacter->m_Emote = EMOTE_SURPRISE;
 	}
 
 	pCharacter->m_PlayerFlags = GetPlayer()->m_PlayerFlags;
@@ -1174,8 +1177,12 @@ void CCharacter::BlockKill(bool dead)
 		SetHelper(-1);
 	CPlayer* killer = GameServer()->GetPlayerByUID(m_Killer);
 	int killerID = GetPlayer()->GetCID();
+	int killerUID = GetPlayer()->GetCUID();
 	if (killer)
+	{
 		killerID = killer->GetCID();
+		killerUID = killer->GetCUID();
+	}
 	if (!dead && killerID == GetPlayer()->GetCID())
 		return;
 
@@ -1194,9 +1201,11 @@ void CCharacter::BlockKill(bool dead)
 		CLoltext::Create(&GameServer()->m_World, this, pos, vel, 200, "CHATKILL", 1, 0);
 		if (g_Config.m_SvChatblockPunish != 0)
 		{
-			m_CKPunish = m_Killer;
-			m_CKPunishTick = Server()->Tick();
-			//                        m_LastBroadcast = 0;
+			m_CKPunish = killerUID;
+			m_CKPunishTick = Server()->Tick() + Server()->TickSpeed()*10;
+			str_format(GetPlayer()->m_PersonalBroadcast, sizeof(GetPlayer()->m_PersonalBroadcast), "%s chatkilled you! type /p to punish", Server()->ClientName(killer->GetCID()));
+			GetPlayer()->m_PersonalBroadcastTick = Server()->Tick() + Server()->TickSpeed()*10;
+			GameServer()->SendBroadcast(GetPlayer()->m_PersonalBroadcast, GetPlayer()->GetCID());
 		}
 	}
 	else
@@ -1214,4 +1223,20 @@ void CCharacter::BlockKill(bool dead)
 	Server()->SendPackMsg(&Msg, MSGFLAG_VITAL, -1);
 
 	m_Killer = -1;
+}
+
+void CCharacter::Freeze(int ticks)
+{
+	if (m_Core.m_Frozen < ticks)
+		m_Core.m_Frozen = ticks;
+}
+
+vec2 CCharacter::GetPos()
+{
+	return m_Core.m_Pos;
+}
+
+void CCharacter::SetPos(vec2 pos)
+{
+	m_Core.m_Pos = pos;
 }

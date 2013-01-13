@@ -109,7 +109,7 @@ MACRO_CONFIG_INT(SvUnlimitedAmmo, sv_unlimited_ammo, 1, 0, 1, CFGFLAG_SERVER, "g
 MACRO_CONFIG_INT(SvRegisterMessageInterval, sv_register_message_interval, 120, 0, 1000, CFGFLAG_SERVER, "Min. seconds between 'pls register' chat msgs")
 MACRO_CONFIG_INT(SvOverrideColor, sv_override_color, 1, 0, 1, CFGFLAG_SERVER, "Override color in colored paint freeze tiles")
 
-MACRO_CONFIG_INT(SvSkinStealAction, sv_skinstealaction, 0, 0, 1, CFGFLAG_SERVER, "How to punish skin stealing (currently only 1 = force pinky)")
+MACRO_CONFIG_INT(SvSkinStealAction, sv_skinstealaction, 1, 0, 1, CFGFLAG_SERVER, "How to punish skin stealing (currently only 1 = force pinky)")
 
 MACRO_CONFIG_INT(SvIntFree, sv_int_free, 2000, 0, 10000, CFGFLAG_SERVER, "Milliseconds for interacted->free transition")
 MACRO_CONFIG_INT(SvBlockedFree, sv_blocked_free, 2000, 0, 10000, CFGFLAG_SERVER, "Milliseconds for blocked->free transition")
@@ -117,8 +117,8 @@ MACRO_CONFIG_INT(SvFrozenInt, sv_frozen_int, 300, 0, 10000, CFGFLAG_SERVER, "Mil
 MACRO_CONFIG_INT(SvFrozenBlocked, sv_frozen_blocked, 5000, 0, 10000, CFGFLAG_SERVER, "Milliseconds for frozen->blocked transition")
 MACRO_CONFIG_INT(SvSelfBlocked, sv_self_blocked, 4000, 0, 10000, CFGFLAG_SERVER, "Milliseconds for self-frozen->blocked transition")
 
-MACRO_CONFIG_INT(SvChatblockTime, sv_chatblock_time, 7000, 0, 20000, CFGFLAG_SERVER, "Milliseconds for chat to be opened before blockkill to be considered a chatblock")
-MACRO_CONFIG_INT(SvChatblockPunish, sv_chatblock_punish, 0, -1, 100, CFGFLAG_SERVER, "Chatblock punishment type available to victim; -1=swap, n=freeze for n secs")
+MACRO_CONFIG_INT(SvChatblockTime, sv_chatblock_time, 6500, 0, 20000, CFGFLAG_SERVER, "Milliseconds for chat to be opened before blockkill to be considered a chatblock")
+MACRO_CONFIG_INT(SvChatblockPunish, sv_chatblock_punish, -1, -1, 100, CFGFLAG_SERVER, "Chatblock punishment type available to victim; -1=swap, n=freeze for n secs")
 
 MACRO_CONFIG_INT(SvColFrz0, sv_col_frz_0, 0xffffff, -1, 0x7fffffff, CFGFLAG_SERVER, "") //white
 MACRO_CONFIG_INT(SvColFrz1, sv_col_frz_1, 0x0, -1, 0x7fffffff, CFGFLAG_SERVER, "") // gray
