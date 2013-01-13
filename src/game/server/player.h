@@ -20,7 +20,7 @@ public:
 
 	void TryRespawn();
 	void Respawn();
-	void SetTeam(int Team, bool DoChatMsg=true);
+	void SetTeam(int Team, bool DoChatMsg=true, bool DoKill=true);
 	int GetTeam() const { return m_Team; };
 	int GetCID() const { return m_ClientID; };
 	int GetCUID() const { return m_ClientUID; };

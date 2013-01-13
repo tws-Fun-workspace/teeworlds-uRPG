@@ -11,9 +11,15 @@ class CGameControllerMOD : public IGameController
 private:
 	int m_NextBroadcastTick;
 	int m_NextAnnounceTick;
+
+	class CFlag *m_apFlags[2];
 public:
 	CGameControllerMOD(class CGameContext *pGameServer);
 	virtual void Tick();
 	// add more virtual functions here if you wish
+
+	virtual bool OnEntity(int Index, vec2 Pos);
+	virtual int OnCharacterDeath(class CCharacter *pVictim, class CPlayer *pKiller, int Weapon);
+	virtual void Snap(int SnappingClient);
 };
 #endif

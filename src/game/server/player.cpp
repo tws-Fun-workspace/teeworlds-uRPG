@@ -324,7 +324,7 @@ void CPlayer::Respawn()
 		m_Spawning = true;
 }
 
-void CPlayer::SetTeam(int Team, bool DoChatMsg)
+void CPlayer::SetTeam(int Team, bool DoChatMsg, bool DoKill)
 {
 	// clamp the team
 	Team = GameServer()->m_pController->ClampTeam(Team);
@@ -338,12 +338,15 @@ void CPlayer::SetTeam(int Team, bool DoChatMsg)
 		GameServer()->SendChat(-1, CGameContext::CHAT_ALL, aBuf);
 	}
 
-	KillCharacter();
+	if (DoKill || Team == TEAM_SPECTATORS)
+		KillCharacter();
 
 	m_Team = Team;
 	m_LastActionTick = Server()->Tick();
 	// we got to wait 0.5 secs before respawning
-	m_RespawnTick = Server()->Tick()+Server()->TickSpeed()/2;
+	if (DoKill || Team == TEAM_SPECTATORS)
+		m_RespawnTick = Server()->Tick()+Server()->TickSpeed()/2;
+
 	str_format(aBuf, sizeof(aBuf), "team_join player='%d:%s' m_Team=%d", m_ClientID, Server()->ClientName(m_ClientID), m_Team);
 	GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
 
