@@ -647,7 +647,6 @@ void CCharacter::Tick()
 		CCharacter* hookedChar = GameServer()->GetPlayerChar(m_Core.m_HookedPlayer);
 		if (hookedChar)
 			hookedChar->Interaction(GetPlayer()->GetCID());
-		Interaction(m_Core.m_HookedPlayer);
 	}
 
 	DDWarTick();
