@@ -99,7 +99,7 @@ CPlayer* CGameContext::GetPlayerByUID(int uid)
 	int ClientID = uid%1000;
 	if(ClientID < 0 || ClientID >= MAX_CLIENTS || !m_apPlayers[ClientID])
 		return 0;
-	if (m_apPlayers[ClientID]->GetCUID() != uid)
+	if (uid > MAX_CLIENTS && m_apPlayers[ClientID]->GetCUID() != uid)
 		return 0;
 	return m_apPlayers[ClientID];
 }
