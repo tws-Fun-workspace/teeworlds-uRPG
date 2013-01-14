@@ -224,7 +224,7 @@ int CNetConnection::Feed(CNetPacketConstruct *pPacket, NETADDR *pAddr)
 					str_sanitize_strong(Str);
 
 					// set the error string
-					SetError(Str);
+					SetError("Quit");
 				}
 				else
 					SetError("No reason given");
