@@ -877,6 +877,11 @@ static int priv_net_create_socket(int domain, int type, struct sockaddr *addr, i
 	}
 #endif
 
+	char tmp[2];
+	tmp[0] = 1;
+	tmp[1] = 0;
+	setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, tmp, sizeof(int));
+
 	/* bind the socket */
 	e = bind(sock, addr, sockaddrlen);
 	if(e != 0)
