@@ -62,8 +62,6 @@ bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
 	m_LastWeapon = WEAPON_HAMMER;
 	m_QueuedWeapon = -1;
 
-	NewState(BS_FREE);
-
 	m_pPlayer = pPlayer;
 	if (m_pPlayer)
 		m_pPlayer->OverrideColors(-1);
@@ -87,6 +85,9 @@ bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
 	m_DefEmoteReset = -1;
 
 	m_HammerScore = 0;
+
+	m_Helper = -1;
+	NewState(BS_FREE);
 
 	return true;
 }
