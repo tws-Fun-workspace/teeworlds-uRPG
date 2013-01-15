@@ -1186,7 +1186,7 @@ void CCharacter::BlockKill(bool dead)
 	if (!dead && killerID == GetPlayer()->GetCID())
 		return;
 
-	if (chatblock)
+	if (killer && chatblock)
 	{
 		char buf[300];
 		str_format(buf, sizeof(buf), "%s chatkilled %s", Server()->ClientName(killerID), Server()->ClientName(GetPlayer()->GetCID()));
