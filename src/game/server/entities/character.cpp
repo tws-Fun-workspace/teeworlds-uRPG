@@ -1048,7 +1048,7 @@ void CCharacter::Snap(int SnappingClient)
 			pCharacter->m_Emote = EMOTE_BLINK;
 		if(m_Core.m_Frozen || m_State == BS_BLOCKED)
 			pCharacter->m_Emote = EMOTE_BLINK;
-		if (m_ChattingSince!=0 && Ago(m_ChattingSince, g_Config.m_SvChatblockTime - g_Config.m_SvFrozenBlocked))
+		if ((m_ChattingSince!=0 && Ago(m_ChattingSince, g_Config.m_SvChatblockTime) && m_State == BS_FREE) || m_Chatblocked)
 			pCharacter->m_Emote = EMOTE_SURPRISE;
 	}
 
@@ -1071,6 +1071,8 @@ void CCharacter::DDWarTick()
 	{
 		if (m_State != BS_FROZEN)
 			m_ChattingSince = 0;
+		if (m_State == BS_INTERACTED)
+			m_Chatblocked = false;
 	}
 	if (m_Core.m_HookedPlayer != -1)
 	{
@@ -1147,6 +1149,14 @@ void CCharacter::NewState(int state)
 	{
 		BlockKill(false);
 	}
+	if (m_State == BS_FREE && state == BS_INTERACTED)
+	{
+		m_Chatblocked = (m_ChattingSince!=0 && Ago(m_ChattingSince, g_Config.m_SvChatblockTime));
+	}
+	else if (state != BS_FROZEN)
+	{
+		m_Chatblocked = false;
+	}
 	m_State = state;
 	m_LastStateChange = Server()->Tick();
 }
@@ -1171,7 +1181,6 @@ void CCharacter::BlockHelp()
 
 void CCharacter::BlockKill(bool dead)
 {
-	bool chatblock = (m_ChattingSince!=0 && Ago(m_ChattingSince, g_Config.m_SvChatblockTime));
 	m_ChattingSince = 0;
 	if (m_Helper == m_Killer)
 		SetHelper(-1);
@@ -1186,7 +1195,7 @@ void CCharacter::BlockKill(bool dead)
 	if (!dead && killerID == GetPlayer()->GetCID())
 		return;
 
-	if (killer && chatblock)
+	if (killer && m_Chatblocked)
 	{
 		char buf[300];
 		str_format(buf, sizeof(buf), "%s chatkilled %s", Server()->ClientName(killerID), Server()->ClientName(GetPlayer()->GetCID()));

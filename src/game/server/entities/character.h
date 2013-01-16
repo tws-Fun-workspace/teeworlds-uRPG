@@ -93,6 +93,7 @@ public:
 	int m_LastFrozen;
 	int m_State;
 	int m_ChattingSince;
+	int m_Chatblocked;
 	int m_CKPunish;
 	int m_CKPunishTick;
 
