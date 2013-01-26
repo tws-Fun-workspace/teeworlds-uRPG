@@ -1174,7 +1174,9 @@ void CCharacter::BlockHelp()
 			Msg.m_Weapon = WEAPON_RIFLE;
 			Msg.m_ModeSpecial = 0;
 			Server()->SendPackMsg(&Msg, MSGFLAG_VITAL, -1);
-			//((CGameControllerDDRace*)GameServer()->m_pController)->Blocked(this, helper);
+			char buf[300];
+			str_format(buf, sizeof(buf), "player %d has /helped %d", m_Helper, GetPlayer()->GetCUID());
+			GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_ADDINFO, "hook", buf);
 		}
 	}
 }
