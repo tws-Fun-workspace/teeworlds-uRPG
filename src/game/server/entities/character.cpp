@@ -1149,7 +1149,7 @@ void CCharacter::NewState(int state)
 	{
 		BlockKill(false);
 	}
-	if (m_State == BS_FREE && state == BS_INTERACTED)
+	if (state == BS_INTERACTED)
 	{
 		m_Chatblocked = (m_ChattingSince!=0 && Ago(m_ChattingSince, g_Config.m_SvChatblockTime));
 	}
