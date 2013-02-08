@@ -120,6 +120,9 @@ MACRO_CONFIG_INT(SvSelfBlocked, sv_self_blocked, 4000, 0, 10000, CFGFLAG_SERVER,
 MACRO_CONFIG_INT(SvChatblockTime, sv_chatblock_time, 1500, 0, 20000, CFGFLAG_SERVER, "Milliseconds for chat to be opened before blockkill to be considered a chatblock")
 MACRO_CONFIG_INT(SvChatblockPunish, sv_chatblock_punish, -1, -1, 100, CFGFLAG_SERVER, "Chatblock punishment type available to victim; -1=swap, n=freeze for n secs")
 
+MACRO_CONFIG_INT(SvFlag0HeatRegen, sv_flag0_heat_regen, 60, 0, 1000, CFGFLAG_SERVER, "Regens 1 heat each this seconds for flag 0")
+MACRO_CONFIG_INT(SvFlag1HeatRegen, sv_flag1_heat_regen, 60, 0, 1000, CFGFLAG_SERVER, "Regens 1 heat each this seconds for flag 1")
+
 MACRO_CONFIG_INT(SvColFrz0, sv_col_frz_0, 0xffffff, -1, 0x7fffffff, CFGFLAG_SERVER, "") //white
 MACRO_CONFIG_INT(SvColFrz1, sv_col_frz_1, 0x0, -1, 0x7fffffff, CFGFLAG_SERVER, "") // gray
 MACRO_CONFIG_INT(SvColFrz2, sv_col_frz_2, 0xffff00, -1, 0x7fffffff, CFGFLAG_SERVER, "") // red

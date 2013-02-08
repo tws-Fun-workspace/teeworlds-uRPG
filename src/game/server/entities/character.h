@@ -109,6 +109,7 @@ public:
 	void Freeze(int ticks);
 	vec2 GetPos();
 	void SetPos(vec2 pos);
+	int HasFlag();
 
 private:
 	// player controlling this character

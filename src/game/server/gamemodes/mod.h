@@ -3,6 +3,7 @@
 #ifndef GAME_SERVER_GAMEMODES_MOD_H
 #define GAME_SERVER_GAMEMODES_MOD_H
 #include <game/server/gamecontroller.h>
+#include <game/server/entities/flag.h>
 
 // you can subclass GAMECONTROLLER_CTF, GAMECONTROLLER_TDM etc if you want
 // todo a modification with their base as well.
@@ -21,5 +22,8 @@ public:
 	virtual bool OnEntity(int Index, vec2 Pos);
 	virtual int OnCharacterDeath(class CCharacter *pVictim, class CPlayer *pKiller, int Weapon);
 	virtual void Snap(int SnappingClient);
+
+	CCharacter* GetFlagCarrier(int Flag) { return m_apFlags[Flag]->m_pCarryingCharacter; }
+	void SetFlagCarrier(int Flag, CCharacter* pCarrier);
 };
 #endif

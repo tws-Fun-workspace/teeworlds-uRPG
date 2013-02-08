@@ -246,3 +246,11 @@ void CGameControllerMOD::Snap(int SnappingClient)
 	else
 		pGameDataObj->m_FlagCarrierBlue = FLAG_MISSING;
 }
+
+void CGameControllerMOD::SetFlagCarrier(int Flag, CCharacter* pCarrier)
+{
+	for (int i=0;i<2;i++)
+		if (GetFlagCarrier(i) == pCarrier)
+			return;
+	m_apFlags[Flag]->m_pCarryingCharacter = pCarrier;
+}

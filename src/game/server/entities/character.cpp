@@ -1057,6 +1057,12 @@ void CCharacter::Snap(int SnappingClient)
 
 void CCharacter::DDWarTick()
 {
+	if (HasFlag() == 0 && g_Config.m_SvFlag0HeatRegen !=0 && Server()->Tick()%(Server()->TickSpeed()*g_Config.m_SvFlag0HeatRegen)==0)
+		IncreaseArmor(1);
+
+	if (HasFlag() == 1 && g_Config.m_SvFlag1HeatRegen !=0 && Server()->Tick()%(Server()->TickSpeed()*g_Config.m_SvFlag1HeatRegen)==0)
+		IncreaseArmor(1);
+
 	if (Ago(m_CKPunishTick, 10000))
 	{
 		m_CKPunishTick = 0;
@@ -1114,6 +1120,15 @@ void CCharacter::Interaction(int with)
 		SetKiller(with);
 	if (m_State == BS_BLOCKED && !Ago(m_LastFrozen, 3))
 		SetHelper(with);
+	CGameControllerMOD* mod = (CGameControllerMOD*)GameServer()->m_pController;
+	if (m_State == BS_BLOCKED)
+	{
+		CCharacter* withChar = GameServer()->GetPlayerByUID(with)->GetCharacter();
+		if (withChar)
+			for (int i=0;i<2;i++)
+				if (mod->GetFlagCarrier(i) == this)
+					mod->SetFlagCarrier(i, withChar);
+	}
 }
 
 void CCharacter::SetKiller(int killerUID)
@@ -1197,7 +1212,19 @@ void CCharacter::BlockKill(bool dead)
 	if (!dead && killerID == GetPlayer()->GetCID())
 		return;
 
-	if (killer && m_Chatblocked)
+	CNetMsg_Sv_KillMsg Msg;
+	Msg.m_Killer = killerID;
+	Msg.m_Victim = GetPlayer()->GetCID();
+	Msg.m_Weapon = dead ? WEAPON_NINJA : WEAPON_HAMMER;
+	Msg.m_ModeSpecial = 0;
+	Server()->SendPackMsg(&Msg, MSGFLAG_VITAL, -1);
+
+	m_Killer = -1;
+
+	if (!killer)
+		return;
+
+	if (m_Chatblocked)
 	{
 		char buf[300];
 		str_format(buf, sizeof(buf), "%s chatkilled %s", Server()->ClientName(killerID), Server()->ClientName(GetPlayer()->GetCID()));
@@ -1222,18 +1249,14 @@ void CCharacter::BlockKill(bool dead)
 	else
 	{
 		char buf[300];
-		str_format(buf, sizeof(buf), "player %d has /killed %d", m_Killer, GetPlayer()->GetCUID());
+		str_format(buf, sizeof(buf), "player %d has /killed %d", killer->GetCID(), GetPlayer()->GetCUID());
 		GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_ADDINFO, "hook", buf);
+
+		if (killer->GetCharacter())
+			for (int i=0;i<2;i++)
+				if (((CGameControllerMOD*)GameServer()->m_pController)->GetFlagCarrier(i) == this)
+					((CGameControllerMOD*)GameServer()->m_pController)->SetFlagCarrier(i, killer->GetCharacter());
 	}
-
-	CNetMsg_Sv_KillMsg Msg;
-	Msg.m_Killer = killerID;
-	Msg.m_Victim = GetPlayer()->GetCID();
-	Msg.m_Weapon = dead ? WEAPON_NINJA : WEAPON_HAMMER;
-	Msg.m_ModeSpecial = 0;
-	Server()->SendPackMsg(&Msg, MSGFLAG_VITAL, -1);
-
-	m_Killer = -1;
 }
 
 void CCharacter::Freeze(int ticks)
@@ -1250,4 +1273,13 @@ vec2 CCharacter::GetPos()
 void CCharacter::SetPos(vec2 pos)
 {
 	m_Core.m_Pos = pos;
+}
+
+int CCharacter::HasFlag()
+{
+	CGameControllerMOD* mod = (CGameControllerMOD*)GameServer()->m_pController;
+	for (int i=0;i<2;i++)
+		if (mod->GetFlagCarrier(i) == this)
+			return i;
+	return -1;
 }
