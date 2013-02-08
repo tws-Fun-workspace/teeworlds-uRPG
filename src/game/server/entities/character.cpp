@@ -1249,7 +1249,7 @@ void CCharacter::BlockKill(bool dead)
 	else
 	{
 		char buf[300];
-		str_format(buf, sizeof(buf), "player %d has /killed %d", killer->GetCID(), GetPlayer()->GetCUID());
+		str_format(buf, sizeof(buf), "player %d has /killed %d", killer->GetCUID(), GetPlayer()->GetCUID());
 		GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_ADDINFO, "hook", buf);
 
 		if (killer->GetCharacter())
