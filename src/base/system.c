@@ -850,7 +850,7 @@ static int priv_net_close_all_sockets(NETSOCKET sock)
 
 static int priv_net_create_socket(int domain, int type, struct sockaddr *addr, int sockaddrlen)
 {
-	int sock, e;
+	int sock, e, tmp, ret;
 
 	/* create socket */
 	sock = socket(domain, type, 0);
@@ -877,8 +877,8 @@ static int priv_net_create_socket(int domain, int type, struct sockaddr *addr, i
 	}
 #endif
 
-	int tmp = 1;
-	int ret =setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &tmp, sizeof tmp);
+	tmp = 1;
+	ret = setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (const char*)&tmp, sizeof tmp);
 	dbg_msg("net", "enabling reuseaddr: %d", ret);
 
 	/* bind the socket */
