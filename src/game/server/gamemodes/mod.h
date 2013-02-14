@@ -23,7 +23,7 @@ public:
 	virtual int OnCharacterDeath(class CCharacter *pVictim, class CPlayer *pKiller, int Weapon);
 	virtual void Snap(int SnappingClient);
 
-	CCharacter* GetFlagCarrier(int Flag) { return m_apFlags[Flag]->m_pCarryingCharacter; }
+	CCharacter* GetFlagCarrier(int Flag) { return m_apFlags[Flag] ? m_apFlags[Flag]->m_pCarryingCharacter : 0; }
 	void SetFlagCarrier(int Flag, CCharacter* pCarrier);
 };
 #endif

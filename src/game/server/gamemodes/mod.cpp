@@ -249,6 +249,8 @@ void CGameControllerMOD::Snap(int SnappingClient)
 
 void CGameControllerMOD::SetFlagCarrier(int Flag, CCharacter* pCarrier)
 {
+	if (!m_apFlags[Flag])
+		return;
 	for (int i=0;i<2;i++)
 		if (GetFlagCarrier(i) == pCarrier)
 			return;
