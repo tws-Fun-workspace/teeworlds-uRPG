@@ -79,8 +79,7 @@ void CProjectile::Tick()
 
 		if (m_Weapon == WEAPON_GUN)
 		{
-			//didn't track down why the 0.20 is necessary, but it is clearly skew without.
-			GameServer()->CreateDamageInd(CurPos, -atan2(m_Direction.x, m_Direction.y)+0.20, 3);
+			GameServer()->CreateDamageInd(CurPos, -atan2(m_Direction.x, m_Direction.y), 3);
 		}
 
 		GameServer()->m_World.DestroyEntity(this);
