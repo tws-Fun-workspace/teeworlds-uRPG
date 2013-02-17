@@ -592,6 +592,7 @@ void CGameContext::OnClientConnected(int ClientID)
 	m_apPlayers[ClientID] = new(ClientID) CPlayer(this, ClientID, StartTeam);
 	//players[client_id].init(client_id);
 	//players[client_id].client_id = client_id;
+	m_apPlayers[ClientID]->m_ConnectAt = time_timestamp();
 
 	(void)m_pController->CheckTeamBalance();
 
@@ -617,7 +618,14 @@ void CGameContext::OnClientDrop(int ClientID, const char *pReason)
 {
 	AbortVoteKickOnDisconnect(ClientID);
 
-	m_apPlayers[ClientID]->OnDisconnect(pReason);
+	int PlayTime = time_timestamp() - m_apPlayers[ClientID]->m_ConnectAt;
+	if (PlayTime < 1)
+	{
+		char aBuf[256];
+		str_format(aBuf, sizeof(aBuf), "ban %d 1 throttled", ClientID);
+		Console()->ExecuteLine(aBuf);
+	} else
+		m_apPlayers[ClientID]->OnDisconnect(pReason);
 
 	delete m_apPlayers[ClientID];
 	m_apPlayers[ClientID] = 0;
