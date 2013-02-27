@@ -1030,6 +1030,13 @@ void CGameContext::ConLogin(IConsole::IResult *pResult, void *pUserData)
 	if(!pPlayer)
 		return;
 
+	if(pPlayer->m_LastLogin + 5 * pSelf->Server()->TickSpeed() - pSelf->Server()->Tick() > 0)
+	{
+		pSelf->SendChatTarget(pResult->m_ClientID, "You can login every 5 seconds only");
+		return;
+	}
+
+	pPlayer->m_LastLogin = pSelf->Server()->Tick();
 	pSelf->MemberList->Login(pResult, pResult->m_ClientID, pResult->GetString(0), pSelf);
 }
 
