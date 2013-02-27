@@ -1018,7 +1018,7 @@ void CGameContext::ConRegister(IConsole::IResult *pResult, void *pUserData)
 	if(!pPlayer)
 		return;
 
-	pSelf->MemberList->Register(pResult, pResult->m_ClientID, pResult->GetString(0), pSelf);
+	pSelf->MemberList->Register(pResult->m_ClientID, pResult->GetString(0), pSelf);
 }
 
 void CGameContext::ConLogin(IConsole::IResult *pResult, void *pUserData)
@@ -1037,7 +1037,7 @@ void CGameContext::ConLogin(IConsole::IResult *pResult, void *pUserData)
 	}
 
 	pPlayer->m_LastLogin = pSelf->Server()->Tick();
-	pSelf->MemberList->Login(pResult, pResult->m_ClientID, pResult->GetString(0), pSelf);
+	pSelf->MemberList->Login(pResult->m_ClientID, pResult->GetString(0), pSelf);
 }
 
 void CGameContext::ConLogOut(IConsole::IResult *pResult, void *pUserData)
