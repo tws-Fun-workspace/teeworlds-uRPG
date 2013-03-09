@@ -222,7 +222,7 @@ public:
 
 	void ProcessClientPacket(CNetChunk *pPacket);
 
-	void SendServerInfo(const NETADDR *pAddr, int Token);
+	void SendServerInfo(const NETADDR *pAddr, int Token, bool Extended=false);
 	void UpdateServerInfo();
 
 	void PumpNetwork();
