@@ -1240,7 +1240,12 @@ void CGameContext::ConSolo(IConsole::IResult *pResult, void *pUserData)
     CCharacter *pChr = pSelf->m_apPlayers[pResult->m_ClientID]->GetCharacter();
     if (!pChr) {
         pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "solo",
-        "You can't use /solo while you are dead/a spectator."); // iDDRace64
+        "You can't use /solo while you are dead/a spectator.");
+        return;
+    }
+    if(!g_Config.m_SvSoloPart) {
+        pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "solo",
+        "Solo disabled. Set sv_solo_part 1 to use /solo");
         return;
     }
     if(pPlayer->GetTeam() != TEAM_SPECTATORS) {

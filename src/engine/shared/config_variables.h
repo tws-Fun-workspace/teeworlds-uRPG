@@ -260,7 +260,7 @@ MACRO_CONFIG_INT(SvGrenadeExplosive,    sv_grenade_explosive, 1, 0, 1, CFGFLAG_S
 MACRO_CONFIG_INT(SvGrenadeFreeze,       sv_grenade_freeze, 0, 0, 1, CFGFLAG_SERVER, "Grenade freeze")
 MACRO_CONFIG_INT(SvPlasma,              sv_plasma, 0, 0, 1, CFGFLAG_SERVER, "Plasma")
 MACRO_CONFIG_INT(SvNewRescue,           sv_new_rescue, 1, 0, 1, CFGFLAG_SERVER, "Improved /r")
-
+MACRO_CONFIG_INT(SvSoloPart,            sv_solo_part, 1, 0, 1, CFGFLAG_SERVER, "Enable to use /solo")
 
 MACRO_CONFIG_INT(hcLaserCustomColor, hc_laser_custom_color, 0, 0, 1, CFGFLAG_SAVE|CFGFLAG_CLIENT, "Enable Custom Lase Color")
 MACRO_CONFIG_INT(hcLaserColorHue, hc_laser_color_hue, 127, 0, 255, CFGFLAG_CLIENT|CFGFLAG_SAVE, "Laser color hue")

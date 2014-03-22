@@ -1,0 +1,180 @@
+[14-03-23 00:36:29][server]: starting...
+[14-03-23 00:36:29][datafile]: loading. filename='maps/xyz_ddrace 2.map'
+[14-03-23 00:36:29][datafile]: allocsize=1256
+[14-03-23 00:36:29][datafile]: readsize=1120
+[14-03-23 00:36:29][datafile]: swaplen=1140
+[14-03-23 00:36:29][datafile]: item_size=872
+[14-03-23 00:36:29][datafile]: loading done. datafile='maps/xyz_ddrace 2.map'
+[14-03-23 00:36:29][server]: maps/xyz_ddrace 2.map crc is fd1d3466
+[14-03-23 00:36:29][server]: server name is 'Test idd Srv'
+[14-03-23 00:36:29][datafile]: loading data index=6 size=2136 uncompressed=105600
+[14-03-23 00:36:29][datafile]: loading data index=13 size=217 uncompressed=158400
+[14-03-23 00:36:29][datafile]: loading data index=9 size=185 uncompressed=105600
+[14-03-23 00:36:29][datafile]: loading data index=11 size=143 uncompressed=105600
+[14-03-23 00:36:29][console]: failed to open 'data/maps/xyz_ddrace 2.cfg'
+[14-03-23 00:36:29][console]: failed to open 'data/maps/xyz_ddrace 2.map.cfg'
+[14-03-23 00:36:29][server]: version 0.6 626fce9a778df4d4
+[14-03-23 00:36:29][server]: baseline memory usage 752k
+[14-03-23 00:36:33][connection]: got connection, sending connect+accept
+[14-03-23 00:36:33][connection]: connecting online
+[14-03-23 00:36:33][server]: sending chunk 0 with size 896
+[14-03-23 00:36:33][server]: sending chunk 1 with size 896
+[14-03-23 00:36:33][server]: player is ready. ClientID=0 addr=192.168.1.101:54628
+[14-03-23 00:36:33][server]: 'Vipivin   ' -> 'Vipivin'
+[14-03-23 00:36:33][server]: player has entered the game. ClientID=0 addr=192.168.1.101:54628
+[14-03-23 00:36:33][chat]: *** 'Vipivin' entered and joined the game
+[14-03-23 00:36:33][game]: team_join player='0:Vipivin' team=0
+[14-03-23 00:36:34][DDRace]: 0 use DDRace Client
+[14-03-23 00:36:34][server]: dropped weird message 'Cl_TeamsState' (31), failed on '(unpack error)'
+[14-03-23 00:36:36][server]: ClientID=0 authed (admin)
+[14-03-23 00:36:39][server]: ClientID=0 rcon='kid_status'
+[14-03-23 00:36:39][Console]: jumps, saytime, saytimeall, cmdlist, credits, emote, eyeemote, help, info, me, pause, rank, rules, settings, spec, team, time, timer, top5
+[14-03-23 00:36:44][server]: ClientID=0 rcon='level_command'
+[14-03-23 00:36:44][Console]: Invalid arguments... Usage: level_command s?ii
+[14-03-23 00:36:46][server]: ClientID=0 rcon='level_command super'
+[14-03-23 00:36:46][Console]: Moderator access for 'super' is enabled
+[14-03-23 00:36:46][Console]: Helper access for 'super' is enabled
+[14-03-23 00:36:46][Console]: Kid's access for 'super' is disabled
+[14-03-23 00:36:46][Console]: User access for 'super' is disabled
+[14-03-23 00:36:51][server]: ClientID=0 rcon='level_command super 1'
+[14-03-23 00:36:51][Console]: Moderator access for 'super' is now enabled
+[14-03-23 00:36:51][Console]: Helper access for 'super' is now enabled
+[14-03-23 00:36:51][Console]: Kid's access for 'super' is now enabled
+[14-03-23 00:36:51][Console]: User access for 'super' is now disabled
+[14-03-23 00:36:54][server]: ClientID=0 rcon='level_command super 0'
+[14-03-23 00:36:54][Console]: Moderator access for 'super' is now enabled
+[14-03-23 00:36:54][Console]: Helper access for 'super' is now enabled
+[14-03-23 00:36:54][Console]: Kid's access for 'super' is now enabled
+[14-03-23 00:36:54][Console]: User access for 'super' is now enabled
+[14-03-23 00:36:56][server]: ClientID=0 rcon='logout'
+[14-03-23 00:36:56][server]: ClientID=0 logged out
+[14-03-23 00:37:01][Console]: No such command: super.
+[14-03-23 00:37:01][chat-command]: 0 used /super
+[14-03-23 00:37:13][chat]: 0:-2:Vipivin: suerp
+[14-03-23 00:37:15][Console]: No such command: suer.
+[14-03-23 00:37:15][chat-command]: 0 used /suer
+[14-03-23 00:37:35][server]: ClientID=0 authed (kid)
+[14-03-23 00:37:37][server]: ClientID=0 rcon='super me'
+[14-03-23 00:37:48][chat-command]: 0 used /unfreeze
+[14-03-23 00:37:57][chat]: *** '[D] Vipivin' entered and joined the game
+[14-03-23 00:37:57][game]: team_join player='1:[D] Vipivin' team=0
+[14-03-23 00:37:57][chat-command]: 0 used /d
+[14-03-23 00:37:57][chat-command]: 0 used /spec
+[14-03-23 00:38:00][chat-command]: 0 used /spec
+[14-03-23 00:38:00][chat-command]: 0 used /d
+[14-03-23 00:38:00][chat-command]: 0 used /spec
+[14-03-23 00:38:00][chat-command]: 0 used /spec
+[14-03-23 00:38:00][chat-command]: 0 used /d
+[14-03-23 00:38:00][chat-command]: 0 used /spec
+[14-03-23 00:38:01][chat-command]: 0 used /spec
+[14-03-23 00:38:01][chat-command]: 0 used /d
+[14-03-23 00:38:01][chat-command]: 0 used /spec
+[14-03-23 00:38:01][chat-command]: 0 used /spec
+[14-03-23 00:38:01][chat-command]: 0 used /dc
+[14-03-23 00:38:03][server]: ClientID=0 rcon='s'
+[14-03-23 00:38:03][Console]: No such command: s.
+[14-03-23 00:38:05][server]: ClientID=0 rcon='lgo'
+[14-03-23 00:38:05][Console]: No such command: lgo.
+[14-03-23 00:38:05][conn]: closed reason=''
+[14-03-23 00:38:06][server]: client dropped. cid=0 addr=192.168.1.101:54628 reason=''
+[14-03-23 00:38:06][game]: kill killer='1:[D] Vipivin' victim='1:[D] Vipivin' weapon=-3 special=0
+[14-03-23 00:38:06][chat]: *** '[D] Vipivin' has left the game
+[14-03-23 00:38:06][game]: kill killer='0:Vipivin' victim='0:Vipivin' weapon=-3 special=0
+[14-03-23 00:38:06][chat]: *** 'Vipivin' has left the game
+[14-03-23 00:38:06][connection]: got connection, sending connect+accept
+[14-03-23 00:38:06][connection]: connecting online
+[14-03-23 00:38:06][server]: sending chunk 0 with size 896
+[14-03-23 00:38:06][server]: sending chunk 1 with size 896
+[14-03-23 00:38:06][server]: sending chunk 2 with size 896
+[14-03-23 00:38:06][server]: sending chunk 3 with size 896
+[14-03-23 00:38:06][server]: sending chunk 4 with size 896
+[14-03-23 00:38:06][server]: sending chunk 5 with size 896
+[14-03-23 00:38:06][server]: sending chunk 6 with size 763
+[14-03-23 00:38:06][server]: player is ready. ClientID=0 addr=192.168.1.101:54628
+[14-03-23 00:38:06][server]: 'Vipivin   ' -> 'Vipivin'
+[14-03-23 00:38:07][server]: player has entered the game. ClientID=0 addr=192.168.1.101:54628
+[14-03-23 00:38:07][chat]: *** 'Vipivin' entered and joined the game
+[14-03-23 00:38:07][game]: team_join player='0:Vipivin' team=0
+[14-03-23 00:38:07][DDRace]: 0 use DDRace Client
+[14-03-23 00:38:07][server]: dropped weird message 'Cl_TeamsState' (31), failed on '(unpack error)'
+[14-03-23 00:38:08][server]: ClientID=0 authed (admin)
+[14-03-23 00:38:16][server]: ClientID=0 rcon='level_command'
+[14-03-23 00:38:16][Console]: Invalid arguments... Usage: level_command s?ii
+[14-03-23 00:38:18][server]: ClientID=0 rcon='level_command e'
+[14-03-23 00:38:18][Console]: No such command: 'e'.
+[14-03-23 00:38:20][server]: ClientID=0 rcon='level_command super'
+[14-03-23 00:38:20][Console]: Moderator access for 'super' is enabled
+[14-03-23 00:38:20][Console]: Helper access for 'super' is enabled
+[14-03-23 00:38:20][Console]: Kid's access for 'super' is enabled
+[14-03-23 00:38:20][Console]: User access for 'super' is enabled
+[14-03-23 00:38:22][server]: ClientID=0 rcon='level_command super1'
+[14-03-23 00:38:22][Console]: No such command: 'super1'.
+[14-03-23 00:38:24][server]: ClientID=0 rcon='level_command super 1'
+[14-03-23 00:38:24][Console]: Moderator access for 'super' is now enabled
+[14-03-23 00:38:24][Console]: Helper access for 'super' is now enabled
+[14-03-23 00:38:24][Console]: Kid's access for 'super' is now enabled
+[14-03-23 00:38:24][Console]: User access for 'super' is now disabled
+[14-03-23 00:38:25][server]: ClientID=0 rcon='level_command super 2'
+[14-03-23 00:38:25][Console]: Moderator access for 'super' is now enabled
+[14-03-23 00:38:25][Console]: Helper access for 'super' is now enabled
+[14-03-23 00:38:25][Console]: Kid's access for 'super' is now disabled
+[14-03-23 00:38:25][Console]: User access for 'super' is now disabled
+[14-03-23 00:38:26][server]: ClientID=0 rcon='level_command super 3'
+[14-03-23 00:38:26][Console]: Moderator access for 'super' is now enabled
+[14-03-23 00:38:26][Console]: Helper access for 'super' is now disabled
+[14-03-23 00:38:26][Console]: Kid's access for 'super' is now disabled
+[14-03-23 00:38:26][Console]: User access for 'super' is now disabled
+[14-03-23 00:38:26][server]: ClientID=0 rcon='level_command super 4'
+[14-03-23 00:38:26][Console]: Moderator access for 'super' is now disabled
+[14-03-23 00:38:26][Console]: Helper access for 'super' is now disabled
+[14-03-23 00:38:26][Console]: Kid's access for 'super' is now disabled
+[14-03-23 00:38:26][Console]: User access for 'super' is now disabled
+[14-03-23 00:38:29][server]: ClientID=0 rcon='level_command super 0'
+[14-03-23 00:38:29][Console]: Moderator access for 'super' is now enabled
+[14-03-23 00:38:29][Console]: Helper access for 'super' is now enabled
+[14-03-23 00:38:29][Console]: Kid's access for 'super' is now enabled
+[14-03-23 00:38:29][Console]: User access for 'super' is now enabled
+[14-03-23 00:38:31][server]: ClientID=0 rcon='level_command super 1'
+[14-03-23 00:38:31][Console]: Moderator access for 'super' is now enabled
+[14-03-23 00:38:31][Console]: Helper access for 'super' is now enabled
+[14-03-23 00:38:31][Console]: Kid's access for 'super' is now enabled
+[14-03-23 00:38:31][Console]: User access for 'super' is now disabled
+[14-03-23 00:38:35][server]: ClientID=0 rcon='level_command super 2'
+[14-03-23 00:38:35][Console]: Moderator access for 'super' is now enabled
+[14-03-23 00:38:35][Console]: Helper access for 'super' is now enabled
+[14-03-23 00:38:35][Console]: Kid's access for 'super' is now disabled
+[14-03-23 00:38:35][Console]: User access for 'super' is now disabled
+[14-03-23 00:38:36][server]: ClientID=0 rcon='level_command super 3'
+[14-03-23 00:38:36][Console]: Moderator access for 'super' is now enabled
+[14-03-23 00:38:36][Console]: Helper access for 'super' is now disabled
+[14-03-23 00:38:36][Console]: Kid's access for 'super' is now disabled
+[14-03-23 00:38:36][Console]: User access for 'super' is now disabled
+[14-03-23 00:38:43][server]: ClientID=0 rcon='level_command super 4'
+[14-03-23 00:38:43][Console]: Moderator access for 'super' is now disabled
+[14-03-23 00:38:43][Console]: Helper access for 'super' is now disabled
+[14-03-23 00:38:43][Console]: Kid's access for 'super' is now disabled
+[14-03-23 00:38:43][Console]: User access for 'super' is now disabled
+[14-03-23 00:38:45][server]: ClientID=0 rcon='level_command super 1'
+[14-03-23 00:38:45][Console]: Moderator access for 'super' is now enabled
+[14-03-23 00:38:45][Console]: Helper access for 'super' is now enabled
+[14-03-23 00:38:45][Console]: Kid's access for 'super' is now enabled
+[14-03-23 00:38:45][Console]: User access for 'super' is now disabled
+[14-03-23 00:38:47][server]: ClientID=0 rcon='level_command super 2'
+[14-03-23 00:38:47][Console]: Moderator access for 'super' is now enabled
+[14-03-23 00:38:47][Console]: Helper access for 'super' is now enabled
+[14-03-23 00:38:47][Console]: Kid's access for 'super' is now disabled
+[14-03-23 00:38:47][Console]: User access for 'super' is now disabled
+[14-03-23 00:38:49][server]: ClientID=0 rcon='level_command super 3'
+[14-03-23 00:38:49][Console]: Moderator access for 'super' is now enabled
+[14-03-23 00:38:49][Console]: Helper access for 'super' is now disabled
+[14-03-23 00:38:49][Console]: Kid's access for 'super' is now disabled
+[14-03-23 00:38:49][Console]: User access for 'super' is now disabled
+[14-03-23 00:38:51][server]: ClientID=0 rcon='level_command super 4'
+[14-03-23 00:38:51][Console]: Moderator access for 'super' is now disabled
+[14-03-23 00:38:51][Console]: Helper access for 'super' is now disabled
+[14-03-23 00:38:51][Console]: Kid's access for 'super' is now disabled
+[14-03-23 00:38:51][Console]: User access for 'super' is now disabled
+[14-03-23 00:38:53][conn]: closed reason=''
+[14-03-23 00:38:53][server]: client dropped. cid=0 addr=192.168.1.101:54628 reason=''
+[14-03-23 00:38:53][game]: kill killer='0:Vipivin' victim='0:Vipivin' weapon=-3 special=0
+[14-03-23 00:38:53][chat]: *** 'Vipivin' has left the game
