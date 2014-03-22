@@ -497,7 +497,7 @@ void CConsole::Con_Exec(IResult *pResult, void *pUserData)
 	((CConsole*)pUserData)->ExecuteFile(pResult->GetString(0));
 }
 
-void CConsole::ConModCommandAccess(IResult *pResult, void *pUser)
+void CConsole::ConLevelCommand(IResult *pResult, void *pUser)
 {
 	CConsole* pConsole = static_cast<CConsole *>(pUser);
 	char aBuf[128];
@@ -514,11 +514,13 @@ void CConsole::ConModCommandAccess(IResult *pResult, void *pUser)
                 pResult->GetInteger(1) == 3 ? ACCESS_LEVEL_MOD : ACCESS_LEVEL_ADMIN
             );
 
-			str_format(aBuf, sizeof(aBuf), "moderator access for '%s' is now %s", pResult->GetString(0), pCommand->GetAccessLevel() >= ACCESS_LEVEL_MOD ? "enabled" : "disabled");
+			str_format(aBuf, sizeof(aBuf), "Moderator access for '%s' is now %s", pResult->GetString(0), pCommand->GetAccessLevel() >= ACCESS_LEVEL_MOD ? "enabled" : "disabled");
 			pConsole->Print(OUTPUT_LEVEL_STANDARD, "Console", aBuf);
-            str_format(aBuf, sizeof(aBuf), "helper access for '%s' is now %s", pResult->GetString(0), pCommand->GetAccessLevel() >= ACCESS_LEVEL_HELPER ? "enabled" : "disabled");
+            str_format(aBuf, sizeof(aBuf), "Helper access for '%s' is now %s", pResult->GetString(0), pCommand->GetAccessLevel() >= ACCESS_LEVEL_HELPER ? "enabled" : "disabled");
             pConsole->Print(OUTPUT_LEVEL_STANDARD, "Console", aBuf);
-			str_format(aBuf, sizeof(aBuf), "user access for '%s' is now %s", pResult->GetString(0), pCommand->GetAccessLevel() >= ACCESS_LEVEL_USER ? "enabled" : "disabled");
+            str_format(aBuf, sizeof(aBuf), "Kid's access for '%s' is now %s", pResult->GetString(0), pCommand->GetAccessLevel() >= ACCESS_LEVEL_KID ? "enabled" : "disabled");
+            pConsole->Print(OUTPUT_LEVEL_STANDARD, "Console", aBuf);
+			str_format(aBuf, sizeof(aBuf), "User access for '%s' is now %s", pResult->GetString(0), pCommand->GetAccessLevel() >= ACCESS_LEVEL_USER ? "enabled" : "disabled");
 		}
         else if (pResult->NumArguments() == 3 && str_comp(pResult->GetString(2), "1") == 0){
             // str_format(aBuf, sizeof(aBuf), "arg: %s", pResult->GetString(2));
@@ -533,25 +535,32 @@ void CConsole::ConModCommandAccess(IResult *pResult, void *pUser)
                 pCommand->SetAccessLevel(ACCESS_LEVEL_HELPER);// ACCESS_LEVEL_HELPER
             }
             else if (pResult->GetInteger(1) == 2) {
+                pCommand->SetAccessLevel(ACCESS_LEVEL_HELPER);// ACCESS_LEVEL_HELPER
+            }
+            else if (pResult->GetInteger(1) == 3) {
                 pCommand->SetAccessLevel(ACCESS_LEVEL_MOD); // ACCESS_LEVEL_MOD
             }
             else {
                 pCommand->SetAccessLevel(ACCESS_LEVEL_ADMIN);  // ACCESS_LEVEL_ADMIN
             }
             // pCommand->SetAccessLevel(pResult->GetInteger(1) ==  0 ? ACCESS_LEVEL_USER : pResult->GetInteger(1) >= 1 ? ACCESS_LEVEL_HELPER : pResult->GetInteger(1) >= 2 ? ACCESS_LEVEL_MOD : ACCESS_LEVEL_ADMIN);
-            str_format(aBuf, sizeof(aBuf), "moderator access for '%s' is now %s", pResult->GetString(0), pCommand->GetAccessLevel() == ACCESS_LEVEL_MOD ? "enabled" : "disabled");
+            str_format(aBuf, sizeof(aBuf), "Moderator access for '%s' is now %s", pResult->GetString(0), pCommand->GetAccessLevel() == ACCESS_LEVEL_MOD ? "enabled" : "disabled");
             pConsole->Print(OUTPUT_LEVEL_STANDARD, "Console", aBuf);
-            str_format(aBuf, sizeof(aBuf), "helper access for '%s' is now %s", pResult->GetString(0), pCommand->GetAccessLevel() == ACCESS_LEVEL_HELPER ? "enabled" : "disabled");
+            str_format(aBuf, sizeof(aBuf), "Helper access for '%s' is now %s", pResult->GetString(0), pCommand->GetAccessLevel() == ACCESS_LEVEL_HELPER ? "enabled" : "disabled");
             pConsole->Print(OUTPUT_LEVEL_STANDARD, "Console", aBuf);
-            str_format(aBuf, sizeof(aBuf), "user access for '%s' is now %s", pResult->GetString(0), pCommand->GetAccessLevel() == ACCESS_LEVEL_USER ? "enabled" : "disabled");
+            str_format(aBuf, sizeof(aBuf), "Kid's access for '%s' is now %s", pResult->GetString(0), pCommand->GetAccessLevel() == ACCESS_LEVEL_KID ? "enabled" : "disabled");
+            pConsole->Print(OUTPUT_LEVEL_STANDARD, "Console", aBuf);
+            str_format(aBuf, sizeof(aBuf), "User access for '%s' is now %s", pResult->GetString(0), pCommand->GetAccessLevel() == ACCESS_LEVEL_USER ? "enabled" : "disabled");
         }
 		else
 		{
-			str_format(aBuf, sizeof(aBuf), "moderator access for '%s' is %s", pResult->GetString(0), pCommand->GetAccessLevel() >= ACCESS_LEVEL_MOD ? "enabled" : "disabled");
+			str_format(aBuf, sizeof(aBuf), "Moderator access for '%s' is %s", pResult->GetString(0), pCommand->GetAccessLevel() >= ACCESS_LEVEL_MOD ? "enabled" : "disabled");
 			pConsole->Print(OUTPUT_LEVEL_STANDARD, "Console", aBuf);
-            str_format(aBuf, sizeof(aBuf), "helper access for '%s' is now %s", pResult->GetString(0), pCommand->GetAccessLevel() >= ACCESS_LEVEL_HELPER ? "enabled" : "disabled");
+            str_format(aBuf, sizeof(aBuf), "Helper access for '%s' is %s", pResult->GetString(0), pCommand->GetAccessLevel() >= ACCESS_LEVEL_HELPER ? "enabled" : "disabled");
             pConsole->Print(OUTPUT_LEVEL_STANDARD, "Console", aBuf);
-			str_format(aBuf, sizeof(aBuf), "user access for '%s' is %s", pResult->GetString(0), pCommand->GetAccessLevel() >= ACCESS_LEVEL_USER ? "enabled" : "disabled");
+            str_format(aBuf, sizeof(aBuf), "Kid's access for '%s' is %s", pResult->GetString(0), pCommand->GetAccessLevel() >= ACCESS_LEVEL_KID ? "enabled" : "disabled");
+            pConsole->Print(OUTPUT_LEVEL_STANDARD, "Console", aBuf);
+			str_format(aBuf, sizeof(aBuf), "User access for '%s' is %s", pResult->GetString(0), pCommand->GetAccessLevel() >= ACCESS_LEVEL_USER ? "enabled" : "disabled");
 		}
 	}
 	else
@@ -604,6 +613,40 @@ void CConsole::ConHelperCommandStatus(IResult *pResult, void *pUser)
     for(CCommand *pCommand = pConsole->m_pFirstCommand; pCommand; pCommand = pCommand->m_pNext)
     {
         if(pCommand->m_Flags&pConsole->m_FlagMask && pCommand->GetAccessLevel() >= ACCESS_LEVEL_HELPER)
+        {
+            int Length = str_length(pCommand->m_pName);
+            if(Used + Length + 2 < (int)(sizeof(aBuf)))
+            {
+                if(Used > 0)
+                {
+                    Used += 2;
+                    str_append(aBuf, ", ", sizeof(aBuf));
+                }
+                str_append(aBuf, pCommand->m_pName, sizeof(aBuf));
+                Used += Length;
+            }
+            else
+            {
+                pConsole->Print(OUTPUT_LEVEL_STANDARD, "Console", aBuf);
+                mem_zero(aBuf, sizeof(aBuf));
+                str_copy(aBuf, pCommand->m_pName, sizeof(aBuf));
+                Used = Length;
+            }
+        }
+    }
+    if(Used > 0)
+        pConsole->Print(OUTPUT_LEVEL_STANDARD, "Console", aBuf);
+}
+void CConsole::ConKidCommandStatus(IResult *pResult, void *pUser)
+{
+    CConsole* pConsole = static_cast<CConsole *>(pUser);
+    char aBuf[240];
+    mem_zero(aBuf, sizeof(aBuf));
+    int Used = 0;
+
+    for(CCommand *pCommand = pConsole->m_pFirstCommand; pCommand; pCommand = pCommand->m_pNext)
+    {
+        if(pCommand->m_Flags&pConsole->m_FlagMask && pCommand->GetAccessLevel() >= ACCESS_LEVEL_KID)
         {
             int Length = str_length(pCommand->m_pName);
             if(Used + Length + 2 < (int)(sizeof(aBuf)))
@@ -798,9 +841,10 @@ CConsole::CConsole(int FlagMask)
 	Register("toggle", "sii", CFGFLAG_SERVER|CFGFLAG_CLIENT, ConToggle, this, "Toggle config value");
 	Register("+toggle", "sii", CFGFLAG_CLIENT, ConToggleStroke, this, "Toggle config value via keypress");
 
-	Register("level_command", "s?ii", CFGFLAG_SERVER, ConModCommandAccess, this, "Specify command accessibility");
+	Register("level_command", "s?ii", CFGFLAG_SERVER, ConLevelCommand, this, "Specify command accessibility");
 	Register("mod_status", "", CFGFLAG_SERVER, ConModCommandStatus, this, "List all commands which are accessible for moderators");
     Register("helper_status", "", CFGFLAG_SERVER, ConHelperCommandStatus, this, "List all commands which are accessible for helpers");
+    Register("kid_status", "", CFGFLAG_SERVER, ConKidCommandStatus, this, "List all commands which are accessible for kid's");
 	Register("user_status", "", CFGFLAG_SERVER, ConUserCommandStatus, this, "List all commands which are accessible for users");
 	Register("cmdlist", "", CFGFLAG_SERVER|CFGFLAG_CHAT, ConUserCommandStatus, this, "List all commands which are accessible for users");
 

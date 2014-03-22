@@ -1040,7 +1040,7 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 
                 ) {
                 m_apPlayers[ClientID]->m_Last_KickVote = time_get();
-                char chatmsg[512] = {0};
+                char chatmsg[64] = {0};
                 str_format(chatmsg, sizeof(chatmsg), "Choose another reason");
                 SendChatTarget(ClientID, chatmsg);
                 return;
