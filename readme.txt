@@ -18,4 +18,5 @@ Please visit http://www.teeworlds.com for up-to-date information about
 the game, including new versions, custom maps and much more.
 
 
-For server commands see server_commands.txt
+For server commands see  server_commands.txt
+For console commands see console_commands.txt
