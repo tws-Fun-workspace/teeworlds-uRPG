@@ -268,5 +268,5 @@ MACRO_CONFIG_INT(hcLaserColorSat, hc_laser_color_sat, 127, 0, 255, CFGFLAG_CLIEN
 MACRO_CONFIG_INT(hcLaserColorLht, hc_laser_color_lht, 127, 0, 255, CFGFLAG_CLIENT|CFGFLAG_SAVE, "Laser color lightness")
 MACRO_CONFIG_INT(hcLaserColorAlpha, hc_laser_color_alpha, 190, 0, 255, CFGFLAG_CLIENT|CFGFLAG_SAVE, "Laser alpha")
 
-MACRO_CONFIG_INT(Las, las, 5, 0, 30, CFGFLAG_SERVER, "Las")
+// MACRO_CONFIG_INT(Las, las, 5, 0, 30, CFGFLAG_SERVER, "Las")
 #endif

@@ -107,58 +107,20 @@ class CCharacter *CGameContext::GetPlayerChar(int ClientID)
 
 void CGameContext::CreateDamageInd(vec2 Pos, float Angle, int Amount, int64_t Mask)
 {
-    if(1 == 3) {
-        vec2 Direction = normalize(vec2(Pos.x, Pos.y));
-        float Spreading[18*2+1];
-        for(int i = 0; i < 18*2+1; i++) {
-            Spreading[i] = 1.5*pi * i;
-        }
-        for(int i = 0; i < Amount; i++) {
-            float a = GetAngle(Direction);
-            a += Spreading[i+18];
-            // Direction = "   vec2(cosf(a), sinf(a))   " !!!! copy it
-                CNetEvent_DamageInd *pEvent = (CNetEvent_DamageInd *)m_Events.Create(NETEVENTTYPE_DAMAGEIND, sizeof(CNetEvent_DamageInd), Mask);
-                if(pEvent)
-                {
-                    pEvent->m_X = (int)Pos.x;
-                    pEvent->m_Y = (int)Pos.y;
-                    pEvent->m_Angle = (int)(a*256.0f);
-                }
-
+    float a = 3 * 3.14159f / 2 + Angle;
+    //float a = get_angle(dir);
+    float s = a-pi/3;
+    float e = a+pi/3;
+    for(int i = 0; i < Amount; i++) {
+        float f = mix(s, e, float(i+1)/float(Amount+2));
+        CNetEvent_DamageInd *pEvent = (CNetEvent_DamageInd *)m_Events.Create(NETEVENTTYPE_DAMAGEIND, sizeof(CNetEvent_DamageInd), Mask);
+        if(pEvent) {
+            pEvent->m_X = (int)Pos.x;
+            pEvent->m_Y = (int)Pos.y;
+            pEvent->m_Angle = (int)(f*256.0f);
         }
     }
-    else {
-        float a = 3 * 3.14159f / 2 + Angle;
-        //float a = get_angle(dir);
-        float s = a-pi/3;
-        float e = a+pi/3;
-        for(int i = 0; i < Amount; i++)
-        {
-            float f = mix(s, e, float(i+1)/float(Amount+2));
-            CNetEvent_DamageInd *pEvent = (CNetEvent_DamageInd *)m_Events.Create(NETEVENTTYPE_DAMAGEIND, sizeof(CNetEvent_DamageInd), Mask);
-            if(pEvent)
-            {
-                pEvent->m_X = (int)Pos.x;
-                pEvent->m_Y = (int)Pos.y;
-                pEvent->m_Angle = (int)(f*256.0f);
-            }
-        }
-    }
-
 }
-/*
-float Spreading[18*2+1];
-for(int i = 0; i < 18*2+1; i++) {
-    Spreading[i] = -1.260f + 0.070f * i;
-}
-for(int i = 0; i < Amount; i++) {
-    float a = GetAngle(Direction);
-    a += Spreading[i+18];
-    // Direction = "   vec2(cosf(a), sinf(a))   " !!!! copy it
-
-
-}
-*/
 void CGameContext::CreateHammerHit(vec2 Pos, int64_t Mask)
 {
 	// create the event

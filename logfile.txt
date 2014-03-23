@@ -1,92 +1,1051 @@
-[14-03-23 16:08:39][server]: starting...
-[14-03-23 16:08:39][datafile]: loading. filename='maps/xyz_ddrace 2.map'
-[14-03-23 16:08:39][datafile]: allocsize=1256
-[14-03-23 16:08:39][datafile]: readsize=1120
-[14-03-23 16:08:39][datafile]: swaplen=1140
-[14-03-23 16:08:39][datafile]: item_size=872
-[14-03-23 16:08:39][datafile]: loading done. datafile='maps/xyz_ddrace 2.map'
-[14-03-23 16:08:39][server]: maps/xyz_ddrace 2.map crc is 1d910fc1
-[14-03-23 16:08:39][server]: server name is 'Test idd Srv'
-[14-03-23 16:08:39][datafile]: loading data index=6 size=2126 uncompressed=105600
-[14-03-23 16:08:39][datafile]: loading data index=13 size=217 uncompressed=158400
-[14-03-23 16:08:39][datafile]: loading data index=9 size=185 uncompressed=105600
-[14-03-23 16:08:39][datafile]: loading data index=11 size=143 uncompressed=105600
-[14-03-23 16:08:39][console]: failed to open 'data/maps/xyz_ddrace 2.cfg'
-[14-03-23 16:08:39][console]: failed to open 'data/maps/xyz_ddrace 2.map.cfg'
-[14-03-23 16:08:39][server]: version 0.6 626fce9a778df4d4
-[14-03-23 16:08:39][server]: baseline memory usage 752k
-[14-03-23 16:08:52][connection]: got connection, sending connect+accept
-[14-03-23 16:08:52][connection]: connecting online
-[14-03-23 16:08:52][server]: sending chunk 0 with size 896
-[14-03-23 16:08:52][server]: sending chunk 1 with size 896
-[14-03-23 16:08:52][server]: player is ready. ClientID=0 addr=192.168.1.101:64752
-[14-03-23 16:08:53][server]: 'Vipivin   ' -> 'Vipivin'
-[14-03-23 16:08:53][server]: player has entered the game. ClientID=0 addr=192.168.1.101:64752
-[14-03-23 16:08:53][chat]: *** 'Vipivin' entered and joined the game
-[14-03-23 16:08:53][game]: team_join player='0:Vipivin' team=0
-[14-03-23 16:08:53][DDRace]: 0 use DDRace Client
-[14-03-23 16:08:53][server]: dropped weird message 'Cl_TeamsState' (31), failed on '(unpack error)'
-[14-03-23 16:08:54][chat]: *** '[D] Vipivin' entered and joined the game
-[14-03-23 16:08:54][game]: team_join player='1:[D] Vipivin' team=0
-[14-03-23 16:08:54][chat-command]: 0 used /d
-[14-03-23 16:09:00][chat-command]: 0 used /dc
-[14-03-23 16:09:01][chat-command]: 0 used /d
-[14-03-23 16:09:02][chat-command]: 0 used /dc
-[14-03-23 16:09:02][chat-command]: 0 used /d
-[14-03-23 16:09:07][chat-command]: 0 used /d
-[14-03-23 16:09:32][chat-command]: 0 used /dc
-[14-03-23 16:09:33][chat-command]: 0 used /d
-[14-03-23 16:09:43][server]: ClientID=0 authed (admin)
-[14-03-23 16:09:47][server]: ClientID=0 rcon='sv_send_chat'
-[14-03-23 16:09:47][Console]: No such command: sv_send_chat.
-[14-03-23 16:09:54][server]: ClientID=0 rcon='sv_send'
-[14-03-23 16:09:54][Console]: No such command: sv_send.
-[14-03-23 16:09:56][server]: ClientID=0 rcon='sv_send_chat'
-[14-03-23 16:09:56][Console]: No such command: sv_send_chat.
-[14-03-23 16:09:59][server]: ClientID=0 rcon='sv_sendChat'
-[14-03-23 16:09:59][Console]: Value: 1
-[14-03-23 16:10:01][server]: ClientID=0 rcon='sv_sendChat 0'
-[14-03-23 16:10:01][chat-command]: 0 used /d
-[14-03-23 16:10:02][chat-command]: 0 used /d
-[14-03-23 16:10:02][game]: kill killer='1:[D] Vipivin' victim='1:[D] Vipivin' weapon=-3 special=0
-[14-03-23 16:10:02][chat-command]: 0 used /dd
-[14-03-23 16:10:02][game]: team_join player='1:[D] Vipivin' team=0
-[14-03-23 16:10:02][chat-command]: 0 used /d
-[14-03-23 16:10:03][chat-command]: 0 used /pause
-[14-03-23 16:10:04][chat-command]: 0 used /pause
-[14-03-23 16:10:07][chat-command]: 0 used /pause
-[14-03-23 16:10:08][chat-command]: 0 used /pause
-[14-03-23 16:10:14][chat-command]: 0 used /spec
-[14-03-23 16:10:14][chat-command]: 0 used /d
-[14-03-23 16:10:14][chat-command]: 0 used /spec
-[14-03-23 16:10:14][chat-command]: 0 used /spec
-[14-03-23 16:10:14][chat-command]: 0 used /d
-[14-03-23 16:10:14][chat-command]: 0 used /spec
-[14-03-23 16:10:16][chat-command]: 0 used /d
-[14-03-23 16:10:16][chat-command]: 0 used /d
-[14-03-23 16:10:19][Console]: No such command: lol.
-[14-03-23 16:10:19][chat-command]: 0 used /lol
-[14-03-23 16:10:19][chat-command]: 0 used /r
-[14-03-23 16:10:20][chat-command]: 0 used /r
-[14-03-23 16:10:20][chat-command]: 0 used /d
-[14-03-23 16:10:21][chat-command]: 0 used /dc
-[14-03-23 16:10:25][chat-command]: 0 used /pause
-[14-03-23 16:10:25][chat-command]: 0 used /pause
-[14-03-23 16:10:26][chat-command]: 0 used /pause
-[14-03-23 16:10:26][chat-command]: 0 used /pause
-[14-03-23 16:10:26][chat-command]: 0 used /pause
-[14-03-23 16:10:26][chat-command]: 0 used /pause
-[14-03-23 16:10:26][chat-command]: 0 used /pause
-[14-03-23 16:10:26][chat-command]: 0 used /pause
-[14-03-23 16:10:26][chat-command]: 0 used /pause
-[14-03-23 16:10:26][chat-command]: 0 used /pause
-[14-03-23 16:10:26][chat-command]: 0 used /pause
-[14-03-23 16:10:27][chat-command]: 0 used /pause
-[14-03-23 16:10:27][chat-command]: 0 used /pause
-[14-03-23 16:10:27][chat-command]: 0 used /pause
-[14-03-23 16:10:27][chat-command]: 0 used /pause
-[14-03-23 16:10:27][chat-command]: 0 used /pause
-[14-03-23 16:10:27][conn]: closed reason=''
-[14-03-23 16:10:27][server]: client dropped. cid=0 addr=192.168.1.101:64752 reason=''
-[14-03-23 16:10:27][game]: kill killer='1:[D] Vipivin' victim='1:[D] Vipivin' weapon=-3 special=0
-[14-03-23 16:10:27][game]: kill killer='0:Vipivin' victim='0:Vipivin' weapon=-3 special=0
+[14-03-23 22:39:14][server]: starting...
+[14-03-23 22:39:14][datafile]: loading. filename='maps/xyz_ddrace 2.map'
+[14-03-23 22:39:14][datafile]: allocsize=1256
+[14-03-23 22:39:14][datafile]: readsize=1120
+[14-03-23 22:39:14][datafile]: swaplen=1140
+[14-03-23 22:39:14][datafile]: item_size=872
+[14-03-23 22:39:14][datafile]: loading done. datafile='maps/xyz_ddrace 2.map'
+[14-03-23 22:39:14][server]: maps/xyz_ddrace 2.map crc is aed5a404
+[14-03-23 22:39:14][server]: server name is 'Test idd Srv'
+[14-03-23 22:39:14][datafile]: loading data index=6 size=2130 uncompressed=105600
+[14-03-23 22:39:14][datafile]: loading data index=13 size=217 uncompressed=158400
+[14-03-23 22:39:14][datafile]: loading data index=9 size=150 uncompressed=105600
+[14-03-23 22:39:14][datafile]: loading data index=11 size=141 uncompressed=105600
+[14-03-23 22:39:14][console]: failed to open 'data/maps/xyz_ddrace 2.cfg'
+[14-03-23 22:39:14][console]: failed to open 'data/maps/xyz_ddrace 2.map.cfg'
+[14-03-23 22:39:14][server]: version 0.6 626fce9a778df4d4
+[14-03-23 22:39:14][server]: baseline memory usage 744k
+[14-03-23 22:39:58][connection]: got connection, sending connect+accept
+[14-03-23 22:39:58][connection]: connecting online
+[14-03-23 22:39:58][server]: sending chunk 0 with size 896
+[14-03-23 22:39:58][server]: sending chunk 1 with size 896
+[14-03-23 22:39:58][server]: sending chunk 2 with size 896
+[14-03-23 22:39:58][server]: sending chunk 3 with size 896
+[14-03-23 22:39:58][server]: sending chunk 4 with size 896
+[14-03-23 22:39:58][server]: sending chunk 5 with size 896
+[14-03-23 22:39:58][server]: sending chunk 6 with size 722
+[14-03-23 22:39:58][server]: sending chunk 0 with size 896
+[14-03-23 22:39:58][server]: sending chunk 1 with size 896
+[14-03-23 22:39:58][server]: sending chunk 2 with size 896
+[14-03-23 22:39:58][server]: sending chunk 3 with size 896
+[14-03-23 22:39:58][server]: sending chunk 4 with size 896
+[14-03-23 22:39:58][server]: sending chunk 5 with size 896
+[14-03-23 22:39:58][server]: sending chunk 6 with size 722
+[14-03-23 22:39:58][server]: player is ready. ClientID=0 addr=93.84.215.253:58264
+[14-03-23 22:39:59][server]: 'ŖȪss1499' -> 'ŖȪss1499'
+[14-03-23 22:39:59][server]: player has entered the game. ClientID=0 addr=93.84.215.253:58264
+[14-03-23 22:39:59][chat]: *** 'ŖȪss1499' entered and joined the game
+[14-03-23 22:39:59][game]: team_join player='0:ŖȪss1499' team=0
+[14-03-23 22:40:00][DDRace]: 0 use DDRace Client
+[14-03-23 22:40:00][server]: dropped weird message 'Cl_TeamsState' (31), failed on '(unpack error)'
+[14-03-23 22:40:19][server]: ClientID=0 authed (admin)
+[14-03-23 22:40:19][server]: ClientID=0 rcon='down me'
+[14-03-23 22:40:20][server]: ClientID=0 rcon='down me'
+[14-03-23 22:40:20][server]: ClientID=0 rcon='down me'
+[14-03-23 22:40:20][server]: ClientID=0 rcon='down me'
+[14-03-23 22:40:20][server]: ClientID=0 rcon='down me'
+[14-03-23 22:40:20][server]: ClientID=0 rcon='down me'
+[14-03-23 22:40:20][server]: ClientID=0 rcon='right me'
+[14-03-23 22:40:21][server]: ClientID=0 rcon='right me'
+[14-03-23 22:40:21][server]: ClientID=0 rcon='down me'
+[14-03-23 22:40:21][server]: ClientID=0 rcon='down me'
+[14-03-23 22:40:21][server]: ClientID=0 rcon='down me'
+[14-03-23 22:40:21][server]: ClientID=0 rcon='down me'
+[14-03-23 22:40:21][server]: ClientID=0 rcon='down me'
+[14-03-23 22:40:22][server]: ClientID=0 rcon='left me'
+[14-03-23 22:40:29][connection]: got connection, sending connect+accept
+[14-03-23 22:40:29][connection]: connecting online
+[14-03-23 22:40:29][server]: sending chunk 0 with size 896
+[14-03-23 22:40:29][server]: player is ready. ClientID=1 addr=192.168.1.101:54729
+[14-03-23 22:40:29][server]: 'Vipivin   ' -> 'Vipivin'
+[14-03-23 22:40:29][server]: player has entered the game. ClientID=1 addr=192.168.1.101:54729
+[14-03-23 22:40:29][chat]: *** 'Vipivin' entered and joined the game
+[14-03-23 22:40:29][game]: team_join player='1:Vipivin' team=0
+[14-03-23 22:40:30][DDRace]: 1 use DDRace Client
+[14-03-23 22:40:30][server]: dropped weird message 'Cl_TeamsState' (31), failed on '(unpack error)'
+[14-03-23 22:40:30][connection]: flushed connection due to timeout. 18 chunks.
+[14-03-23 22:40:31][chat]: 1:-2:Vipivin: динайх
+[14-03-23 22:40:35][chat]: *** '[D] Vipivin' entered and joined the game
+[14-03-23 22:40:35][game]: team_join player='2:[D] Vipivin' team=0
+[14-03-23 22:40:35][chat-command]: 1 used /d
+[14-03-23 22:40:36][chat-command]: 1 used /d
+[14-03-23 22:40:36][chat-command]: 1 used /d
+[14-03-23 22:40:37][chat-command]: 1 used /spec
+[14-03-23 22:40:39][chat-command]: 1 used /spec
+[14-03-23 22:40:40][chat-command]: 1 used /spec
+[14-03-23 22:40:41][chat-command]: 0 used /r
+[14-03-23 22:40:42][chat]: 1:-2:Vipivin: ди сюда
+[14-03-23 22:40:42][chat]: *** '[D] ŖȪss1499' entered and joined the game
+[14-03-23 22:40:42][game]: team_join player='3:[D] ŖȪss1499' team=0
+[14-03-23 22:40:42][chat-command]: 0 used /d
+[14-03-23 22:40:43][chat-command]: 0 used /dc
+[14-03-23 22:40:44][chat-command]: 1 used /spec
+[14-03-23 22:40:49][chat]: 1:-2:Vipivin: синеньние
+[14-03-23 22:40:50][chat-command]: 1 used /d
+[14-03-23 22:40:50][chat-command]: 1 used /d
+[14-03-23 22:40:51][chat-command]: 1 used /d
+[14-03-23 22:40:56][chat]: 1:-2:Vipivin: и move пеекрасил
+[14-03-23 22:40:56][chat]: 0:-2:ŖȪss1499: это же супер
+[14-03-23 22:40:57][chat-command]: 1 used /d
+[14-03-23 22:41:13][game]: kill killer='0:ŖȪss1499' victim='0:ŖȪss1499' weapon=-1 special=0
+[14-03-23 22:41:23][chat]: 1:-2:Vipivin: глянь на гитхабе тайлы
+[14-03-23 22:41:32][chat]: 0:-2:ŖȪss1499: ок
+[14-03-23 22:41:35][chat]: 1:-2:Vipivin: я ща кину
+[14-03-23 22:41:35][chat-command]: 1 used /unfreeze
+[14-03-23 22:41:35][chat-command]: 1 used /unfreeze
+[14-03-23 22:41:36][chat]: 0:-2:ŖȪss1499: потом кинешь конф
+[14-03-23 22:41:44][chat]: 1:-2:Vipivin: ща сделаю 
+[14-03-23 22:41:46][chat-command]: 1 used /unfreeze
+[14-03-23 22:42:16][server]: ClientID=0 rcon='sv_damage 1'
+[14-03-23 22:43:18][game]: kill killer='0:ŖȪss1499' victim='1:Vipivin' weapon=2 special=0
+[14-03-23 22:43:23][game]: kill killer='0:ŖȪss1499' victim='1:Vipivin' weapon=2 special=0
+[14-03-23 22:43:30][game]: kill killer='0:ŖȪss1499' victim='1:Vipivin' weapon=2 special=0
+[14-03-23 22:43:30][chat]: 1:-2:Vipivin: я кинул
+[14-03-23 22:43:32][game]: kill killer='0:ŖȪss1499' victim='1:Vipivin' weapon=2 special=0
+[14-03-23 22:43:32][game]: kill killer='1:Vipivin' victim='0:ŖȪss1499' weapon=4 special=0
+[14-03-23 22:43:33][game]: kill killer='1:Vipivin' victim='0:ŖȪss1499' weapon=4 special=0
+[14-03-23 22:43:35][game]: kill killer='1:Vipivin' victim='0:ŖȪss1499' weapon=4 special=0
+[14-03-23 22:43:36][game]: kill killer='1:Vipivin' victim='0:ŖȪss1499' weapon=4 special=0
+[14-03-23 22:43:38][game]: kill killer='1:Vipivin' victim='0:ŖȪss1499' weapon=4 special=0
+[14-03-23 22:43:39][game]: kill killer='0:ŖȪss1499' victim='1:Vipivin' weapon=2 special=0
+[14-03-23 22:43:40][game]: kill killer='0:ŖȪss1499' victim='1:Vipivin' weapon=2 special=0
+[14-03-23 22:43:42][game]: kill killer='1:Vipivin' victim='0:ŖȪss1499' weapon=4 special=0
+[14-03-23 22:43:45][game]: kill killer='1:Vipivin' victim='0:ŖȪss1499' weapon=4 special=0
+[14-03-23 22:43:51][game]: kill killer='0:ŖȪss1499' victim='1:Vipivin' weapon=2 special=0
+[14-03-23 22:43:57][game]: kill killer='0:ŖȪss1499' victim='1:Vipivin' weapon=1 special=0
+[14-03-23 22:43:57][chat]: 1:-2:Vipivin: вх аим бзабаню
+[14-03-23 22:43:59][game]: kill killer='0:ŖȪss1499' victim='1:Vipivin' weapon=2 special=0
+[14-03-23 22:44:03][game]: kill killer='0:ŖȪss1499' victim='1:Vipivin' weapon=2 special=0
+[14-03-23 22:44:05][chat]: 0:-2:ŖȪss1499: :D
+[14-03-23 22:44:11][game]: kill killer='1:Vipivin' victim='0:ŖȪss1499' weapon=3 special=0
+[14-03-23 22:44:13][game]: kill killer='1:Vipivin' victim='3:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:44:13][game]: kill killer='0:ŖȪss1499' victim='1:Vipivin' weapon=2 special=0
+[14-03-23 22:44:14][game]: kill killer='0:ŖȪss1499' victim='1:Vipivin' weapon=2 special=0
+[14-03-23 22:44:17][game]: kill killer='1:Vipivin' victim='0:ŖȪss1499' weapon=4 special=0
+[14-03-23 22:44:19][chat-command]: 1 used /d
+[14-03-23 22:44:20][game]: kill killer='1:Vipivin' victim='0:ŖȪss1499' weapon=4 special=0
+[14-03-23 22:44:24][game]: kill killer='0:ŖȪss1499' victim='2:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:44:28][game]: kill killer='1:Vipivin' victim='0:ŖȪss1499' weapon=3 special=0
+[14-03-23 22:44:30][server]: ClientID=0 rcon='sv_damage 0'
+[14-03-23 22:44:47][server]: ClientID=0 rcon='sv_test_dummy 1'
+[14-03-23 22:44:48][chat]: 0:-2:ŖȪss1499: :D
+[14-03-23 22:44:49][chat]: *** '[D] ŖȪss1499' entered and joined the game
+[14-03-23 22:44:49][game]: team_join player='4:[D] ŖȪss1499' team=0
+[14-03-23 22:44:49][chat-command]: 0 used /d
+[14-03-23 22:44:49][chat]: *** '[D] ŖȪss1499' entered and joined the game
+[14-03-23 22:44:49][game]: team_join player='5:[D] ŖȪss1499' team=0
+[14-03-23 22:44:49][chat-command]: 0 used /d
+[14-03-23 22:44:49][chat]: *** '[D] ŖȪss1499' entered and joined the game
+[14-03-23 22:44:49][game]: team_join player='6:[D] ŖȪss1499' team=0
+[14-03-23 22:44:49][chat-command]: 0 used /d
+[14-03-23 22:44:50][chat]: *** '[D] ŖȪss1499' entered and joined the game
+[14-03-23 22:44:50][game]: team_join player='7:[D] ŖȪss1499' team=0
+[14-03-23 22:44:50][chat-command]: 0 used /d
+[14-03-23 22:44:50][chat]: *** '[D] ŖȪss1499' entered and joined the game
+[14-03-23 22:44:50][game]: team_join player='8:[D] ŖȪss1499' team=0
+[14-03-23 22:44:50][chat-command]: 0 used /d
+[14-03-23 22:44:50][chat]: *** '[D] ŖȪss1499' entered and joined the game
+[14-03-23 22:44:50][game]: team_join player='9:[D] ŖȪss1499' team=0
+[14-03-23 22:44:50][chat-command]: 0 used /d
+[14-03-23 22:44:50][chat]: *** '[D] ŖȪss1499' entered and joined the game
+[14-03-23 22:44:50][game]: team_join player='10:[D] ŖȪss1499' team=0
+[14-03-23 22:44:50][chat-command]: 0 used /d
+[14-03-23 22:44:50][chat]: *** '[D] ŖȪss1499' entered and joined the game
+[14-03-23 22:44:50][game]: team_join player='11:[D] ŖȪss1499' team=0
+[14-03-23 22:44:50][chat-command]: 0 used /d
+[14-03-23 22:44:50][chat]: *** '[D] ŖȪss1499' entered and joined the game
+[14-03-23 22:44:50][game]: team_join player='12:[D] ŖȪss1499' team=0
+[14-03-23 22:44:50][chat-command]: 0 used /d
+[14-03-23 22:44:50][chat]: *** '[D] ŖȪss1499' entered and joined the game
+[14-03-23 22:44:50][game]: team_join player='13:[D] ŖȪss1499' team=0
+[14-03-23 22:44:50][chat-command]: 0 used /d
+[14-03-23 22:44:50][chat]: *** '[D] ŖȪss1499' entered and joined the game
+[14-03-23 22:44:50][game]: team_join player='14:[D] ŖȪss1499' team=0
+[14-03-23 22:44:50][chat-command]: 0 used /d
+[14-03-23 22:44:50][chat]: *** '[D] ŖȪss1499' entered and joined the game
+[14-03-23 22:44:50][game]: team_join player='15:[D] ŖȪss1499' team=0
+[14-03-23 22:44:50][chat-command]: 0 used /d
+[14-03-23 22:44:50][chat]: *** '[D] ŖȪss1499' entered and joined the game
+[14-03-23 22:44:50][game]: team_join player='16:[D] ŖȪss1499' team=0
+[14-03-23 22:44:50][chat-command]: 0 used /d
+[14-03-23 22:44:50][chat]: *** '[D] ŖȪss1499' entered and joined the game
+[14-03-23 22:44:50][game]: team_join player='17:[D] ŖȪss1499' team=0
+[14-03-23 22:44:50][chat-command]: 0 used /d
+[14-03-23 22:44:50][chat]: *** '[D] ŖȪss1499' entered and joined the game
+[14-03-23 22:44:50][game]: team_join player='18:[D] ŖȪss1499' team=0
+[14-03-23 22:44:50][chat-command]: 0 used /d
+[14-03-23 22:44:54][chat]: *** '[D] Vipivin' entered and joined the game
+[14-03-23 22:44:54][game]: team_join player='19:[D] Vipivin' team=0
+[14-03-23 22:44:54][chat-command]: 1 used /d
+[14-03-23 22:44:54][chat]: *** '[D] Vipivin' entered and joined the game
+[14-03-23 22:44:54][game]: team_join player='20:[D] Vipivin' team=0
+[14-03-23 22:44:54][chat-command]: 1 used /d
+[14-03-23 22:44:54][chat]: *** '[D] Vipivin' entered and joined the game
+[14-03-23 22:44:54][game]: team_join player='21:[D] Vipivin' team=0
+[14-03-23 22:44:54][chat-command]: 1 used /d
+[14-03-23 22:44:54][chat]: *** '[D] Vipivin' entered and joined the game
+[14-03-23 22:44:54][game]: team_join player='22:[D] Vipivin' team=0
+[14-03-23 22:44:54][chat-command]: 1 used /d
+[14-03-23 22:44:54][chat]: *** '[D] Vipivin' entered and joined the game
+[14-03-23 22:44:54][game]: team_join player='23:[D] Vipivin' team=0
+[14-03-23 22:44:54][chat-command]: 1 used /d
+[14-03-23 22:44:54][chat]: *** '[D] Vipivin' entered and joined the game
+[14-03-23 22:44:54][game]: team_join player='24:[D] Vipivin' team=0
+[14-03-23 22:44:54][chat-command]: 1 used /d
+[14-03-23 22:44:54][chat]: *** '[D] Vipivin' entered and joined the game
+[14-03-23 22:44:54][game]: team_join player='25:[D] Vipivin' team=0
+[14-03-23 22:44:54][chat-command]: 1 used /d
+[14-03-23 22:44:54][chat]: *** '[D] Vipivin' entered and joined the game
+[14-03-23 22:44:54][game]: team_join player='26:[D] Vipivin' team=0
+[14-03-23 22:44:54][chat-command]: 1 used /d
+[14-03-23 22:44:55][chat]: *** '[D] Vipivin' entered and joined the game
+[14-03-23 22:44:55][game]: team_join player='27:[D] Vipivin' team=0
+[14-03-23 22:44:55][chat-command]: 1 used /d
+[14-03-23 22:44:55][chat]: *** '[D] Vipivin' entered and joined the game
+[14-03-23 22:44:55][game]: team_join player='28:[D] Vipivin' team=0
+[14-03-23 22:44:55][chat-command]: 1 used /d
+[14-03-23 22:44:55][chat]: *** '[D] Vipivin' entered and joined the game
+[14-03-23 22:44:55][game]: team_join player='29:[D] Vipivin' team=0
+[14-03-23 22:44:55][chat-command]: 1 used /d
+[14-03-23 22:44:55][chat]: *** '[D] Vipivin' entered and joined the game
+[14-03-23 22:44:55][game]: team_join player='30:[D] Vipivin' team=0
+[14-03-23 22:44:55][chat-command]: 1 used /d
+[14-03-23 22:44:55][chat]: *** '[D] Vipivin' entered and joined the game
+[14-03-23 22:44:55][game]: team_join player='31:[D] Vipivin' team=0
+[14-03-23 22:44:55][chat-command]: 1 used /d
+[14-03-23 22:44:55][chat]: *** '[D] Vipivin' entered and joined the game
+[14-03-23 22:44:55][game]: team_join player='32:[D] Vipivin' team=0
+[14-03-23 22:44:55][chat-command]: 1 used /d
+[14-03-23 22:44:56][chat]: *** '[D] Vipivin' entered and joined the game
+[14-03-23 22:44:56][game]: team_join player='33:[D] Vipivin' team=0
+[14-03-23 22:44:56][chat-command]: 1 used /d
+[14-03-23 22:44:56][chat]: *** '[D] Vipivin' entered and joined the game
+[14-03-23 22:44:56][game]: team_join player='34:[D] Vipivin' team=0
+[14-03-23 22:44:56][chat-command]: 1 used /d
+[14-03-23 22:44:56][chat]: *** '[D] Vipivin' entered and joined the game
+[14-03-23 22:44:56][game]: team_join player='35:[D] Vipivin' team=0
+[14-03-23 22:44:56][chat-command]: 1 used /d
+[14-03-23 22:44:56][chat]: *** '[D] Vipivin' entered and joined the game
+[14-03-23 22:44:56][game]: team_join player='36:[D] Vipivin' team=0
+[14-03-23 22:44:56][chat-command]: 1 used /d
+[14-03-23 22:44:57][chat]: *** '[D] Vipivin' entered and joined the game
+[14-03-23 22:44:57][game]: team_join player='37:[D] Vipivin' team=0
+[14-03-23 22:44:57][chat-command]: 1 used /d
+[14-03-23 22:44:57][chat]: *** '[D] Vipivin' entered and joined the game
+[14-03-23 22:44:57][game]: team_join player='38:[D] Vipivin' team=0
+[14-03-23 22:44:57][chat-command]: 1 used /d
+[14-03-23 22:44:57][chat]: *** '[D] Vipivin' entered and joined the game
+[14-03-23 22:44:57][game]: team_join player='39:[D] Vipivin' team=0
+[14-03-23 22:44:57][chat-command]: 1 used /d
+[14-03-23 22:44:57][chat]: *** '[D] Vipivin' entered and joined the game
+[14-03-23 22:44:57][game]: team_join player='40:[D] Vipivin' team=0
+[14-03-23 22:44:57][chat-command]: 1 used /d
+[14-03-23 22:44:57][chat]: *** '[D] Vipivin' entered and joined the game
+[14-03-23 22:44:57][game]: team_join player='41:[D] Vipivin' team=0
+[14-03-23 22:44:57][chat-command]: 1 used /d
+[14-03-23 22:44:57][chat]: *** '[D] Vipivin' entered and joined the game
+[14-03-23 22:44:57][game]: team_join player='42:[D] Vipivin' team=0
+[14-03-23 22:44:57][chat-command]: 1 used /d
+[14-03-23 22:44:57][chat]: *** '[D] Vipivin' entered and joined the game
+[14-03-23 22:44:57][game]: team_join player='43:[D] Vipivin' team=0
+[14-03-23 22:44:57][chat-command]: 1 used /d
+[14-03-23 22:44:57][chat]: *** '[D] Vipivin' entered and joined the game
+[14-03-23 22:44:57][game]: team_join player='44:[D] Vipivin' team=0
+[14-03-23 22:44:57][chat-command]: 1 used /d
+[14-03-23 22:44:57][chat]: *** '[D] Vipivin' entered and joined the game
+[14-03-23 22:44:57][game]: team_join player='45:[D] Vipivin' team=0
+[14-03-23 22:44:57][chat-command]: 1 used /d
+[14-03-23 22:44:57][chat]: *** '[D] Vipivin' entered and joined the game
+[14-03-23 22:44:57][game]: team_join player='46:[D] Vipivin' team=0
+[14-03-23 22:44:57][chat-command]: 1 used /d
+[14-03-23 22:44:57][chat]: *** '[D] Vipivin' entered and joined the game
+[14-03-23 22:44:57][game]: team_join player='47:[D] Vipivin' team=0
+[14-03-23 22:44:57][chat-command]: 1 used /d
+[14-03-23 22:44:57][chat]: *** '[D] Vipivin' entered and joined the game
+[14-03-23 22:44:57][game]: team_join player='48:[D] Vipivin' team=0
+[14-03-23 22:44:57][chat-command]: 1 used /d
+[14-03-23 22:44:57][chat]: *** '[D] Vipivin' entered and joined the game
+[14-03-23 22:44:57][game]: team_join player='49:[D] Vipivin' team=0
+[14-03-23 22:44:57][chat-command]: 1 used /d
+[14-03-23 22:44:57][chat]: *** '[D] Vipivin' entered and joined the game
+[14-03-23 22:44:57][game]: team_join player='50:[D] Vipivin' team=0
+[14-03-23 22:44:57][chat-command]: 1 used /d
+[14-03-23 22:44:57][chat]: *** '[D] Vipivin' entered and joined the game
+[14-03-23 22:44:57][game]: team_join player='51:[D] Vipivin' team=0
+[14-03-23 22:44:57][chat-command]: 1 used /d
+[14-03-23 22:44:57][chat]: *** '[D] Vipivin' entered and joined the game
+[14-03-23 22:44:57][game]: team_join player='52:[D] Vipivin' team=0
+[14-03-23 22:44:57][chat-command]: 1 used /d
+[14-03-23 22:44:57][chat]: *** '[D] Vipivin' entered and joined the game
+[14-03-23 22:44:57][game]: team_join player='53:[D] Vipivin' team=0
+[14-03-23 22:44:57][chat-command]: 1 used /d
+[14-03-23 22:44:58][chat]: *** '[D] Vipivin' entered and joined the game
+[14-03-23 22:44:58][game]: team_join player='54:[D] Vipivin' team=0
+[14-03-23 22:44:58][chat-command]: 1 used /d
+[14-03-23 22:44:58][chat]: *** '[D] Vipivin' entered and joined the game
+[14-03-23 22:44:58][game]: team_join player='55:[D] Vipivin' team=0
+[14-03-23 22:44:58][chat-command]: 1 used /d
+[14-03-23 22:44:58][chat]: *** '[D] Vipivin' entered and joined the game
+[14-03-23 22:44:58][game]: team_join player='56:[D] Vipivin' team=0
+[14-03-23 22:44:58][chat-command]: 1 used /d
+[14-03-23 22:44:58][chat]: *** '[D] Vipivin' entered and joined the game
+[14-03-23 22:44:58][game]: team_join player='57:[D] Vipivin' team=0
+[14-03-23 22:44:58][chat-command]: 1 used /d
+[14-03-23 22:44:58][chat]: *** '[D] Vipivin' entered and joined the game
+[14-03-23 22:44:58][game]: team_join player='58:[D] Vipivin' team=0
+[14-03-23 22:44:58][chat-command]: 1 used /d
+[14-03-23 22:44:58][chat]: *** '[D] Vipivin' entered and joined the game
+[14-03-23 22:44:58][game]: team_join player='59:[D] Vipivin' team=0
+[14-03-23 22:44:58][chat-command]: 1 used /d
+[14-03-23 22:44:58][chat]: *** '[D] Vipivin' entered and joined the game
+[14-03-23 22:44:58][game]: team_join player='60:[D] Vipivin' team=0
+[14-03-23 22:44:58][chat-command]: 1 used /d
+[14-03-23 22:44:58][chat]: *** '[D] Vipivin' entered and joined the game
+[14-03-23 22:44:58][game]: team_join player='61:[D] Vipivin' team=0
+[14-03-23 22:44:58][chat-command]: 1 used /d
+[14-03-23 22:44:58][chat]: *** '[D] Vipivin' entered and joined the game
+[14-03-23 22:44:58][game]: team_join player='62:[D] Vipivin' team=0
+[14-03-23 22:44:58][chat-command]: 1 used /d
+[14-03-23 22:44:58][chat]: *** '[D] Vipivin' entered and joined the game
+[14-03-23 22:44:58][game]: team_join player='63:[D] Vipivin' team=0
+[14-03-23 22:44:58][chat-command]: 1 used /d
+[14-03-23 22:44:58][server]: ClientID=0 rcon='sv_damage 1'
+[14-03-23 22:44:59][game]: kill killer='0:ŖȪss1499' victim='2:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:44:59][chat-command]: 1 used /spec
+[14-03-23 22:45:00][chat-command]: 1 used /spec
+[14-03-23 22:45:01][game]: kill killer='1:Vipivin' victim='45:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:45:01][game]: kill killer='1:Vipivin' victim='35:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:45:02][game]: kill killer='0:ŖȪss1499' victim='0:ŖȪss1499' weapon=3 special=0
+[14-03-23 22:45:05][game]: kill killer='1:Vipivin' victim='29:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:45:05][game]: kill killer='1:Vipivin' victim='7:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:45:05][dummy]: Dummy was't created due to absence of free slots. Ask admin to set in config sv_dummies 1 and restart server, or just kick anybody ;)
+[14-03-23 22:45:05][chat-command]: 0 used /d
+[14-03-23 22:45:05][game]: kill killer='1:Vipivin' victim='42:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:45:05][game]: kill killer='1:Vipivin' victim='39:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:45:05][game]: kill killer='1:Vipivin' victim='28:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:45:05][game]: kill killer='1:Vipivin' victim='21:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:45:05][game]: kill killer='1:Vipivin' victim='9:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:45:05][dummy]: Dummy was't created due to absence of free slots. Ask admin to set in config sv_dummies 1 and restart server, or just kick anybody ;)
+[14-03-23 22:45:05][chat-command]: 0 used /d
+[14-03-23 22:45:05][dummy]: Dummy was't created due to absence of free slots. Ask admin to set in config sv_dummies 1 and restart server, or just kick anybody ;)
+[14-03-23 22:45:05][chat-command]: 0 used /d
+[14-03-23 22:45:06][game]: kill killer='1:Vipivin' victim='52:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:45:06][game]: kill killer='1:Vipivin' victim='25:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:45:06][dummy]: Dummy was't created due to absence of free slots. Ask admin to set in config sv_dummies 1 and restart server, or just kick anybody ;)
+[14-03-23 22:45:06][chat-command]: 0 used /d
+[14-03-23 22:45:06][game]: kill killer='1:Vipivin' victim='40:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:45:06][game]: kill killer='1:Vipivin' victim='63:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:45:07][game]: kill killer='1:Vipivin' victim='41:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:45:07][game]: kill killer='1:Vipivin' victim='24:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:45:07][game]: kill killer='0:ŖȪss1499' victim='1:Vipivin' weapon=2 special=0
+[14-03-23 22:45:08][game]: kill killer='1:Vipivin' victim='35:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:45:09][game]: kill killer='1:Vipivin' victim='55:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:45:09][game]: kill killer='1:Vipivin' victim='60:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:45:09][game]: kill killer='1:Vipivin' victim='59:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:45:09][game]: kill killer='1:Vipivin' victim='56:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:45:09][game]: kill killer='1:Vipivin' victim='53:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:45:09][game]: kill killer='1:Vipivin' victim='1:Vipivin' weapon=-1 special=0
+[14-03-23 22:45:10][game]: kill killer='0:ŖȪss1499' victim='44:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:45:11][game]: kill killer='1:Vipivin' victim='41:[D] Vipivin' weapon=4 special=0
+[14-03-23 22:45:12][game]: kill killer='0:ŖȪss1499' victim='45:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:45:12][game]: kill killer='0:ŖȪss1499' victim='27:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:45:13][game]: kill killer='1:Vipivin' victim='58:[D] Vipivin' weapon=4 special=0
+[14-03-23 22:45:13][game]: kill killer='1:Vipivin' victim='51:[D] Vipivin' weapon=4 special=0
+[14-03-23 22:45:13][game]: kill killer='1:Vipivin' victim='54:[D] Vipivin' weapon=4 special=0
+[14-03-23 22:45:14][game]: kill killer='1:Vipivin' victim='9:[D] ŖȪss1499' weapon=4 special=0
+[14-03-23 22:45:14][game]: kill killer='1:Vipivin' victim='59:[D] Vipivin' weapon=4 special=0
+[14-03-23 22:45:14][game]: kill killer='1:Vipivin' victim='53:[D] Vipivin' weapon=4 special=0
+[14-03-23 22:45:14][game]: kill killer='1:Vipivin' victim='56:[D] Vipivin' weapon=4 special=0
+[14-03-23 22:45:14][game]: kill killer='1:Vipivin' victim='40:[D] Vipivin' weapon=4 special=0
+[14-03-23 22:45:14][game]: kill killer='1:Vipivin' victim='25:[D] Vipivin' weapon=4 special=0
+[14-03-23 22:45:14][game]: kill killer='1:Vipivin' victim='21:[D] Vipivin' weapon=4 special=0
+[14-03-23 22:45:14][game]: kill killer='1:Vipivin' victim='17:[D] ŖȪss1499' weapon=4 special=0
+[14-03-23 22:45:14][game]: kill killer='1:Vipivin' victim='30:[D] Vipivin' weapon=4 special=0
+[14-03-23 22:45:14][game]: kill killer='1:Vipivin' victim='50:[D] Vipivin' weapon=4 special=0
+[14-03-23 22:45:14][game]: kill killer='1:Vipivin' victim='49:[D] Vipivin' weapon=4 special=0
+[14-03-23 22:45:15][game]: kill killer='1:Vipivin' victim='42:[D] Vipivin' weapon=4 special=0
+[14-03-23 22:45:15][game]: kill killer='1:Vipivin' victim='34:[D] Vipivin' weapon=4 special=0
+[14-03-23 22:45:15][game]: kill killer='1:Vipivin' victim='47:[D] Vipivin' weapon=4 special=0
+[14-03-23 22:45:15][game]: kill killer='1:Vipivin' victim='12:[D] ŖȪss1499' weapon=4 special=0
+[14-03-23 22:45:15][game]: kill killer='1:Vipivin' victim='11:[D] ŖȪss1499' weapon=4 special=0
+[14-03-23 22:45:15][game]: kill killer='1:Vipivin' victim='16:[D] ŖȪss1499' weapon=4 special=0
+[14-03-23 22:45:15][game]: kill killer='1:Vipivin' victim='18:[D] ŖȪss1499' weapon=4 special=0
+[14-03-23 22:45:15][game]: kill killer='1:Vipivin' victim='44:[D] Vipivin' weapon=4 special=0
+[14-03-23 22:45:15][game]: kill killer='1:Vipivin' victim='52:[D] Vipivin' weapon=4 special=0
+[14-03-23 22:45:15][game]: kill killer='1:Vipivin' victim='41:[D] Vipivin' weapon=4 special=0
+[14-03-23 22:45:16][game]: kill killer='1:Vipivin' victim='28:[D] Vipivin' weapon=4 special=0
+[14-03-23 22:45:16][game]: kill killer='1:Vipivin' victim='19:[D] Vipivin' weapon=4 special=0
+[14-03-23 22:45:16][game]: kill killer='1:Vipivin' victim='63:[D] Vipivin' weapon=4 special=0
+[14-03-23 22:45:16][game]: kill killer='1:Vipivin' victim='27:[D] Vipivin' weapon=4 special=0
+[14-03-23 22:45:16][game]: kill killer='1:Vipivin' victim='3:[D] ŖȪss1499' weapon=4 special=0
+[14-03-23 22:45:16][game]: kill killer='1:Vipivin' victim='6:[D] ŖȪss1499' weapon=4 special=0
+[14-03-23 22:45:16][game]: kill killer='1:Vipivin' victim='38:[D] Vipivin' weapon=4 special=0
+[14-03-23 22:45:16][game]: kill killer='1:Vipivin' victim='14:[D] ŖȪss1499' weapon=4 special=0
+[14-03-23 22:45:16][game]: kill killer='1:Vipivin' victim='46:[D] Vipivin' weapon=4 special=0
+[14-03-23 22:45:16][game]: kill killer='1:Vipivin' victim='15:[D] ŖȪss1499' weapon=4 special=0
+[14-03-23 22:45:17][game]: kill killer='1:Vipivin' victim='8:[D] ŖȪss1499' weapon=4 special=0
+[14-03-23 22:45:17][game]: kill killer='1:Vipivin' victim='13:[D] ŖȪss1499' weapon=4 special=0
+[14-03-23 22:45:17][game]: kill killer='1:Vipivin' victim='10:[D] ŖȪss1499' weapon=4 special=0
+[14-03-23 22:45:17][game]: kill killer='1:Vipivin' victim='5:[D] ŖȪss1499' weapon=4 special=0
+[14-03-23 22:45:17][game]: kill killer='1:Vipivin' victim='51:[D] Vipivin' weapon=4 special=0
+[14-03-23 22:45:17][game]: kill killer='1:Vipivin' victim='54:[D] Vipivin' weapon=4 special=0
+[14-03-23 22:45:18][game]: kill killer='1:Vipivin' victim='59:[D] Vipivin' weapon=4 special=0
+[14-03-23 22:45:18][game]: kill killer='1:Vipivin' victim='56:[D] Vipivin' weapon=4 special=0
+[14-03-23 22:45:18][game]: kill killer='1:Vipivin' victim='9:[D] ŖȪss1499' weapon=4 special=0
+[14-03-23 22:45:18][game]: kill killer='1:Vipivin' victim='25:[D] Vipivin' weapon=4 special=0
+[14-03-23 22:45:18][game]: kill killer='1:Vipivin' victim='30:[D] Vipivin' weapon=4 special=0
+[14-03-23 22:45:18][game]: kill killer='1:Vipivin' victim='49:[D] Vipivin' weapon=4 special=0
+[14-03-23 22:45:18][game]: kill killer='1:Vipivin' victim='17:[D] ŖȪss1499' weapon=4 special=0
+[14-03-23 22:45:18][game]: kill killer='1:Vipivin' victim='53:[D] Vipivin' weapon=4 special=0
+[14-03-23 22:45:18][game]: kill killer='1:Vipivin' victim='35:[D] Vipivin' weapon=4 special=0
+[14-03-23 22:45:18][game]: kill killer='1:Vipivin' victim='31:[D] Vipivin' weapon=4 special=0
+[14-03-23 22:45:18][game]: kill killer='1:Vipivin' victim='42:[D] Vipivin' weapon=4 special=0
+[14-03-23 22:45:19][game]: kill killer='1:Vipivin' victim='12:[D] ŖȪss1499' weapon=4 special=0
+[14-03-23 22:45:19][game]: kill killer='1:Vipivin' victim='16:[D] ŖȪss1499' weapon=4 special=0
+[14-03-23 22:45:19][game]: kill killer='1:Vipivin' victim='34:[D] Vipivin' weapon=4 special=0
+[14-03-23 22:45:19][game]: kill killer='1:Vipivin' victim='45:[D] Vipivin' weapon=4 special=0
+[14-03-23 22:45:19][game]: kill killer='1:Vipivin' victim='39:[D] Vipivin' weapon=4 special=0
+[14-03-23 22:45:19][game]: kill killer='1:Vipivin' victim='20:[D] Vipivin' weapon=4 special=0
+[14-03-23 22:45:19][game]: kill killer='1:Vipivin' victim='18:[D] ŖȪss1499' weapon=4 special=0
+[14-03-23 22:45:19][game]: kill killer='1:Vipivin' victim='52:[D] Vipivin' weapon=4 special=0
+[14-03-23 22:45:19][game]: kill killer='1:Vipivin' victim='58:[D] Vipivin' weapon=4 special=0
+[14-03-23 22:45:20][game]: kill killer='1:Vipivin' victim='3:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:45:20][game]: kill killer='1:Vipivin' victim='41:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:45:20][game]: kill killer='1:Vipivin' victim='63:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:45:20][game]: kill killer='1:Vipivin' victim='28:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:45:20][game]: kill killer='1:Vipivin' victim='44:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:45:20][game]: kill killer='1:Vipivin' victim='22:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:45:20][game]: kill killer='1:Vipivin' victim='11:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:45:21][server]: ClientID=0 rcon='ShotgunSpread me 10'
+[14-03-23 22:45:21][game]: kill killer='1:Vipivin' victim='46:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:45:21][game]: kill killer='1:Vipivin' victim='6:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:45:21][game]: kill killer='1:Vipivin' victim='5:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:45:21][game]: kill killer='1:Vipivin' victim='1:Vipivin' weapon=3 special=0
+[14-03-23 22:45:21][game]: kill killer='1:Vipivin' victim='21:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:45:21][game]: kill killer='1:Vipivin' victim='26:[D] Vipivin' weapon=4 special=0
+[14-03-23 22:45:21][game]: kill killer='0:ŖȪss1499' victim='32:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:45:21][game]: kill killer='0:ŖȪss1499' victim='61:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:45:21][game]: kill killer='0:ŖȪss1499' victim='36:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:45:21][game]: kill killer='0:ŖȪss1499' victim='2:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:45:22][game]: kill killer='0:ŖȪss1499' victim='23:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:45:22][game]: kill killer='0:ŖȪss1499' victim='35:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:45:22][game]: kill killer='0:ŖȪss1499' victim='53:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:45:22][game]: kill killer='0:ŖȪss1499' victim='1:Vipivin' weapon=2 special=0
+[14-03-23 22:45:22][game]: kill killer='0:ŖȪss1499' victim='55:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:45:22][game]: kill killer='0:ŖȪss1499' victim='37:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:45:22][game]: kill killer='0:ŖȪss1499' victim='48:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:45:22][game]: kill killer='0:ŖȪss1499' victim='33:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:45:22][game]: kill killer='0:ŖȪss1499' victim='29:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:45:22][game]: kill killer='0:ŖȪss1499' victim='31:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:45:22][game]: kill killer='0:ŖȪss1499' victim='15:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:45:22][game]: kill killer='0:ŖȪss1499' victim='14:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:45:22][game]: kill killer='0:ŖȪss1499' victim='50:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:45:22][game]: kill killer='0:ŖȪss1499' victim='7:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:45:22][game]: kill killer='0:ŖȪss1499' victim='60:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:45:22][game]: kill killer='0:ŖȪss1499' victim='57:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:45:23][game]: kill killer='0:ŖȪss1499' victim='19:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:45:23][game]: kill killer='0:ŖȪss1499' victim='10:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:45:23][game]: kill killer='0:ŖȪss1499' victim='27:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:45:23][game]: kill killer='0:ŖȪss1499' victim='24:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:45:23][game]: kill killer='0:ŖȪss1499' victim='4:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:45:23][game]: kill killer='0:ŖȪss1499' victim='43:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:45:23][game]: kill killer='0:ŖȪss1499' victim='40:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:45:23][game]: kill killer='1:Vipivin' victim='34:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:45:24][game]: kill killer='0:ŖȪss1499' victim='17:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:45:24][game]: kill killer='0:ŖȪss1499' victim='62:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:45:24][game]: kill killer='0:ŖȪss1499' victim='47:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:45:24][game]: kill killer='0:ŖȪss1499' victim='8:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:45:24][game]: kill killer='0:ŖȪss1499' victim='9:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:45:24][game]: kill killer='0:ŖȪss1499' victim='1:Vipivin' weapon=2 special=0
+[14-03-23 22:45:24][game]: kill killer='0:ŖȪss1499' victim='49:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:45:24][game]: kill killer='0:ŖȪss1499' victim='51:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:45:24][game]: kill killer='0:ŖȪss1499' victim='25:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:45:24][game]: kill killer='0:ŖȪss1499' victim='59:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:45:24][game]: kill killer='0:ŖȪss1499' victim='13:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:45:25][game]: kill killer='0:ŖȪss1499' victim='18:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:45:25][game]: kill killer='0:ŖȪss1499' victim='39:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:45:25][game]: kill killer='0:ŖȪss1499' victim='3:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:45:25][game]: kill killer='0:ŖȪss1499' victim='30:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:45:25][game]: kill killer='0:ŖȪss1499' victim='20:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:45:25][game]: kill killer='0:ŖȪss1499' victim='38:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:45:25][game]: kill killer='0:ŖȪss1499' victim='56:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:45:25][game]: kill killer='0:ŖȪss1499' victim='11:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:45:25][game]: kill killer='0:ŖȪss1499' victim='22:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:45:25][game]: kill killer='0:ŖȪss1499' victim='12:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:45:26][game]: kill killer='0:ŖȪss1499' victim='6:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:45:26][game]: kill killer='0:ŖȪss1499' victim='16:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:45:26][game]: kill killer='0:ŖȪss1499' victim='5:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:45:27][game]: kill killer='0:ŖȪss1499' victim='7:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:45:27][game]: kill killer='0:ŖȪss1499' victim='1:Vipivin' weapon=2 special=0
+[14-03-23 22:45:27][game]: kill killer='0:ŖȪss1499' victim='2:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:45:27][game]: kill killer='0:ŖȪss1499' victim='21:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:45:27][game]: kill killer='0:ŖȪss1499' victim='9:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:45:27][game]: kill killer='0:ŖȪss1499' victim='15:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:45:27][game]: kill killer='0:ŖȪss1499' victim='10:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:45:28][game]: kill killer='1:Vipivin' victim='0:ŖȪss1499' weapon=4 special=0
+[14-03-23 22:45:28][game]: kill killer='0:ŖȪss1499' victim='8:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:45:28][game]: kill killer='0:ŖȪss1499' victim='4:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:45:28][game]: kill killer='0:ŖȪss1499' victim='26:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:45:30][game]: kill killer='0:ŖȪss1499' victim='5:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:45:30][game]: kill killer='1:Vipivin' victim='11:[D] ŖȪss1499' weapon=4 special=0
+[14-03-23 22:45:31][game]: kill killer='0:ŖȪss1499' victim='13:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:45:31][game]: kill killer='0:ŖȪss1499' victim='16:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:45:32][game]: kill killer='0:ŖȪss1499' victim='17:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:45:33][game]: kill killer='0:ŖȪss1499' victim='9:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:45:34][game]: kill killer='0:ŖȪss1499' victim='2:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:45:35][game]: kill killer='1:Vipivin' victim='4:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:45:35][game]: kill killer='0:ŖȪss1499' victim='5:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:45:35][game]: kill killer='1:Vipivin' victim='22:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:45:35][game]: kill killer='1:Vipivin' victim='10:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:45:35][game]: kill killer='1:Vipivin' victim='18:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:45:35][game]: kill killer='0:ŖȪss1499' victim='54:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:45:36][game]: kill killer='1:Vipivin' victim='19:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:45:36][game]: kill killer='1:Vipivin' victim='6:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:45:37][chat]: 1:-2:Vipivin: пизды дал
+[14-03-23 22:45:39][game]: kill killer='1:Vipivin' victim='27:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:45:40][game]: kill killer='1:Vipivin' victim='3:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:45:41][game]: kill killer='1:Vipivin' victim='10:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:45:41][game]: kill killer='0:ŖȪss1499' victim='43:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:45:42][game]: kill killer='1:Vipivin' victim='9:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:45:44][game]: kill killer='1:Vipivin' victim='4:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:45:44][game]: kill killer='1:Vipivin' victim='17:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:45:44][game]: kill killer='1:Vipivin' victim='29:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:45:44][game]: kill killer='1:Vipivin' victim='20:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:45:44][game]: kill killer='1:Vipivin' victim='47:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:45:44][game]: kill killer='1:Vipivin' victim='40:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:45:45][game]: kill killer='1:Vipivin' victim='52:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:45:45][game]: kill killer='1:Vipivin' victim='36:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:45:49][game]: kill killer='1:Vipivin' victim='0:ŖȪss1499' weapon=3 special=0
+[14-03-23 22:45:52][game]: kill killer='1:Vipivin' victim='50:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:45:52][game]: kill killer='1:Vipivin' victim='46:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:45:52][game]: kill killer='1:Vipivin' victim='44:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:45:52][game]: kill killer='1:Vipivin' victim='42:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:45:52][game]: kill killer='1:Vipivin' victim='36:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:45:52][game]: kill killer='1:Vipivin' victim='9:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:45:55][game]: kill killer='1:Vipivin' victim='43:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:45:55][game]: kill killer='1:Vipivin' victim='39:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:45:55][game]: kill killer='1:Vipivin' victim='51:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:45:55][game]: kill killer='1:Vipivin' victim='22:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:45:55][game]: kill killer='1:Vipivin' victim='6:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:45:56][game]: kill killer='1:Vipivin' victim='60:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:45:56][game]: kill killer='1:Vipivin' victim='59:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:45:56][game]: kill killer='1:Vipivin' victim='19:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:45:56][game]: kill killer='1:Vipivin' victim='29:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:45:56][game]: kill killer='1:Vipivin' victim='4:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:45:56][game]: kill killer='1:Vipivin' victim='54:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:45:57][game]: kill killer='1:Vipivin' victim='58:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:45:57][game]: kill killer='1:Vipivin' victim='3:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:45:57][game]: kill killer='1:Vipivin' victim='45:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:45:57][game]: kill killer='1:Vipivin' victim='44:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:45:57][game]: kill killer='1:Vipivin' victim='31:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:45:58][game]: kill killer='1:Vipivin' victim='36:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:45:58][game]: kill killer='1:Vipivin' victim='53:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:45:58][game]: kill killer='1:Vipivin' victim='48:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:45:58][game]: kill killer='1:Vipivin' victim='18:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:45:58][game]: kill killer='1:Vipivin' victim='24:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:45:59][game]: kill killer='1:Vipivin' victim='50:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:45:59][game]: kill killer='1:Vipivin' victim='42:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:45:59][game]: kill killer='1:Vipivin' victim='37:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:45:59][game]: kill killer='1:Vipivin' victim='33:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:45:59][game]: kill killer='1:Vipivin' victim='32:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:45:59][game]: kill killer='1:Vipivin' victim='13:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:45:59][game]: kill killer='1:Vipivin' victim='27:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:45:59][game]: kill killer='1:Vipivin' victim='30:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:45:59][game]: kill killer='1:Vipivin' victim='5:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:45:59][game]: kill killer='1:Vipivin' victim='9:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:45:59][game]: kill killer='1:Vipivin' victim='11:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:45:59][game]: kill killer='1:Vipivin' victim='8:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:46:00][game]: kill killer='1:Vipivin' victim='28:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:00][game]: kill killer='1:Vipivin' victim='2:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:00][game]: kill killer='1:Vipivin' victim='26:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:01][game]: kill killer='1:Vipivin' victim='34:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:01][game]: kill killer='1:Vipivin' victim='25:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:01][game]: kill killer='1:Vipivin' victim='60:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:01][game]: kill killer='1:Vipivin' victim='21:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:02][game]: kill killer='1:Vipivin' victim='29:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:02][game]: kill killer='1:Vipivin' victim='4:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:46:02][game]: kill killer='1:Vipivin' victim='6:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:46:02][game]: kill killer='1:Vipivin' victim='38:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:02][game]: kill killer='1:Vipivin' victim='14:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:46:03][game]: kill killer='0:ŖȪss1499' victim='62:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:46:03][game]: kill killer='1:Vipivin' victim='31:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:03][game]: kill killer='1:Vipivin' victim='19:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:04][game]: kill killer='1:Vipivin' victim='24:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:04][game]: kill killer='1:Vipivin' victim='59:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:04][game]: kill killer='1:Vipivin' victim='20:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:04][game]: kill killer='1:Vipivin' victim='61:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:04][game]: kill killer='1:Vipivin' victim='10:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:46:04][game]: kill killer='0:ŖȪss1499' victim='55:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:46:05][game]: kill killer='0:ŖȪss1499' victim='47:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:46:05][game]: kill killer='1:Vipivin' victim='17:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:46:05][game]: kill killer='1:Vipivin' victim='2:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:05][game]: kill killer='1:Vipivin' victim='39:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:05][game]: kill killer='1:Vipivin' victim='46:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:05][game]: kill killer='1:Vipivin' victim='35:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:05][game]: kill killer='1:Vipivin' victim='16:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:46:06][game]: kill killer='0:ŖȪss1499' victim='52:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:46:06][game]: kill killer='1:Vipivin' victim='49:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:06][game]: kill killer='1:Vipivin' victim='41:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:07][game]: kill killer='1:Vipivin' victim='27:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:07][game]: kill killer='0:ŖȪss1499' victim='21:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:46:07][game]: kill killer='0:ŖȪss1499' victim='9:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:46:08][game]: kill killer='1:Vipivin' victim='28:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:08][game]: kill killer='0:ŖȪss1499' victim='43:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:46:08][game]: kill killer='0:ŖȪss1499' victim='10:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:46:09][game]: kill killer='1:Vipivin' victim='14:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:46:09][game]: kill killer='1:Vipivin' victim='5:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:46:09][game]: kill killer='0:ŖȪss1499' victim='8:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:46:09][game]: kill killer='1:Vipivin' victim='19:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:09][game]: kill killer='0:ŖȪss1499' victim='30:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:46:10][game]: kill killer='1:Vipivin' victim='18:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:46:10][game]: kill killer='0:ŖȪss1499' victim='16:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:46:10][game]: kill killer='1:Vipivin' victim='33:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:10][game]: kill killer='1:Vipivin' victim='54:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:10][game]: kill killer='1:Vipivin' victim='7:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:46:10][game]: kill killer='0:ŖȪss1499' victim='51:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:46:11][game]: kill killer='1:Vipivin' victim='20:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:11][game]: kill killer='1:Vipivin' victim='29:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:11][game]: kill killer='1:Vipivin' victim='26:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:11][game]: kill killer='1:Vipivin' victim='45:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:11][game]: kill killer='1:Vipivin' victim='22:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:11][game]: kill killer='0:ŖȪss1499' victim='24:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:46:11][game]: kill killer='0:ŖȪss1499' victim='9:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:46:12][game]: kill killer='0:ŖȪss1499' victim='13:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:46:13][game]: kill killer='0:ŖȪss1499' victim='36:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:46:13][game]: kill killer='1:Vipivin' victim='35:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:13][game]: kill killer='1:Vipivin' victim='2:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:13][game]: kill killer='1:Vipivin' victim='11:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:46:13][game]: kill killer='1:Vipivin' victim='23:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:13][game]: kill killer='1:Vipivin' victim='27:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:13][game]: kill killer='1:Vipivin' victim='39:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:13][game]: kill killer='1:Vipivin' victim='37:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:13][game]: kill killer='1:Vipivin' victim='17:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:46:13][game]: kill killer='1:Vipivin' victim='4:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:46:13][game]: kill killer='1:Vipivin' victim='32:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:13][game]: kill killer='1:Vipivin' victim='15:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:46:14][game]: kill killer='1:Vipivin' victim='21:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:14][game]: kill killer='1:Vipivin' victim='38:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:14][game]: kill killer='1:Vipivin' victim='31:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:14][game]: kill killer='1:Vipivin' victim='3:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:46:14][game]: kill killer='0:ŖȪss1499' victim='25:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:46:15][game]: kill killer='0:ŖȪss1499' victim='57:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:46:15][game]: kill killer='1:Vipivin' victim='14:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:46:15][game]: kill killer='0:ŖȪss1499' victim='34:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:46:15][game]: kill killer='1:Vipivin' victim='18:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:46:15][game]: kill killer='1:Vipivin' victim='43:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:16][game]: kill killer='1:Vipivin' victim='20:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:16][game]: kill killer='1:Vipivin' victim='5:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:46:16][game]: kill killer='0:ŖȪss1499' victim='9:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:46:16][game]: kill killer='1:Vipivin' victim='24:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:16][game]: kill killer='1:Vipivin' victim='19:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:16][game]: kill killer='1:Vipivin' victim='10:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:46:17][game]: kill killer='0:ŖȪss1499' victim='12:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:46:17][game]: kill killer='1:Vipivin' victim='29:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:17][game]: kill killer='1:Vipivin' victim='22:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:18][game]: kill killer='0:ŖȪss1499' victim='11:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:46:18][game]: kill killer='1:Vipivin' victim='13:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:46:18][game]: kill killer='0:ŖȪss1499' victim='15:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:46:18][game]: kill killer='1:Vipivin' victim='4:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:46:18][game]: kill killer='1:Vipivin' victim='2:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:18][game]: kill killer='1:Vipivin' victim='26:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:19][game]: kill killer='0:ŖȪss1499' victim='21:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:46:19][game]: kill killer='1:Vipivin' victim='33:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:19][game]: kill killer='1:Vipivin' victim='30:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:19][game]: kill killer='0:ŖȪss1499' victim='14:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:46:20][game]: kill killer='0:ŖȪss1499' victim='18:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:46:21][game]: kill killer='1:Vipivin' victim='3:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:46:21][game]: kill killer='1:Vipivin' victim='25:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:21][game]: kill killer='1:Vipivin' victim='23:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:21][game]: kill killer='1:Vipivin' victim='17:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:46:21][game]: kill killer='1:Vipivin' victim='7:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:46:21][game]: kill killer='0:ŖȪss1499' victim='12:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:46:21][game]: kill killer='0:ŖȪss1499' victim='22:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:46:22][game]: kill killer='1:Vipivin' victim='5:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:46:22][game]: kill killer='0:ŖȪss1499' victim='13:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:46:23][game]: kill killer='1:Vipivin' victim='15:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:46:23][game]: kill killer='1:Vipivin' victim='24:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:23][game]: kill killer='1:Vipivin' victim='28:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:23][game]: kill killer='1:Vipivin' victim='9:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:46:23][game]: kill killer='0:ŖȪss1499' victim='4:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:46:24][game]: kill killer='1:Vipivin' victim='27:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:24][game]: kill killer='0:ŖȪss1499' victim='18:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:46:24][game]: kill killer='1:Vipivin' victim='31:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:24][game]: kill killer='1:Vipivin' victim='2:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:24][game]: kill killer='1:Vipivin' victim='29:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:24][game]: kill killer='0:ŖȪss1499' victim='33:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:46:25][game]: kill killer='0:ŖȪss1499' victim='7:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:46:25][game]: kill killer='1:Vipivin' victim='32:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:25][game]: kill killer='1:Vipivin' victim='19:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:25][game]: kill killer='0:ŖȪss1499' victim='17:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:46:25][game]: kill killer='1:Vipivin' victim='46:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:26][game]: kill killer='1:Vipivin' victim='12:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:46:26][game]: kill killer='1:Vipivin' victim='16:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:46:26][game]: kill killer='0:ŖȪss1499' victim='34:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:46:27][game]: kill killer='1:Vipivin' victim='26:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:27][game]: kill killer='0:ŖȪss1499' victim='13:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:46:27][game]: kill killer='1:Vipivin' victim='25:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:27][game]: kill killer='1:Vipivin' victim='23:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:27][game]: kill killer='1:Vipivin' victim='30:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:28][game]: kill killer='1:Vipivin' victim='22:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:28][game]: kill killer='1:Vipivin' victim='3:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:46:28][game]: kill killer='0:ŖȪss1499' victim='4:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:46:28][game]: kill killer='0:ŖȪss1499' victim='2:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:46:29][game]: kill killer='0:ŖȪss1499' victim='7:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:46:29][game]: kill killer='1:Vipivin' victim='9:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:46:30][game]: kill killer='1:Vipivin' victim='24:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:30][game]: kill killer='1:Vipivin' victim='18:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:46:30][game]: kill killer='1:Vipivin' victim='15:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:46:31][game]: kill killer='1:Vipivin' victim='0:ŖȪss1499' weapon=3 special=0
+[14-03-23 22:46:31][game]: kill killer='1:Vipivin' victim='17:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:46:31][game]: kill killer='1:Vipivin' victim='27:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:32][game]: kill killer='1:Vipivin' victim='12:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:46:32][game]: kill killer='1:Vipivin' victim='29:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:32][game]: kill killer='1:Vipivin' victim='19:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:32][game]: kill killer='1:Vipivin' victim='21:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:32][game]: kill killer='1:Vipivin' victim='31:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:32][game]: kill killer='1:Vipivin' victim='16:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:46:33][game]: kill killer='0:ŖȪss1499' victim='1:Vipivin' weapon=2 special=0
+[14-03-23 22:46:35][game]: kill killer='0:ŖȪss1499' victim='6:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:46:35][game]: kill killer='0:ŖȪss1499' victim='0:ŖȪss1499' weapon=3 special=0
+[14-03-23 22:46:36][game]: kill killer='1:Vipivin' victim='32:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:36][game]: kill killer='1:Vipivin' victim='24:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:36][game]: kill killer='1:Vipivin' victim='10:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:46:36][game]: kill killer='1:Vipivin' victim='23:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:36][game]: kill killer='1:Vipivin' victim='28:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:37][game]: kill killer='1:Vipivin' victim='26:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:37][game]: kill killer='0:ŖȪss1499' victim='19:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:46:38][game]: kill killer='0:ŖȪss1499' victim='27:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:46:38][game]: kill killer='1:Vipivin' victim='56:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:38][game]: kill killer='0:ŖȪss1499' victim='17:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:46:38][game]: kill killer='1:Vipivin' victim='11:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:46:38][game]: kill killer='1:Vipivin' victim='41:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:39][game]: kill killer='0:ŖȪss1499' victim='3:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:46:39][game]: kill killer='0:ŖȪss1499' victim='2:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:46:39][game]: kill killer='1:Vipivin' victim='20:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:39][game]: kill killer='1:Vipivin' victim='42:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:39][game]: kill killer='1:Vipivin' victim='40:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:39][game]: kill killer='1:Vipivin' victim='63:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:40][game]: kill killer='0:ŖȪss1499' victim='5:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:46:40][game]: kill killer='1:Vipivin' victim='18:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:46:41][game]: kill killer='1:Vipivin' victim='0:ŖȪss1499' weapon=3 special=0
+[14-03-23 22:46:42][game]: kill killer='1:Vipivin' victim='45:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:42][game]: kill killer='1:Vipivin' victim='43:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:42][game]: kill killer='1:Vipivin' victim='36:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:42][game]: kill killer='1:Vipivin' victim='33:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:42][game]: kill killer='1:Vipivin' victim='23:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:42][game]: kill killer='1:Vipivin' victim='34:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:42][game]: kill killer='1:Vipivin' victim='12:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:46:43][game]: kill killer='0:ŖȪss1499' victim='28:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:46:44][game]: kill killer='1:Vipivin' victim='0:ŖȪss1499' weapon=3 special=0
+[14-03-23 22:46:45][game]: kill killer='1:Vipivin' victim='17:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:46:45][game]: kill killer='1:Vipivin' victim='6:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:46:46][game]: kill killer='1:Vipivin' victim='20:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:46][game]: kill killer='1:Vipivin' victim='37:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:47][game]: kill killer='1:Vipivin' victim='52:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:47][game]: kill killer='1:Vipivin' victim='41:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:47][game]: kill killer='1:Vipivin' victim='54:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:51][game]: kill killer='1:Vipivin' victim='0:ŖȪss1499' weapon=3 special=0
+[14-03-23 22:46:54][game]: kill killer='1:Vipivin' victim='53:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:54][game]: kill killer='1:Vipivin' victim='49:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:54][game]: kill killer='1:Vipivin' victim='26:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:54][chat]: 0:-2:ŖȪss1499: off
+[14-03-23 22:46:55][game]: kill killer='1:Vipivin' victim='20:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:55][game]: kill killer='1:Vipivin' victim='56:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:55][game]: kill killer='1:Vipivin' victim='34:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:55][game]: kill killer='1:Vipivin' victim='46:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:56][game]: kill killer='1:Vipivin' victim='60:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:56][game]: kill killer='1:Vipivin' victim='63:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:56][game]: kill killer='1:Vipivin' victim='54:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:56][game]: kill killer='1:Vipivin' victim='59:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:56][game]: kill killer='1:Vipivin' victim='58:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:56][game]: kill killer='1:Vipivin' victim='55:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:56][game]: kill killer='1:Vipivin' victim='51:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:58][game]: kill killer='1:Vipivin' victim='41:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:58][game]: kill killer='1:Vipivin' victim='57:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:46:58][game]: kill killer='1:Vipivin' victim='18:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:46:58][game]: kill killer='1:Vipivin' victim='0:ŖȪss1499' weapon=3 special=0
+[14-03-23 22:46:59][game]: kill killer='0:ŖȪss1499' victim='56:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:04][server]: ClientID=0 rcon='jnvis me'
+[14-03-23 22:47:04][Console]: No such command: jnvis.
+[14-03-23 22:47:05][game]: kill killer='1:Vipivin' victim='55:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:47:05][game]: kill killer='1:Vipivin' victim='48:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:47:05][game]: kill killer='1:Vipivin' victim='11:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:47:05][game]: kill killer='1:Vipivin' victim='42:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:47:05][game]: kill killer='1:Vipivin' victim='45:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:47:05][game]: kill killer='1:Vipivin' victim='23:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:47:05][game]: kill killer='1:Vipivin' victim='27:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:47:05][game]: kill killer='1:Vipivin' victim='32:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:47:05][game]: kill killer='1:Vipivin' victim='24:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:47:05][game]: kill killer='1:Vipivin' victim='15:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:47:05][game]: kill killer='1:Vipivin' victim='13:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:47:05][game]: kill killer='1:Vipivin' victim='2:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:47:05][game]: kill killer='1:Vipivin' victim='35:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:47:05][game]: kill killer='1:Vipivin' victim='21:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:47:05][game]: kill killer='1:Vipivin' victim='4:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:47:05][game]: kill killer='1:Vipivin' victim='25:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:47:05][game]: kill killer='1:Vipivin' victim='14:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:47:05][game]: kill killer='1:Vipivin' victim='39:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:47:05][game]: kill killer='1:Vipivin' victim='12:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:47:05][game]: kill killer='1:Vipivin' victim='1:Vipivin' weapon=3 special=0
+[14-03-23 22:47:05][game]: kill killer='1:Vipivin' victim='20:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:47:07][game]: kill killer='1:Vipivin' victim='34:[D] Vipivin' weapon=4 special=0
+[14-03-23 22:47:07][game]: kill killer='0:ŖȪss1499' victim='33:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:47:07][game]: kill killer='1:Vipivin' victim='41:[D] Vipivin' weapon=4 special=0
+[14-03-23 22:47:09][game]: kill killer='1:Vipivin' victim='9:[D] ŖȪss1499' weapon=4 special=0
+[14-03-23 22:47:10][game]: kill killer='1:Vipivin' victim='44:[D] Vipivin' weapon=4 special=0
+[14-03-23 22:47:11][server]: ClientID=0 rcon='invis me'
+[14-03-23 22:47:11][info]: 'ŖȪss1499' ClientID=0 is now invisible.
+[14-03-23 22:47:11][game]: kill killer='1:Vipivin' victim='8:[D] ŖȪss1499' weapon=4 special=0
+[14-03-23 22:47:12][game]: kill killer='1:Vipivin' victim='30:[D] Vipivin' weapon=4 special=0
+[14-03-23 22:47:13][game]: kill killer='1:Vipivin' victim='38:[D] Vipivin' weapon=4 special=0
+[14-03-23 22:47:14][game]: kill killer='1:Vipivin' victim='55:[D] Vipivin' weapon=4 special=0
+[14-03-23 22:47:15][game]: kill killer='1:Vipivin' victim='14:[D] ŖȪss1499' weapon=4 special=0
+[14-03-23 22:47:15][server]: ClientID=0 rcon='ShotgunSpread me 10'
+[14-03-23 22:47:16][game]: kill killer='1:Vipivin' victim='19:[D] Vipivin' weapon=0 special=0
+[14-03-23 22:47:16][game]: kill killer='1:Vipivin' victim='60:[D] Vipivin' weapon=0 special=0
+[14-03-23 22:47:18][game]: kill killer='1:Vipivin' victim='2:[D] Vipivin' weapon=0 special=0
+[14-03-23 22:47:18][game]: kill killer='1:Vipivin' victim='50:[D] Vipivin' weapon=0 special=0
+[14-03-23 22:47:18][game]: kill killer='1:Vipivin' victim='32:[D] Vipivin' weapon=0 special=0
+[14-03-23 22:47:18][game]: kill killer='1:Vipivin' victim='25:[D] Vipivin' weapon=0 special=0
+[14-03-23 22:47:18][game]: kill killer='1:Vipivin' victim='54:[D] Vipivin' weapon=0 special=0
+[14-03-23 22:47:21][game]: kill killer='1:Vipivin' victim='20:[D] Vipivin' weapon=0 special=0
+[14-03-23 22:47:21][game]: kill killer='1:Vipivin' victim='29:[D] Vipivin' weapon=0 special=0
+[14-03-23 22:47:21][game]: kill killer='1:Vipivin' victim='42:[D] Vipivin' weapon=0 special=0
+[14-03-23 22:47:24][game]: kill killer='1:Vipivin' victim='58:[D] Vipivin' weapon=0 special=0
+[14-03-23 22:47:24][game]: kill killer='1:Vipivin' victim='7:[D] ŖȪss1499' weapon=0 special=0
+[14-03-23 22:47:26][game]: kill killer='1:Vipivin' victim='28:[D] Vipivin' weapon=0 special=0
+[14-03-23 22:47:26][game]: kill killer='0:ŖȪss1499' victim='33:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:26][game]: kill killer='0:ŖȪss1499' victim='54:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:26][game]: kill killer='0:ŖȪss1499' victim='11:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:47:26][game]: kill killer='0:ŖȪss1499' victim='25:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:26][game]: kill killer='0:ŖȪss1499' victim='27:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:26][game]: kill killer='0:ŖȪss1499' victim='4:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:47:26][game]: kill killer='0:ŖȪss1499' victim='9:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:47:26][game]: kill killer='0:ŖȪss1499' victim='23:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:26][game]: kill killer='0:ŖȪss1499' victim='34:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:26][game]: kill killer='0:ŖȪss1499' victim='44:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:26][game]: kill killer='1:Vipivin' victim='31:[D] Vipivin' weapon=0 special=0
+[14-03-23 22:47:26][game]: kill killer='0:ŖȪss1499' victim='12:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:47:26][game]: kill killer='0:ŖȪss1499' victim='35:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:26][game]: kill killer='0:ŖȪss1499' victim='13:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:47:26][game]: kill killer='0:ŖȪss1499' victim='22:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:27][game]: kill killer='0:ŖȪss1499' victim='32:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:27][game]: kill killer='0:ŖȪss1499' victim='6:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:47:27][game]: kill killer='0:ŖȪss1499' victim='2:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:27][game]: kill killer='0:ŖȪss1499' victim='1:Vipivin' weapon=2 special=0
+[14-03-23 22:47:27][game]: kill killer='0:ŖȪss1499' victim='21:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:27][game]: kill killer='0:ŖȪss1499' victim='17:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:47:27][game]: kill killer='0:ŖȪss1499' victim='24:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:27][game]: kill killer='0:ŖȪss1499' victim='30:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:27][game]: kill killer='0:ŖȪss1499' victim='38:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:27][game]: kill killer='0:ŖȪss1499' victim='14:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:47:27][game]: kill killer='0:ŖȪss1499' victim='15:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:47:27][game]: kill killer='0:ŖȪss1499' victim='20:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:27][game]: kill killer='0:ŖȪss1499' victim='50:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:27][game]: kill killer='0:ŖȪss1499' victim='58:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:27][game]: kill killer='0:ŖȪss1499' victim='42:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:27][game]: kill killer='0:ŖȪss1499' victim='29:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:28][game]: kill killer='0:ŖȪss1499' victim='3:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:47:28][game]: kill killer='0:ŖȪss1499' victim='1:Vipivin' weapon=2 special=0
+[14-03-23 22:47:28][game]: kill killer='0:ŖȪss1499' victim='46:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:28][game]: kill killer='0:ŖȪss1499' victim='63:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:28][game]: kill killer='0:ŖȪss1499' victim='55:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:28][game]: kill killer='0:ŖȪss1499' victim='19:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:28][game]: kill killer='0:ŖȪss1499' victim='56:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:28][game]: kill killer='0:ŖȪss1499' victim='48:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:28][game]: kill killer='0:ŖȪss1499' victim='16:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:47:28][game]: kill killer='0:ŖȪss1499' victim='5:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:47:28][game]: kill killer='0:ŖȪss1499' victim='39:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:28][game]: kill killer='0:ŖȪss1499' victim='61:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:28][game]: kill killer='0:ŖȪss1499' victim='8:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:47:28][game]: kill killer='0:ŖȪss1499' victim='60:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:29][game]: kill killer='0:ŖȪss1499' victim='47:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:29][game]: kill killer='0:ŖȪss1499' victim='53:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:29][game]: kill killer='0:ŖȪss1499' victim='52:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:29][game]: kill killer='0:ŖȪss1499' victim='26:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:29][game]: kill killer='0:ŖȪss1499' victim='57:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:29][game]: kill killer='0:ŖȪss1499' victim='1:Vipivin' weapon=2 special=0
+[14-03-23 22:47:29][game]: kill killer='0:ŖȪss1499' victim='40:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:29][game]: kill killer='0:ŖȪss1499' victim='28:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:29][game]: kill killer='0:ŖȪss1499' victim='7:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:47:30][game]: kill killer='0:ŖȪss1499' victim='41:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:30][game]: kill killer='0:ŖȪss1499' victim='11:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:47:31][game]: kill killer='0:ŖȪss1499' victim='18:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:47:31][game]: kill killer='0:ŖȪss1499' victim='62:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:32][game]: kill killer='0:ŖȪss1499' victim='37:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:47:33][game]: kill killer='0:ŖȪss1499' victim='59:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:33][game]: kill killer='0:ŖȪss1499' victim='49:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:33][game]: kill killer='0:ŖȪss1499' victim='10:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:47:33][game]: kill killer='0:ŖȪss1499' victim='43:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:33][game]: kill killer='0:ŖȪss1499' victim='51:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:33][game]: kill killer='0:ŖȪss1499' victim='36:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:34][game]: kill killer='0:ŖȪss1499' victim='1:Vipivin' weapon=2 special=0
+[14-03-23 22:47:37][game]: kill killer='1:Vipivin' victim='29:[D] Vipivin' weapon=4 special=0
+[14-03-23 22:47:40][game]: kill killer='1:Vipivin' victim='38:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:47:41][game]: kill killer='1:Vipivin' victim='43:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:47:41][game]: kill killer='1:Vipivin' victim='37:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:47:41][game]: kill killer='1:Vipivin' victim='34:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:47:41][game]: kill killer='1:Vipivin' victim='10:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:47:41][game]: kill killer='1:Vipivin' victim='44:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:47:41][game]: kill killer='1:Vipivin' victim='42:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:47:42][game]: kill killer='1:Vipivin' victim='49:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:47:42][game]: kill killer='1:Vipivin' victim='48:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:47:42][game]: kill killer='1:Vipivin' victim='47:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:47:42][game]: kill killer='0:ŖȪss1499' victim='55:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:42][game]: kill killer='0:ŖȪss1499' victim='56:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:42][game]: kill killer='0:ŖȪss1499' victim='54:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:42][game]: kill killer='0:ŖȪss1499' victim='53:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:42][game]: kill killer='0:ŖȪss1499' victim='18:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:47:42][game]: kill killer='0:ŖȪss1499' victim='36:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:42][game]: kill killer='1:Vipivin' victim='32:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:47:42][game]: kill killer='1:Vipivin' victim='5:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:47:42][game]: kill killer='1:Vipivin' victim='3:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:47:43][game]: kill killer='1:Vipivin' victim='33:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:47:43][game]: kill killer='1:Vipivin' victim='29:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:47:43][game]: kill killer='1:Vipivin' victim='50:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:47:43][game]: kill killer='1:Vipivin' victim='30:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:47:43][game]: kill killer='0:ŖȪss1499' victim='59:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:43][game]: kill killer='0:ŖȪss1499' victim='58:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:43][game]: kill killer='0:ŖȪss1499' victim='57:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:43][game]: kill killer='0:ŖȪss1499' victim='2:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:43][game]: kill killer='0:ŖȪss1499' victim='52:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:43][game]: kill killer='0:ŖȪss1499' victim='61:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:43][game]: kill killer='0:ŖȪss1499' victim='60:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:44][game]: kill killer='1:Vipivin' victim='35:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:47:44][game]: kill killer='1:Vipivin' victim='16:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:47:44][game]: kill killer='1:Vipivin' victim='15:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:47:44][game]: kill killer='0:ŖȪss1499' victim='63:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:44][game]: kill killer='0:ŖȪss1499' victim='62:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:44][game]: kill killer='0:ŖȪss1499' victim='25:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:44][game]: kill killer='1:Vipivin' victim='26:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:47:44][game]: kill killer='1:Vipivin' victim='28:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:47:44][game]: kill killer='1:Vipivin' victim='6:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:47:44][game]: kill killer='1:Vipivin' victim='13:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:47:44][game]: kill killer='0:ŖȪss1499' victim='38:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:44][game]: kill killer='0:ŖȪss1499' victim='11:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:47:44][game]: kill killer='0:ŖȪss1499' victim='10:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:47:45][game]: kill killer='1:Vipivin' victim='9:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:47:45][game]: kill killer='1:Vipivin' victim='8:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:47:45][game]: kill killer='0:ŖȪss1499' victim='37:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:45][game]: kill killer='0:ŖȪss1499' victim='34:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:45][game]: kill killer='0:ŖȪss1499' victim='21:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:45][game]: kill killer='0:ŖȪss1499' victim='43:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:45][game]: kill killer='0:ŖȪss1499' victim='42:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:45][game]: kill killer='0:ŖȪss1499' victim='44:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:45][game]: kill killer='0:ŖȪss1499' victim='14:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:47:46][game]: kill killer='0:ŖȪss1499' victim='48:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:46][game]: kill killer='0:ŖȪss1499' victim='7:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:47:46][game]: kill killer='0:ŖȪss1499' victim='47:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:46][game]: kill killer='1:Vipivin' victim='20:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:47:46][game]: kill killer='0:ŖȪss1499' victim='49:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:47][game]: kill killer='0:ŖȪss1499' victim='18:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:47:47][game]: kill killer='1:Vipivin' victim='27:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:47:47][game]: kill killer='0:ŖȪss1499' victim='3:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:47:47][game]: kill killer='0:ŖȪss1499' victim='5:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:47:48][game]: kill killer='1:Vipivin' victim='17:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:47:48][game]: kill killer='0:ŖȪss1499' victim='15:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:47:48][game]: kill killer='0:ŖȪss1499' victim='2:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:48][game]: kill killer='0:ŖȪss1499' victim='6:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:47:49][game]: kill killer='0:ŖȪss1499' victim='9:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:47:49][game]: kill killer='0:ŖȪss1499' victim='11:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:47:49][game]: kill killer='0:ŖȪss1499' victim='13:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:47:50][game]: kill killer='0:ŖȪss1499' victim='14:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:47:50][game]: kill killer='1:Vipivin' victim='46:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:47:50][game]: kill killer='0:ŖȪss1499' victim='25:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:50][game]: kill killer='0:ŖȪss1499' victim='26:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:50][game]: kill killer='0:ŖȪss1499' victim='7:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:47:51][game]: kill killer='0:ŖȪss1499' victim='1:Vipivin' weapon=2 special=0
+[14-03-23 22:47:51][game]: kill killer='1:Vipivin' victim='0:ŖȪss1499' weapon=3 special=0
+[14-03-23 22:47:51][game]: kill killer='1:Vipivin' victim='20:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:47:51][game]: kill killer='1:Vipivin' victim='51:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:47:52][game]: kill killer='0:ŖȪss1499' victim='15:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:47:53][game]: kill killer='1:Vipivin' victim='28:[D] Vipivin' weapon=4 special=0
+[14-03-23 22:47:53][game]: kill killer='0:ŖȪss1499' victim='6:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:47:54][game]: kill killer='1:Vipivin' victim='31:[D] Vipivin' weapon=4 special=0
+[14-03-23 22:47:54][game]: kill killer='1:Vipivin' victim='25:[D] Vipivin' weapon=4 special=0
+[14-03-23 22:47:56][game]: kill killer='0:ŖȪss1499' victim='32:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:57][game]: kill killer='0:ŖȪss1499' victim='11:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:47:58][game]: kill killer='0:ŖȪss1499' victim='27:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:58][game]: kill killer='1:Vipivin' victim='22:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:47:59][game]: kill killer='0:ŖȪss1499' victim='28:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:47:59][game]: kill killer='0:ŖȪss1499' victim='31:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:48:00][game]: kill killer='1:Vipivin' victim='41:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:48:00][game]: kill killer='1:Vipivin' victim='40:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:48:00][game]: kill killer='0:ŖȪss1499' victim='37:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:48:01][game]: kill killer='0:ŖȪss1499' victim='25:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:48:01][game]: kill killer='1:Vipivin' victim='19:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:48:02][game]: kill killer='1:Vipivin' victim='24:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:48:03][game]: kill killer='1:Vipivin' victim='23:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:48:04][game]: kill killer='1:Vipivin' victim='39:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:48:04][game]: kill killer='1:Vipivin' victim='26:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:48:05][game]: kill killer='1:Vipivin' victim='12:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:48:05][game]: kill killer='1:Vipivin' victim='35:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:48:07][game]: kill killer='0:ŖȪss1499' victim='1:Vipivin' weapon=2 special=0
+[14-03-23 22:48:09][game]: kill killer='0:ŖȪss1499' victim='18:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:48:10][game]: kill killer='0:ŖȪss1499' victim='58:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:48:10][game]: kill killer='0:ŖȪss1499' victim='39:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:48:11][game]: kill killer='0:ŖȪss1499' victim='42:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:48:11][game]: kill killer='0:ŖȪss1499' victim='55:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:48:12][game]: kill killer='0:ŖȪss1499' victim='12:[D] ŖȪss1499' weapon=2 special=0
+[14-03-23 22:48:12][chat]: 1:-2:Vipivin: какого хуя
+[14-03-23 22:48:12][game]: kill killer='0:ŖȪss1499' victim='47:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:48:13][game]: kill killer='0:ŖȪss1499' victim='33:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:48:13][game]: kill killer='0:ŖȪss1499' victim='23:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:48:16][game]: kill killer='0:ŖȪss1499' victim='59:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:48:16][game]: kill killer='0:ŖȪss1499' victim='49:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:48:16][server]: ClientID=1 authed (admin)
+[14-03-23 22:48:17][game]: kill killer='0:ŖȪss1499' victim='63:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:48:17][game]: kill killer='0:ŖȪss1499' victim='19:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:48:18][game]: kill killer='0:ŖȪss1499' victim='26:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:48:18][game]: kill killer='0:ŖȪss1499' victim='43:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:48:18][game]: kill killer='0:ŖȪss1499' victim='29:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:48:18][game]: kill killer='0:ŖȪss1499' victim='41:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:48:18][game]: kill killer='0:ŖȪss1499' victim='38:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:48:18][solo]: Solo part.
+[14-03-23 22:48:18][chat-command]: 1 used /solo
+[14-03-23 22:48:19][game]: kill killer='0:ŖȪss1499' victim='35:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:48:20][game]: kill killer='0:ŖȪss1499' victim='42:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:48:20][game]: kill killer='0:ŖȪss1499' victim='12:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:48:20][game]: kill killer='0:ŖȪss1499' victim='54:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:48:21][game]: kill killer='0:ŖȪss1499' victim='59:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:48:21][game]: kill killer='0:ŖȪss1499' victim='58:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:48:21][game]: kill killer='0:ŖȪss1499' victim='31:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:48:21][game]: kill killer='0:ŖȪss1499' victim='46:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:48:22][game]: kill killer='0:ŖȪss1499' victim='62:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:48:22][game]: kill killer='0:ŖȪss1499' victim='25:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:48:22][game]: kill killer='0:ŖȪss1499' victim='13:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:48:22][chat]: 0:-2:ŖȪss1499: ??
+[14-03-23 22:48:23][solo]: Out solo part.
+[14-03-23 22:48:23][chat-command]: 1 used /solo
+[14-03-23 22:48:23][game]: kill killer='1:Vipivin' victim='0:ŖȪss1499' weapon=4 special=0
+[14-03-23 22:48:24][game]: kill killer='0:ŖȪss1499' victim='19:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:48:24][game]: kill killer='0:ŖȪss1499' victim='23:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:48:24][game]: kill killer='0:ŖȪss1499' victim='47:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:48:24][game]: kill killer='0:ŖȪss1499' victim='39:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:48:24][game]: kill killer='0:ŖȪss1499' victim='53:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:48:24][game]: kill killer='0:ŖȪss1499' victim='15:[D] ŖȪss1499' weapon=3 special=0
+[14-03-23 22:48:25][game]: kill killer='1:Vipivin' victim='27:[D] Vipivin' weapon=4 special=0
+[14-03-23 22:48:26][game]: kill killer='1:Vipivin' victim='0:ŖȪss1499' weapon=4 special=0
+[14-03-23 22:48:27][game]: kill killer='0:ŖȪss1499' victim='29:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:48:30][game]: kill killer='1:Vipivin' victim='2:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:48:30][game]: kill killer='1:Vipivin' victim='33:[D] Vipivin' weapon=3 special=0
+[14-03-23 22:48:36][game]: kill killer='0:ŖȪss1499' victim='60:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:48:36][game]: kill killer='0:ŖȪss1499' victim='35:[D] Vipivin' weapon=2 special=0
+[14-03-23 22:48:37][solo]: Solo part.
+[14-03-23 22:48:37][chat-command]: 1 used /solo
+[14-03-23 22:48:38][solo]: Out solo part.
+[14-03-23 22:48:38][chat-command]: 1 used /solo
+[14-03-23 22:48:42][game]: kill killer='1:Vipivin' victim='0:ŖȪss1499' weapon=4 special=0
+[14-03-23 22:48:43][game]: kill killer='1:Vipivin' victim='26:[D] Vipivin' weapon=4 special=0
+[14-03-23 22:48:44][game]: kill killer='1:Vipivin' victim='0:ŖȪss1499' weapon=4 special=0
+[14-03-23 22:48:46][game]: kill killer='1:Vipivin' victim='0:ŖȪss1499' weapon=4 special=0
+[14-03-23 22:48:53][game]: kill killer='1:Vipivin' victim='33:[D] Vipivin' weapon=4 special=0
+[14-03-23 22:48:54][game]: kill killer='1:Vipivin' victim='49:[D] Vipivin' weapon=4 special=0
+[14-03-23 22:48:55][game]: kill killer='1:Vipivin' victim='41:[D] Vipivin' weapon=4 special=0
+[14-03-23 22:48:56][game]: kill killer='1:Vipivin' victim='54:[D] Vipivin' weapon=4 special=0
+[14-03-23 22:48:57][server]: ClientID=0 rcon='kick 1 off'
+[14-03-23 22:48:57][server]: client dropped. cid=1 addr=192.168.1.101:54729 reason='Kicked (off)'
+[14-03-23 22:48:57][game]: kill killer='63:[D] Vipivin' victim='63:[D] Vipivin' weapon=-3 special=0
+[14-03-23 22:48:57][chat]: *** '[D] Vipivin' has left the game
+[14-03-23 22:48:57][game]: kill killer='1:Vipivin' victim='1:Vipivin' weapon=-3 special=0
+[14-03-23 22:48:57][chat]: *** 'Vipivin' has left the game (Kicked (off))

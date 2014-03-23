@@ -30,9 +30,9 @@ CONSOLE_COMMAND("Move", "vi",               CFGFLAG_SERVER|CMDFLAG_TEST, ConMove
 CONSOLE_COMMAND("Move_raw", "vi",           CFGFLAG_SERVER,              ConMoveRaw, this, "Moves to the point with x/y-coordinates ii")
 CONSOLE_COMMAND("Force_pause", "vi",        CFGFLAG_SERVER,              ConForcePause, this, "Force i to pause for i seconds")
 CONSOLE_COMMAND("Force_unpause", "v",       CFGFLAG_SERVER,              ConForcePause, this, "Set force-pause timer of v to 0.")
-CONSOLE_COMMAND("Showothers", "?i",         CFGFLAG_CHAT,                ConShowOthers, this, "Whether to showplayers from other teams or not (off by default), optional i = 0 for off else for on")
+CONSOLE_COMMAND("showothers", "?i",         CFGFLAG_CHAT,                ConShowOthers, this, "Whether to showplayers from other teams or not (off by default), optional i = 0 for off else for on")
 
-CONSOLE_COMMAND("List", "?s",               CFGFLAG_CHAT,                ConList, this, "List connected players with optional case-insensitive substring matching filter")
+CONSOLE_COMMAND("list", "?s",               CFGFLAG_CHAT,                ConList, this, "List connected players with optional case-insensitive substring matching filter")
 
 
 
@@ -46,8 +46,8 @@ CONSOLE_COMMAND("UnXxl", "v",               CFGFLAG_SERVER,              ConUnFa
 CONSOLE_COMMAND("Rainbow", "v?i",           CFGFLAG_SERVER|CMDFLAG_TEST, ConRainbow, this, "Colorchange the tee i like a rainbow")
 CONSOLE_COMMAND("Invis", "v",               CFGFLAG_SERVER|CMDFLAG_TEST, ConInvis, this, "Makes player v invisible")
 CONSOLE_COMMAND("Vis", "v",                 CFGFLAG_SERVER|CMDFLAG_TEST, ConVis, this, "Makes player v visible again")
-CONSOLE_COMMAND("Whisper", "v?r",           CFGFLAG_CHAT,                ConWhisper, this, "Whispers r to player v")
-CONSOLE_COMMAND("W", "v?r",                 CFGFLAG_CHAT,                ConWhisper, this, "Whispers r to player v")
+CONSOLE_COMMAND("whisper", "v?r",           CFGFLAG_CHAT,                ConWhisper, this, "Whispers r to player v")
+CONSOLE_COMMAND("w", "v?r",                 CFGFLAG_CHAT,                ConWhisper, this, "Whispers r to player v")
 CONSOLE_COMMAND("Rename", "vr",             CFGFLAG_SERVER,              ConRename, this, "Renames i name to s")
 CONSOLE_COMMAND("Score", "vi",              CFGFLAG_SERVER|CMDFLAG_TEST, ConScore, this, "Changes the score of i to i")
 CONSOLE_COMMAND("Hammer", "vi",             CFGFLAG_SERVER|CMDFLAG_TEST, ConHammer, this, "Sets the hammer power of player v to i")
