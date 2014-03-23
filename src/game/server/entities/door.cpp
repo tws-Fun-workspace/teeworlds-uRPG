@@ -57,9 +57,6 @@ void CDoor::ResetCollision()
                     m_Number);
     }
 }
-// TILE_AIR
-// TILE_DEATH
-// TILE_STOPA
 void CDoor::Open(int Team)
 {
 

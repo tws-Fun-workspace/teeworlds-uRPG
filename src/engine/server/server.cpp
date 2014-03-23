@@ -264,7 +264,7 @@ void CServerBan::ConBanExt(IConsole::IResult *pResult, void *pUser)
 	CServerBan *pThis = static_cast<CServerBan *>(pUser);
 
 	const char *pStr = pResult->GetString(0);
-	int Minutes = pResult->NumArguments()>1 ? clamp(pResult->GetInteger(1), 0, 44640) : 30;
+	int Minutes = pResult->NumArguments()>1 ? clamp(pResult->GetInteger(1), 0, 44640) : 10;
 	const char *pReason = pResult->NumArguments()>2 ? pResult->GetString(2) : "No reason given";
 
 	if(StrAllnum(pStr))
@@ -1708,7 +1708,7 @@ void CServer::ConKick(IConsole::IResult *pResult, void *pUser)
 
 void CServer::ConStatus(IConsole::IResult *pResult, void *pUser)
 {
-	char aBuf[128];
+	char aBuf[256];
 	char aAddrStr[NETADDR_MAXSTRSIZE];
 	CServer* pThis = static_cast<CServer *>(pUser);
 

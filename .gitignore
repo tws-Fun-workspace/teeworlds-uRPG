@@ -49,4 +49,5 @@ bam.exe
 .settings
 *.opensdf
 
-DDRace*
+
+logfile.txt

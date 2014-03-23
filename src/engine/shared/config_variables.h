@@ -250,7 +250,7 @@ MACRO_CONFIG_INT(SvRconScore,           sv_rcon_score, 0, 0, 1, CFGFLAG_SERVER, 
 MACRO_CONFIG_INT(SvFastHammerHits,      sv_fast_hammer_hits, 0, 0, 1, CFGFLAG_SERVER, "Fast hammer hits")
 MACRO_CONFIG_INT(SvMinRecord,           sv_minimal_record, 0, 0, 3600, CFGFLAG_SERVER, "Minimum permitted time finish(s)")
 MACRO_CONFIG_INT(SvAutoShoot,           sv_auto_shoot, 0, 0, 1, CFGFLAG_SERVER, "Auto-shooter")
-MACRO_CONFIG_INT(SvSendChat,            sv_sendchat, 1, 0, 1, CFGFLAG_SERVER, "Send to chat on/off")
+MACRO_CONFIG_INT(SvSendChat,            sv_send_chat, 1, 0, 1, CFGFLAG_SERVER, "Send to chat on/off")
 MACRO_CONFIG_INT(SvDmgBlood,            sv_dmg_blood, 0, 0, 1, CFGFLAG_SERVER, "Turns blood on damage on/off")
 MACRO_CONFIG_INT(SvXXLSpeed,            sv_xxl_speed, 10000, 0, 100000000, CFGFLAG_SERVER, "XXL Speed")
 MACRO_CONFIG_STR(SvSpecialUser,         sv_special_user, 32, "", CFGFLAG_SERVER, "Special User")

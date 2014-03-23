@@ -578,7 +578,7 @@ void CGameContext::ConJoinTeam(IConsole::IResult *pResult, void *pUserData)
 			else if (((CGameControllerDDRace*) pSelf->m_pController)->m_Teams.SetCharacterTeam(
 					pPlayer->GetCID(), pResult->GetInteger(0)))
 			{
-				char aBuf[512];
+				char aBuf[256];
 				str_format(aBuf, sizeof(aBuf), "%s joined team %d",
 						pSelf->Server()->ClientName(pPlayer->GetCID()),
 						pResult->GetInteger(0));
@@ -947,7 +947,7 @@ void CGameContext::ConDummy(IConsole::IResult *pResult, void *pUserData)
 			if(pPlayer->m_Last_Dummy + pSelf->Server()->TickSpeed() * g_Config.m_SvDummyDelay/2 <= pSelf->Server()->Tick())
 			{
                 if(g_Config.m_SvEffects)
-				    pSelf->CreatePlayerSpawn(pDummyChr->Core()->m_Pos);
+				    pSelf->CreatePlayerSpawn(pDummyChr->Core()->m_Pos, pDummyChr->Teams()->TeamMask(pDummyChr->Team(), -1, DummyID));
 				pDummyChr->m_PrevPos = pSelf->m_apPlayers[ClientID]->m_ViewPos;
 				pDummyChr->Core()->m_Pos = pSelf->m_apPlayers[ClientID]->m_ViewPos;
 				pPlayer->m_Last_Dummy = pSelf->Server()->Tick();
@@ -983,7 +983,7 @@ void CGameContext::ConDummy(IConsole::IResult *pResult, void *pUserData)
 						pPlayer->m_TeeInfos.m_SkinName, //skin
 						dummy_name, //name
 						"[iDDRace]", //clan
-						pSelf->Server()->ClientCountry(ClientID));
+						pSelf->Server()->ClientCountry(ClientID)); // flag
 		if(pSelf->m_apPlayers[free_slot_id])
 		{
 			pPlayer->m_HasDummy = true;
@@ -1066,6 +1066,7 @@ void CGameContext::ConDummyChange(IConsole::IResult *pResult, void *pUserData)
 	if(!CheckClientID(pResult->m_ClientID)) return;
 	int ClientID = pResult->m_ClientID;
 	CPlayer *pPlayer = pSelf->m_apPlayers[pResult->m_ClientID];
+    CCharacter* pChr = pPlayer->GetCharacter();
 	if(!pPlayer) return;
 	if(pPlayer->m_HasDummy == false || !CheckClientID(pPlayer->m_DummyID) || !pSelf->m_apPlayers[pPlayer->m_DummyID] || !pSelf->m_apPlayers[pPlayer->m_DummyID]->m_IsDummy)
 	{
@@ -1090,11 +1091,11 @@ void CGameContext::ConDummyChange(IConsole::IResult *pResult, void *pUserData)
 		}
 		vec2 tmp_pos = pSelf->m_apPlayers[DummyID]->m_ViewPos;
         if(g_Config.m_SvEffects)
-		      pSelf->CreatePlayerSpawn(pDummyChr->Core()->m_Pos);
+		      pSelf->CreatePlayerSpawn(pDummyChr->Core()->m_Pos, pDummyChr->Teams()->TeamMask(pDummyChr->Team(), -1, DummyID));
 		pDummyChr->m_PrevPos = pOwnerChr->Core()->m_Pos;//TIGROW edit
 		pDummyChr->Core()->m_Pos = pPlayer->m_ViewPos;
         if(g_Config.m_SvEffects)
-		      pSelf->CreatePlayerSpawn(pOwnerChr->Core()->m_Pos);
+		      pSelf->CreatePlayerSpawn(pOwnerChr->Core()->m_Pos, pDummyChr->Teams()->TeamMask(pDummyChr->Team(), -1, DummyID));
 		pOwnerChr->m_PrevPos = tmp_pos;//TIGROW edit
 		pOwnerChr->Core()->m_Pos = tmp_pos;
 		pPlayer->m_Last_DummyChange = pSelf->Server()->Tick();

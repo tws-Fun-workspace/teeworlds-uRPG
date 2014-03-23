@@ -132,10 +132,6 @@ void CProjectile::Tick()
 			GameServer()->CreateExplosion(ColPos, m_Owner, m_Weapon, true, (!pTargetChr ? -1 : pTargetChr->Team()),
 			(m_Owner != -1)? TeamMask : -1LL);
 
-            // m_fast_reload
-            // g_Config.m_SvSilentXXL
-            // g_Config.m_SvSilentXXL && m_fast_reload
-            // 1 1
             if(g_Config.m_SvSilentXXL && m_fast_reload)
                 int asdasd = 0;
             else

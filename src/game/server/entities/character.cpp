@@ -1662,9 +1662,19 @@ void CCharacter::HandleTiles(int Index)
         if (GetPlayer()->m_Authed  < 2 || GetPlayer()->m_Authed == 3)
         {
             Die(m_pPlayer->GetCID(), WEAPON_WORLD);
-            char aBuf[256];
+            char aBuf[128];
             // str_format(aBuf, sizeof(aBuf), "Helpers only! Your rank: %i", GetPlayer()->m_Authed);
             str_format(aBuf, sizeof(aBuf), "Helper room, you can't enter");
+            GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
+        }
+    }
+    if(((m_TileIndex == TILE_KID) || (m_TileFIndex == TILE_KID)))
+    {
+        if (GetPlayer()->m_Authed  < 1)
+        {
+            Die(m_pPlayer->GetCID(), WEAPON_WORLD);
+            char aBuf[64];
+            str_format(aBuf, sizeof(aBuf), "Kid's room, you can't enter");
             GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
         }
     }
@@ -1673,21 +1683,15 @@ void CCharacter::HandleTiles(int Index)
 		if (m_LastIndexTile == TILE_SUPER || m_LastIndexFrontTile == TILE_SUPER)
 			return;
 
-		char aBuf[256];
+		char aBuf[64];
 		if (m_Super){
 			m_Super = false;
-			// Teams()->SetForceCharacterTeam(m_pPlayer->GetCID(), m_TeamBeforeSuper);
-            // Teams()->SetCharacterTeam(m_pPlayer->GetCID(), TEAM_FLOCK);
 			str_format(aBuf, sizeof(aBuf), "Super disabled");
 		}
 		else
 		{
 			m_Super = true;
 			UnFreeze();
-			// m_TeamBeforeSuper = Team();
-			// dbg_msg("Teamb4super","%d",m_TeamBeforeSuper = Team());
-			// Teams()->SetCharacterTeam(m_pPlayer->GetCID(), TEAM_SUPER);
-			// m_DDRaceState = DDRACE_CHEAT;
 			str_format(aBuf, sizeof(aBuf), "Super enabled");
 		}
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
@@ -1698,7 +1702,7 @@ void CCharacter::HandleTiles(int Index)
 		if (m_LastIndexTile == TILE_HAMMER || m_LastIndexFrontTile == TILE_HAMMER)
 			return;
 
-		char aBuf[256];
+		char aBuf[64];
 		if (m_HammerType == 3)
 		{
 			m_HammerType = 0;
@@ -1716,7 +1720,7 @@ void CCharacter::HandleTiles(int Index)
 		if (m_LastIndexTile == TILE_BLOODY || m_LastIndexFrontTile == TILE_BLOODY)
 			return;
 
-		char aBuf[256];
+		char aBuf[64];
 		if (m_Bloody)
 		{
 			m_Bloody = false;
@@ -1747,7 +1751,7 @@ void CCharacter::HandleTiles(int Index)
 		m_HammerType = 0;
 		m_Bloody = false;
 		m_pPlayer->m_Invisible = false;
-		char aBuf[256];
+		char aBuf[64];
 		str_format(aBuf, sizeof(aBuf), "ALL extras disabled");
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
 	}
@@ -1775,7 +1779,7 @@ void CCharacter::HandleTiles(int Index)
 		if (m_LastIndexTile == TILE_INVIS || m_LastIndexFrontTile == TILE_INVIS)
 			return;
 
-		char aBuf[256];
+		char aBuf[64];
 		if (m_pPlayer->m_Invisible)
 		{
 			m_pPlayer->m_Invisible = false;

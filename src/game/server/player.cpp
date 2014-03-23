@@ -319,7 +319,7 @@ void CPlayer::OnDisconnect(const char *pReason) {
 	if(Server()->ClientIngame(m_ClientID))
 	{
         if(g_Config.m_SvSendChat) {
-		  char aBuf[1024];
+		  char aBuf[512];
 		  if(pReason && *pReason)
 		  	str_format(aBuf, sizeof(aBuf), "'%s' has left the game (%s)", Server()->ClientName(m_ClientID), pReason);
 		  else {

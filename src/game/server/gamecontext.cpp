@@ -302,7 +302,7 @@ void CGameContext::SendChatTarget(int To, const char *pText)
 void CGameContext::SendChat(int ChatterClientID, int Team, const char *pText, int SpamProtectionClientID)
 {
     if(!g_Config.m_SvSendChat) {
-        SendChatTarget(ChatterClientID, "Chat is off");
+        // SendChatTarget(ChatterClientID, "Chat is off");
         return;
     }
 	if(SpamProtectionClientID >= 0 && SpamProtectionClientID < MAX_CLIENTS)
@@ -760,7 +760,7 @@ void CGameContext::OnClientEnter(int ClientID)
 
 			time_t rawtime;
 			struct tm* timeinfo;
-			char d[16], m [16], y[16];
+			char d[16], m[16], y[16];
 			int dd, mm, yy;
 
 			time ( &rawtime );
@@ -775,7 +775,7 @@ void CGameContext::OnClientEnter(int ClientID)
 			if((mm == 12 && dd == 31) || (mm == 1 && dd == 1))
 			{
 				char aBuf[128];
-				str_format(aBuf, sizeof(aBuf), "Happy %d from GreYFoX and Vipivin(FunKy)", mm==12?yy+1:yy);
+				str_format(aBuf, sizeof(aBuf), "Happy %d from GreYFoX", mm==12?yy+1:yy);
 				SendBroadcast(aBuf, ClientID);
 			}
 		}

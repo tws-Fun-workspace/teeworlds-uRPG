@@ -7,7 +7,7 @@
 #endif
 
 CONSOLE_COMMAND("Kill","v",                 CFGFLAG_SERVER,              ConKillPlayer, this, "Kills player v and announces the kill")
-CONSOLE_COMMAND("Tele", "vi",               CFGFLAG_SERVER|CMDFLAG_TEST, ConTeleport, this, "Teleports v to player v")
+CONSOLE_COMMAND("Tele", "vv",               CFGFLAG_SERVER|CMDFLAG_TEST, ConTeleport, this, "Teleports v to player v")
 CONSOLE_COMMAND("Weapons", "v",             CFGFLAG_SERVER|CMDFLAG_TEST, ConWeapons, this, "Gives all weapons to you")
 CONSOLE_COMMAND("AddWeapon", "i",           CFGFLAG_SERVER|CMDFLAG_TEST, ConAddWeapon, this, "Gives weapon with id i to you (all = -1, hammer = 0, gun = 1, shotgun = 2, grenade = 3, laser = 4, ninja = 5)")
 CONSOLE_COMMAND("UnWeapons", "v",           CFGFLAG_SERVER|CMDFLAG_TEST, ConUnWeapons, this, "Takes all weapons from you")
@@ -87,11 +87,11 @@ CONSOLE_COMMAND("RemoveModer", "v",         CFGFLAG_SERVER,              ConRemo
 CONSOLE_COMMAND("Freeze", "v?i",            CFGFLAG_SERVER|CMDFLAG_TEST, ConFreezePlayer, this, "Freezes player v for i seconds (infinite by default)")
 CONSOLE_COMMAND("UnFreeze", "v",            CFGFLAG_SERVER,              ConUnFreezePlayer, this, "Unfreezes player v")
 
-CONSOLE_COMMAND("Mute", "v",                CFGFLAG_SERVER,              ConMute, this, "");
-CONSOLE_COMMAND("MuteId", "vi",             CFGFLAG_SERVER,              ConMuteID, this, "");
-CONSOLE_COMMAND("MuteIp", "si",             CFGFLAG_SERVER,              ConMuteIP, this, "");
-CONSOLE_COMMAND("unMute", "v",              CFGFLAG_SERVER,              ConUnmute, this, "");
-CONSOLE_COMMAND("Mutes", "",                CFGFLAG_SERVER,              ConMutes, this, "");
+CONSOLE_COMMAND("Mute", "v",                CFGFLAG_SERVER,              ConMute, this, "Mute player");
+CONSOLE_COMMAND("MuteId", "vi",             CFGFLAG_SERVER,              ConMuteID, this, "Mute player by id");
+CONSOLE_COMMAND("MuteIp", "si",             CFGFLAG_SERVER,              ConMuteIP, this, "Mute player by IP");
+CONSOLE_COMMAND("unMute", "v",              CFGFLAG_SERVER,              ConUnmute, this, "UnMute player");
+CONSOLE_COMMAND("Mutes", "",                CFGFLAG_SERVER,              ConMutes, this, "Show mutes");
 #undef CONSOLE_COMMAND
 
 #endif
