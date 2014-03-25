@@ -6,7 +6,7 @@
 
 #include <game/server/teams.h>
 
-CPickup::CPickup(CGameWorld *pGameWorld, int Type, int SubType, int Layer, int Number)
+CPickup::CPickup(CGameWorld *pGameWorld, int Type, int SubType, int Layer, int Number, vec2 Pos)
 : CEntity(pGameWorld, CGameWorld::ENTTYPE_PICKUP)
 {
 	m_Type = Type;
@@ -15,7 +15,7 @@ CPickup::CPickup(CGameWorld *pGameWorld, int Type, int SubType, int Layer, int N
 
 	m_Layer = Layer;
 	m_Number = Number;
-
+    m_PosRelative = Pos;
 	Reset();
 
 	GameWorld()->InsertEntity(this);
@@ -59,7 +59,8 @@ void CPickup::Tick()
 			switch (m_Type)
 			{
 				case POWERUP_HEALTH:
-					if(pChr->Freeze()) GameServer()->CreateSound(m_Pos, SOUND_PICKUP_HEALTH, pChr->Teams()->TeamMask(pChr->Team()));
+					if(pChr->Freeze())
+                        GameServer()->CreateSound(m_Pos, SOUND_PICKUP_HEALTH, pChr->Teams()->TeamMask(pChr->Team()));
 					break;
 
 				case POWERUP_ARMOR:
@@ -162,10 +163,18 @@ void CPickup::Snap(int SnappingClient)
 	if(!pP)
 		return;
 
-	pP->m_X = (int)m_Pos.x;
-	pP->m_Y = (int)m_Pos.y;
-	pP->m_Type = m_Type;
-	pP->m_Subtype = m_Subtype;
+    // if(m_PosRelative != vec2(0,0)) {
+        pP->m_X = (int)m_PosRelative.x;
+        pP->m_Y = (int)m_PosRelative.y;
+        pP->m_Type = m_Type;
+        pP->m_Subtype = m_Subtype;
+   /* }
+    else {
+    	pP->m_X = (int)m_Pos.x;
+    	pP->m_Y = (int)m_Pos.y;
+    	pP->m_Type = m_Type;
+    	pP->m_Subtype = m_Subtype;
+    }*/
 }
 
 void CPickup::Move()

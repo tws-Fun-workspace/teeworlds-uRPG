@@ -9,8 +9,7 @@
 #include "projectile.h"
 #include "4laserbox.h"
 #include "wall.h"
-
-
+#include "pickup.h"
 
 
 
@@ -241,9 +240,10 @@ void CCharacter::HandleNinja()
 
 void CCharacter::DoWeaponSwitch()
 {
-	// make sure we can switch
-	if(m_ReloadTimer != 0 || m_QueuedWeapon == -1 || m_aWeapons[WEAPON_NINJA].m_Got)
-		return;
+    // make sure we can switch
+	// if(m_ReloadTimer != 0 || m_QueuedWeapon == -1 || m_aWeapons[WEAPON_NINJA].m_Got)
+    if(m_QueuedWeapon == -1 || m_aWeapons[WEAPON_NINJA].m_Got)
+        return;
 
 	// switch Weapon
 	SetWeapon(m_QueuedWeapon);
@@ -306,12 +306,7 @@ void CCharacter::FireWeapon()
 	DoWeaponSwitch();
 	vec2 Direction = normalize(vec2(m_LatestInput.m_TargetX, m_LatestInput.m_TargetY));
 
-	// if(g_Config.m_SvAutoShoot) {
-        // bool FullAuto = true;
-    // }
-    // else {
-        bool FullAuto = g_Config.m_SvAutoShoot;
-    // }
+    bool FullAuto = g_Config.m_SvAutoShoot;
 	if(m_FastReload && (m_ActiveWeapon == WEAPON_GRENADE || m_ActiveWeapon == WEAPON_SHOTGUN || m_ActiveWeapon == WEAPON_RIFLE || m_ActiveWeapon == WEAPON_HAMMER||m_ActiveWeapon == WEAPON_GUN))
 			FullAuto = true;
 	if(m_ActiveWeapon == WEAPON_GRENADE || m_ActiveWeapon == WEAPON_SHOTGUN || m_ActiveWeapon == WEAPON_RIFLE)
@@ -336,7 +331,7 @@ void CCharacter::FireWeapon()
 		m_ReloadTimer = 125 * Server()->TickSpeed() / 1000;
 		GameServer()->CreateSound(m_Pos, SOUND_WEAPON_NOAMMO);*/
 		// Timer stuff to avoid shrieking orchestra caused by unfreeze-plasma
-		if(m_PainSoundTimer<=0)
+		if(m_PainSoundTimer <= 0)
 		{
 				m_PainSoundTimer = 1 * Server()->TickSpeed();
 				GameServer()->CreateSound(m_Pos, SOUND_PLAYER_PAIN_LONG, Teams()->TeamMask(Team(), -1, m_pPlayer->GetCID()));
@@ -350,14 +345,10 @@ void CCharacter::FireWeapon()
 	{
 		case WEAPON_HAMMER:
 		{
+
             if(m_EHammer) {
                 GameServer()->CreateExplosion(m_Pos + vec2(m_Input.m_TargetX,m_Input.m_TargetY), m_pPlayer->GetCID(), WEAPON_HAMMER, true, false, -1LL);
             }
-            // new CLaser(&GameServer()->m_World, m_Pos, vec2(cosf(a), sinf(a)), GameServer()->Tuning()->m_LaserReach, m_pPlayer->GetCID(), WEAPON_SHOTGUN);
-            // By Cyser!xXx
-            // new CBox(&GameServer()->m_World, m_Pos, m_pPlayer->GetCID());
-            // new CWall(&GameServer()->m_World, ProjStartPos, Direction, m_pPlayer->GetCID());
-            // new CRControl(&GameServer()->m_World, m_Pos, m_pPlayer->GetCID(), 20, 500);
             if(m_gHammer) {
                 CProjectile *pProj = new CProjectile (
                         GameWorld(),
@@ -374,19 +365,17 @@ void CCharacter::FireWeapon()
                         WEAPON_GRENADE,//Weapon
                         m_FastReload
                     );//SoundImpact
+                // pack the Projectile and send it to the client Directly
+                CNetObj_Projectile p;
+                pProj->FillInfo(&p);
+                CMsgPacker Msg(NETMSGTYPE_SV_EXTRAPROJECTILE);
+                Msg.AddInt(1);
+                for(unsigned i = 0; i < sizeof(CNetObj_Projectile)/sizeof(int); i++)
+                    Msg.AddInt(((int *)&p)[i]);
+                Server()->SendMsg(&Msg, 0, m_pPlayer->GetCID());
 
-            // pack the Projectile and send it to the client Directly
-            CNetObj_Projectile p;
-            pProj->FillInfo(&p);
-
-            CMsgPacker Msg(NETMSGTYPE_SV_EXTRAPROJECTILE);
-            Msg.AddInt(1);
-            for(unsigned i = 0; i < sizeof(CNetObj_Projectile)/sizeof(int); i++)
-                Msg.AddInt(((int *)&p)[i]);
-            Server()->SendMsg(&Msg, 0, m_pPlayer->GetCID());
-
-            if (!(g_Config.m_SvSilentXXL && m_FastReload))
-             GameServer()->CreateSound(m_Pos, SOUND_GRENADE_FIRE, Teams()->TeamMask(Team(), -1, m_pPlayer->GetCID()));
+                if (!(g_Config.m_SvSilentXXL && m_FastReload))
+                 GameServer()->CreateSound(m_Pos, SOUND_GRENADE_FIRE, Teams()->TeamMask(Team(), -1, m_pPlayer->GetCID()));
             }
 
 
@@ -479,21 +468,31 @@ void CCharacter::FireWeapon()
             }
 
 		} break;
-/*          SPREAD!!!!!!!!!!!!!!!!!!!!!!!!!!
-float Spreading[18*2+1];
-for(int i = 0; i < 18*2+1; i++) {
-    Spreading[i] = -1.260f + 0.070f * i;
-}
-for(int i = GetFloatAngleAbs(PUT HERE GUN); i <= GetFloatAngle(PUT HERE GUN); i++) {
-    float a = GetAngle(Direction);
-    a += Spreading[i+18];
-    // Direction = "   vec2(cosf(a), sinf(a))   " !!!! copy it
-    // Weapon > ex: new CLaser(&GameServer()->m_World, m_Pos, vec2(cosf(a), sinf(a)), GameServer()->Tuning()->m_LaserReach, m_pPlayer->GetCID(), WEAPON_SHOTGUN);
-
-}
-*/
+                /*          SPREAD!!!!!!!!!!!!!!!!!!!!!!!!!!
+                float Spreading[18*2+1];
+                for(int i = 0; i < 18*2+1; i++) {
+                    Spreading[i] = -1.260f + 0.070f * i;
+                }
+                for(int i = GetFloatAngleAbs(PUT HERE GUN); i <= GetFloatAngle(PUT HERE GUN); i++) {
+                    float a = GetAngle(Direction);
+                    a += Spreading[i+18];
+                    // Direction = "   vec2(cosf(a), sinf(a))   " !!!! copy it
+                    // Weapon > ex: new CLaser(&GameServer()->m_World, m_Pos, vec2(cosf(a), sinf(a)), GameServer()->Tuning()->m_LaserReach, m_pPlayer->GetCID(), WEAPON_SHOTGUN);
+                }
+                */
 		case WEAPON_GUN: // m_SpreadGun
 		{
+
+            //CPickup(CGameWorld *pGameWorld, int Type, int SubType = 0, int Layer = 0, int Number = 0, vec2 Pos = vec2(0,0));
+            /*new CPickup(
+                    &GameServer()->m_World,
+                    POWERUP_HEALTH,
+                    0,
+                    0,
+                    0,
+                    m_Pos
+                );*/
+            // return;
 			float Spreading[18*2+1];
                     for(int i = 0; i < 18*2+1; i++) {
                         Spreading[i] = -1.260f + 0.070f * i;
@@ -1027,26 +1026,6 @@ if(g_Config.m_SvDamage)
 
 	if(Dmg)
 	{
-		/*if(m_Armor)
-		{
-			if(Dmg > 1)
-			{
-				m_Health--;
-				Dmg--;
-			}
-
-			if(Dmg > m_Armor)
-			{
-				Dmg -= m_Armor;
-				m_Armor = 0;
-			}
-			else
-			{
-				m_Armor -= Dmg;
-				Dmg = 0;
-			}
-		}*/
-
 		m_Health -= Dmg;
 	}
 

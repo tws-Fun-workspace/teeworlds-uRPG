@@ -129,6 +129,7 @@ void CProjectile::Tick()
 	{
 		if(m_Explosive/*??*/ && (!pTargetChr || (pTargetChr && !m_Freeze)))
 		{
+
 			GameServer()->CreateExplosion(ColPos, m_Owner, m_Weapon, true, (!pTargetChr ? -1 : pTargetChr->Team()),
 			(m_Owner != -1)? TeamMask : -1LL);
 
@@ -174,8 +175,8 @@ void CProjectile::Tick()
 
 		}
 		else
-			if (!m_Freeze)
 				GameServer()->m_World.DestroyEntity(this);
+            // if (!m_Freeze)
 	}
 	if(m_LifeSpan == -1)
 	{

@@ -829,13 +829,6 @@ void CGameContext::ConFastReload(IConsole::IResult *pResult, void *pUserData)
 		str_format(aBuf, sizeof(aBuf), "You got XXL by %s.", pSelf->Server()->ClientName(pResult->m_ClientID));
 		pSelf->SendChatTarget(Victim, aBuf);
 	}
-	else
-	{
-		pChr->m_ReloadMultiplier = 1000;
-		pChr->m_FastReload = false;
-		str_format(aBuf, sizeof(aBuf), "%s removed your XXL.", pSelf->Server()->ClientName(pResult->m_ClientID));
-		pSelf->SendChatTarget(Victim, aBuf);
-	}
 }
 void CGameContext::ConScore(IConsole::IResult *pResult, void *pUserData)
 {

@@ -325,7 +325,7 @@ struct CNetMsg_Sv_Motd
 {
 	const char *m_pMessage;
 	int MsgID() const { return NETMSGTYPE_SV_MOTD; }
-	
+
 	bool Pack(CMsgPacker *pPacker)
 	{
 		pPacker->AddString(m_pMessage, -1);
@@ -337,7 +337,7 @@ struct CNetMsg_Sv_Broadcast
 {
 	const char *m_pMessage;
 	int MsgID() const { return NETMSGTYPE_SV_BROADCAST; }
-	
+
 	bool Pack(CMsgPacker *pPacker)
 	{
 		pPacker->AddString(m_pMessage, -1);
@@ -351,7 +351,7 @@ struct CNetMsg_Sv_Chat
 	int m_ClientID;
 	const char *m_pMessage;
 	int MsgID() const { return NETMSGTYPE_SV_CHAT; }
-	
+
 	bool Pack(CMsgPacker *pPacker)
 	{
 		pPacker->AddInt(m_Team);
@@ -368,7 +368,7 @@ struct CNetMsg_Sv_KillMsg
 	int m_Weapon;
 	int m_ModeSpecial;
 	int MsgID() const { return NETMSGTYPE_SV_KILLMSG; }
-	
+
 	bool Pack(CMsgPacker *pPacker)
 	{
 		pPacker->AddInt(m_Killer);
@@ -383,7 +383,7 @@ struct CNetMsg_Sv_SoundGlobal
 {
 	int m_SoundID;
 	int MsgID() const { return NETMSGTYPE_SV_SOUNDGLOBAL; }
-	
+
 	bool Pack(CMsgPacker *pPacker)
 	{
 		pPacker->AddInt(m_SoundID);
@@ -394,7 +394,7 @@ struct CNetMsg_Sv_SoundGlobal
 struct CNetMsg_Sv_TuneParams
 {
 	int MsgID() const { return NETMSGTYPE_SV_TUNEPARAMS; }
-	
+
 	bool Pack(CMsgPacker *pPacker)
 	{
 		return pPacker->Error() != 0;
@@ -404,7 +404,7 @@ struct CNetMsg_Sv_TuneParams
 struct CNetMsg_Sv_ExtraProjectile
 {
 	int MsgID() const { return NETMSGTYPE_SV_EXTRAPROJECTILE; }
-	
+
 	bool Pack(CMsgPacker *pPacker)
 	{
 		return pPacker->Error() != 0;
@@ -414,7 +414,7 @@ struct CNetMsg_Sv_ExtraProjectile
 struct CNetMsg_Sv_ReadyToEnter
 {
 	int MsgID() const { return NETMSGTYPE_SV_READYTOENTER; }
-	
+
 	bool Pack(CMsgPacker *pPacker)
 	{
 		return pPacker->Error() != 0;
@@ -425,7 +425,7 @@ struct CNetMsg_Sv_WeaponPickup
 {
 	int m_Weapon;
 	int MsgID() const { return NETMSGTYPE_SV_WEAPONPICKUP; }
-	
+
 	bool Pack(CMsgPacker *pPacker)
 	{
 		pPacker->AddInt(m_Weapon);
@@ -438,7 +438,7 @@ struct CNetMsg_Sv_Emoticon
 	int m_ClientID;
 	int m_Emoticon;
 	int MsgID() const { return NETMSGTYPE_SV_EMOTICON; }
-	
+
 	bool Pack(CMsgPacker *pPacker)
 	{
 		pPacker->AddInt(m_ClientID);
@@ -450,7 +450,7 @@ struct CNetMsg_Sv_Emoticon
 struct CNetMsg_Sv_VoteClearOptions
 {
 	int MsgID() const { return NETMSGTYPE_SV_VOTECLEAROPTIONS; }
-	
+
 	bool Pack(CMsgPacker *pPacker)
 	{
 		return pPacker->Error() != 0;
@@ -476,7 +476,7 @@ struct CNetMsg_Sv_VoteOptionListAdd
 	const char *m_pDescription13;
 	const char *m_pDescription14;
 	int MsgID() const { return NETMSGTYPE_SV_VOTEOPTIONLISTADD; }
-	
+
 	bool Pack(CMsgPacker *pPacker)
 	{
 		pPacker->AddInt(m_NumOptions);
@@ -503,7 +503,7 @@ struct CNetMsg_Sv_VoteOptionAdd
 {
 	const char *m_pDescription;
 	int MsgID() const { return NETMSGTYPE_SV_VOTEOPTIONADD; }
-	
+
 	bool Pack(CMsgPacker *pPacker)
 	{
 		pPacker->AddString(m_pDescription, -1);
@@ -515,7 +515,7 @@ struct CNetMsg_Sv_VoteOptionRemove
 {
 	const char *m_pDescription;
 	int MsgID() const { return NETMSGTYPE_SV_VOTEOPTIONREMOVE; }
-	
+
 	bool Pack(CMsgPacker *pPacker)
 	{
 		pPacker->AddString(m_pDescription, -1);
@@ -529,7 +529,7 @@ struct CNetMsg_Sv_VoteSet
 	const char *m_pDescription;
 	const char *m_pReason;
 	int MsgID() const { return NETMSGTYPE_SV_VOTESET; }
-	
+
 	bool Pack(CMsgPacker *pPacker)
 	{
 		pPacker->AddInt(m_Timeout);
@@ -546,7 +546,7 @@ struct CNetMsg_Sv_VoteStatus
 	int m_Pass;
 	int m_Total;
 	int MsgID() const { return NETMSGTYPE_SV_VOTESTATUS; }
-	
+
 	bool Pack(CMsgPacker *pPacker)
 	{
 		pPacker->AddInt(m_Yes);
@@ -562,7 +562,7 @@ struct CNetMsg_Cl_Say
 	int m_Team;
 	const char *m_pMessage;
 	int MsgID() const { return NETMSGTYPE_CL_SAY; }
-	
+
 	bool Pack(CMsgPacker *pPacker)
 	{
 		pPacker->AddInt(m_Team);
@@ -575,7 +575,7 @@ struct CNetMsg_Cl_SetTeam
 {
 	int m_Team;
 	int MsgID() const { return NETMSGTYPE_CL_SETTEAM; }
-	
+
 	bool Pack(CMsgPacker *pPacker)
 	{
 		pPacker->AddInt(m_Team);
@@ -587,7 +587,7 @@ struct CNetMsg_Cl_SetSpectatorMode
 {
 	int m_SpectatorID;
 	int MsgID() const { return NETMSGTYPE_CL_SETSPECTATORMODE; }
-	
+
 	bool Pack(CMsgPacker *pPacker)
 	{
 		pPacker->AddInt(m_SpectatorID);
@@ -605,7 +605,7 @@ struct CNetMsg_Cl_StartInfo
 	int m_ColorBody;
 	int m_ColorFeet;
 	int MsgID() const { return NETMSGTYPE_CL_STARTINFO; }
-	
+
 	bool Pack(CMsgPacker *pPacker)
 	{
 		pPacker->AddString(m_pName, -1);
@@ -629,7 +629,7 @@ struct CNetMsg_Cl_ChangeInfo
 	int m_ColorBody;
 	int m_ColorFeet;
 	int MsgID() const { return NETMSGTYPE_CL_CHANGEINFO; }
-	
+
 	bool Pack(CMsgPacker *pPacker)
 	{
 		pPacker->AddString(m_pName, -1);
@@ -646,7 +646,7 @@ struct CNetMsg_Cl_ChangeInfo
 struct CNetMsg_Cl_Kill
 {
 	int MsgID() const { return NETMSGTYPE_CL_KILL; }
-	
+
 	bool Pack(CMsgPacker *pPacker)
 	{
 		return pPacker->Error() != 0;
@@ -657,7 +657,7 @@ struct CNetMsg_Cl_Emoticon
 {
 	int m_Emoticon;
 	int MsgID() const { return NETMSGTYPE_CL_EMOTICON; }
-	
+
 	bool Pack(CMsgPacker *pPacker)
 	{
 		pPacker->AddInt(m_Emoticon);
@@ -669,7 +669,7 @@ struct CNetMsg_Cl_Vote
 {
 	int m_Vote;
 	int MsgID() const { return NETMSGTYPE_CL_VOTE; }
-	
+
 	bool Pack(CMsgPacker *pPacker)
 	{
 		pPacker->AddInt(m_Vote);
@@ -683,7 +683,7 @@ struct CNetMsg_Cl_CallVote
 	const char *m_Value;
 	const char *m_Reason;
 	int MsgID() const { return NETMSGTYPE_CL_CALLVOTE; }
-	
+
 	bool Pack(CMsgPacker *pPacker)
 	{
 		pPacker->AddString(m_Type, -1);
@@ -696,7 +696,7 @@ struct CNetMsg_Cl_CallVote
 struct CNetMsg_Cl_IsDDRace
 {
 	int MsgID() const { return NETMSGTYPE_CL_ISDDRACE; }
-	
+
 	bool Pack(CMsgPacker *pPacker)
 	{
 		return pPacker->Error() != 0;
@@ -707,7 +707,7 @@ struct CNetMsg_Cl_ShowOthers
 {
 	int m_Show;
 	int MsgID() const { return NETMSGTYPE_CL_SHOWOTHERS; }
-	
+
 	bool Pack(CMsgPacker *pPacker)
 	{
 		pPacker->AddInt(m_Show);
@@ -721,7 +721,7 @@ struct CNetMsg_Sv_DDRaceTime
 	int m_Check;
 	int m_Finish;
 	int MsgID() const { return NETMSGTYPE_SV_DDRACETIME; }
-	
+
 	bool Pack(CMsgPacker *pPacker)
 	{
 		pPacker->AddInt(m_Time);
@@ -736,7 +736,7 @@ struct CNetMsg_Sv_Record
 	int m_ServerTimeBest;
 	int m_PlayerTimeBest;
 	int MsgID() const { return NETMSGTYPE_SV_RECORD; }
-	
+
 	bool Pack(CMsgPacker *pPacker)
 	{
 		pPacker->AddInt(m_ServerTimeBest);
@@ -750,7 +750,7 @@ struct CNetMsg_Sv_PlayerTime
 	int m_Time;
 	int m_ClientID;
 	int MsgID() const { return NETMSGTYPE_SV_PLAYERTIME; }
-	
+
 	bool Pack(CMsgPacker *pPacker)
 	{
 		pPacker->AddInt(m_Time);
@@ -778,7 +778,7 @@ struct CNetMsg_Cl_TeamsState
 	int m_Tee14;
 	int m_Tee15;
 	int MsgID() const { return NETMSGTYPE_CL_TEAMSSTATE; }
-	
+
 	bool Pack(CMsgPacker *pPacker)
 	{
 		pPacker->AddInt(m_Tee0);
@@ -804,7 +804,7 @@ struct CNetMsg_Cl_TeamsState
 struct CNetMsg_Cl_IsDDRace64
 {
 	int MsgID() const { return NETMSGTYPE_CL_ISDDRACE64; }
-	
+
 	bool Pack(CMsgPacker *pPacker)
 	{
 		return pPacker->Error() != 0;
