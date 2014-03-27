@@ -134,7 +134,7 @@ void CProjectile::Tick()
 			(m_Owner != -1)? TeamMask : -1LL);
 
             if(g_Config.m_SvSilentXXL && m_fast_reload)
-                int asdasd = 0;
+                int intasd = 0;
             else
                 GameServer()->CreateSound(ColPos, m_SoundImpact, (m_Owner != -1)? TeamMask : -1LL);
 		}
@@ -149,24 +149,11 @@ void CProjectile::Tick()
             m_Pos = TempPos;
             m_Direction = normalize(TempDir);
             m_StartTick = Server()->Tick();
+            // if(m_Bouncing != 0)
             m_Bouncing++;
 		}
 		else if (m_Weapon == WEAPON_GUN)
 		{
-
-            // top left in map
-            /*for (int i = 0; i < 10; i++)
-            {
-                CNetEvent_DamageInd *pEvent = (CNetEvent_DamageInd *)GameServer()->m_Events.Create(NETEVENTTYPE_DAMAGEIND, sizeof(CNetEvent_DamageInd), TeamMask);
-                if(pEvent)
-                {
-                    pEvent->m_X = (int)m_Direction.x*100.0f;
-                    pEvent->m_Y = (int)m_Direction.x*100.0f;
-                    pEvent->m_Angle = (int)(i*256.0f);
-                }
-            }*/
-
-
             // GameServer()->CreatePlayerSpawn(CurPos, (m_Owner != -1)? TeamMask : -1LL);
             // GameServer()->CreateDeath(CurPos, m_Owner, TeamMask);
             // GameServer()->CreateHammerHit(CurPos, TeamMask);
@@ -175,8 +162,8 @@ void CProjectile::Tick()
 
 		}
 		else
-				GameServer()->m_World.DestroyEntity(this);
-            // if (!m_Freeze)
+            if (!m_Freeze)
+                GameServer()->m_World.DestroyEntity(this);
 	}
 	if(m_LifeSpan == -1)
 	{

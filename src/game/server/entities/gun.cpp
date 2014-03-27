@@ -46,7 +46,7 @@ void CGun::Fire()
 			continue;
 		if(m_Layer == LAYER_SWITCH && !GameServer()->Collision()->m_pSwitchers[m_Number].m_Status[Target->Team()])
 			continue;
-		int res = GameServer()->Collision()->IntersectLine(m_Pos, Target->m_Pos,0,0,false);
+		int res = GameServer()->Collision()->IntersectLine(m_Pos, Target->m_Pos, 0, 0, false);
 		if (!res)
 		{
 			int Len = length(Target->m_Pos - m_Pos);

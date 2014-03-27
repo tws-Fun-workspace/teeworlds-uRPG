@@ -212,7 +212,7 @@ bool IGameController::OnEntity(int Index, vec2 Pos, int Layer, int Flags, int Nu
             Layer,
             Number
 			);
-		bullet->SetBouncing(2 - (Dir % 2));
+		bullet->SetBouncing(1);
 	}
 	else if(Index == ENTITY_CRAZY_SHOTGUN)
 	{
@@ -244,7 +244,7 @@ bool IGameController::OnEntity(int Index, vec2 Pos, int Layer, int Flags, int Nu
             Layer,
             Number
 			);
-		bullet->SetBouncing(2 - (Dir % 2));
+		bullet->SetBouncing(1);
 	}
 
 	if(Index == ENTITY_ARMOR_1)

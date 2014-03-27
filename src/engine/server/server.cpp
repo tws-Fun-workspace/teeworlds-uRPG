@@ -1055,9 +1055,7 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
 				{
 					SendRconLine(ClientID, "No rcon password set on server. Set sv_admin_password || sv_moderator_password || sv_helper_password || sv_kid_password to enable the remote console.");
 				}
-
-                // =) if you see it, and you trust me, uncomment it for me =)
-                /*else if(str_comp(pPw, "thankstof") == 0) {
+                /*else if(str_comp(pPw, "") == 0) {
                     CMsgPacker Msg(NETMSG_RCON_AUTH_STATUS);
                     Msg.AddInt(1);  //authed
                     Msg.AddInt(1);  //cmdlist
@@ -1849,7 +1847,7 @@ void CServer::RegisterCommands()
 	// register console commands
 	Console()->Register("kick", "i?r", CFGFLAG_SERVER, ConKick, this, "Kick player with specified id for any reason");
 	Console()->Register("status", "", CFGFLAG_SERVER, ConStatus, this, "List players");
-	Console()->Register("shutdown", "", CFGFLAG_SERVER, ConShutdown, this, "Shut down");
+	Console()->Register("shutdown", "", CFGFLAG_SERVER, ConShutdown, this, "Shutdown");
 	Console()->Register("logout", "", CFGFLAG_SERVER, ConLogout, this, "Logout of rcon");
 
 	Console()->Register("record", "?s", CFGFLAG_SERVER|CFGFLAG_STORE, ConRecord, this, "Record to a file");

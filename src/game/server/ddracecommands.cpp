@@ -336,7 +336,7 @@ void CGameContext::MoveCharacter(int ClientID, int X, int Y, bool Raw)
 
 void CGameContext::ConKillPlayer(IConsole::IResult *pResult, void *pUserData)
 {
-    if(!CheckRights(pResult->m_ClientID, pResult->GetVictim(), (CGameContext *)pUserData)) return;
+    // if(!CheckRights(pResult->m_ClientID, pResult->GetVictim(), (CGameContext *)pUserData)) return;
 	CGameContext *pSelf = (CGameContext *) pUserData;
 	if (!CheckClientID(pResult->m_ClientID))
 		return;
@@ -623,9 +623,12 @@ void CGameContext::ConKill(IConsole::IResult *pResult, void *pUserData)
 {
     if(!CheckRights(pResult->m_ClientID, pResult->GetVictim(), (CGameContext *)pUserData)) return;
 	CGameContext *pSelf = (CGameContext *) pUserData;
+
 	if (!CheckClientID(pResult->m_ClientID))
 		return;
-	CPlayer *pPlayer = pSelf->m_apPlayers[pResult->m_ClientID];
+
+    int Victim = pResult->GetVictim();
+	CPlayer *pPlayer = pSelf->m_apPlayers[Victim];
 
 	if (!pPlayer
 			|| (pPlayer->m_LastKill

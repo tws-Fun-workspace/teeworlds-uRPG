@@ -117,7 +117,7 @@ void CCollision::Init(class CLayers *pLayers)
                     || (Index >= TILE_OLDLASER          && Index <= TILE_NPH)
                     || (Index >= TILE_EHOOK_START       && Index <= TILE_SOLO_END)
                     || (Index >= TILE_DFREEZE           && Index <= TILE_DUNFREEZE)
-                    || (Index >= TILE_ENTER             && Index <= TILE_MOVE)
+                    || (Index >= TILE_ENTER             && Index <= TILE_LASERSPREAD)
 					|| (Index >= TILE_RAINBOW           && Index <= TILE_RMNINJA)
 					|| (Index >= TILE_JUMPS_DEFAULT     && Index <= TILE_JUMPS_REMOVE))
 					m_pFront[i].m_Index = Index;
@@ -153,7 +153,9 @@ void CCollision::Init(class CLayers *pLayers)
                 || (Index >= TILE_OLDLASER                  && Index <= TILE_NPH)
                 || (Index >= TILE_EHOOK_START               && Index <= TILE_SOLO_END)
                 || (Index >= TILE_DFREEZE                   && Index <= TILE_DUNFREEZE)
-                || (Index >= TILE_ENTER                     && Index <= TILE_MOVE)
+                // || (Index >= TILE_ENTER                     && Index <= TILE_MOVE)
+                || (Index >= TILE_ENTER                     && Index <= TILE_LASERSPREAD)
+
 				|| (Index >= TILE_RAINBOW                   && Index <= TILE_RMNINJA)
 				|| (Index >= TILE_JUMPS_DEFAULT             && Index <= TILE_JUMPS_REMOVE))
 				m_pTiles[i].m_Index = Index;
@@ -563,9 +565,9 @@ bool CCollision::TileExists(int Index)
 		return true;
 	if(m_pFront && m_pFront[Index].m_Index >= TILE_FREEZE && m_pFront[Index].m_Index  <= TILE_NPH)
 		return true;
-    if(m_pTiles[Index].m_Index >= TILE_ENTER && m_pTiles[Index].m_Index <= TILE_MOVE)
+    if(m_pTiles[Index].m_Index >= TILE_ENTER && m_pTiles[Index].m_Index <= TILE_LASERSPREAD)
         return true;
-    if(m_pFront && m_pFront[Index].m_Index >= TILE_ENTER && m_pFront[Index].m_Index  <= TILE_MOVE)
+    if(m_pFront && m_pFront[Index].m_Index >= TILE_ENTER && m_pFront[Index].m_Index  <= TILE_LASERSPREAD)
         return true;
 	if(m_pTiles[Index].m_Index >= TILE_RAINBOW && m_pTiles[Index].m_Index <= TILE_RMNINJA)
 		return true;

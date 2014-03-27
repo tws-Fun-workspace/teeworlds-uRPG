@@ -1,4 +1,11 @@
 "Kill"                  "v"                 "Kills player v and announces the kill")
+"kick"                  "i?r"               "Kick player with specified id for any reason"
+"status"                ""                  "List players"
+"shutdown"              ""                  "Shutdown"
+"logout"                ""                  ""
+"record"                "?s"                "Record to a file"
+"stoprecord"            ""                  "Stop recording"
+"reload"                ""                  "Reload the map"
 "Tele"                  "vv"                "Teleports v to player v")
 "Weapons"               "v"                 "Gives all weapons to you")
 "AddWeapon"             "i"                 "Gives weapon with id i to you (all = -1, hammer = 0, gun = 1, shotgun = 2, grenade = 3, laser = 4, ninja = 5)")
@@ -23,7 +30,11 @@
 "Force_unpause"         "v"                 "Set force-pause timer of v to 0.")
 "showothers"            "?i"                "Whether to showplayers from other teams or not (off by default), optional i = 0 for off else for on")
 "list"                  "?s"                "List connected players with optional case-insensitive substring matching filter")
-
+"level_command"         "s?ii"              "Specify command accessibility"
+"mod_status"            ""                  "List all commands which are accessible for moderators"
+"helper_status"         ""                  "List all commands which are accessible for helpers"
+"kid_status"            ""                  "List all commands which are accessible for kid's"
+"user_status"           ""                  "List all commands which are accessible for users"
 
 
 // Another commands

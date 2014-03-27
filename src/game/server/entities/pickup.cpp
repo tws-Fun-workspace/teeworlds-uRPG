@@ -164,17 +164,17 @@ void CPickup::Snap(int SnappingClient)
 		return;
 
     // if(m_PosRelative != vec2(0,0)) {
-        pP->m_X = (int)m_PosRelative.x;
-        pP->m_Y = (int)m_PosRelative.y;
-        pP->m_Type = m_Type;
-        pP->m_Subtype = m_Subtype;
-   /* }
-    else {
+        // pP->m_X = (int)m_PosRelative.x;
+        // pP->m_Y = (int)m_PosRelative.y;
+        // pP->m_Type = m_Type;
+        // pP->m_Subtype = m_Subtype;
+    // }
+    // else {
     	pP->m_X = (int)m_Pos.x;
     	pP->m_Y = (int)m_Pos.y;
     	pP->m_Type = m_Type;
     	pP->m_Subtype = m_Subtype;
-    }*/
+    // }
 }
 
 void CPickup::Move()

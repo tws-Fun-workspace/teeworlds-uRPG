@@ -463,7 +463,7 @@ void CCharacter::FireWeapon()
 
             // HeXP
             if(m_checkIT) {
-                if(g_Config.m_SvEffects)
+                // if(g_Config.m_SvEffects)
                     GameServer()->CreateExplosion(m_Pos-Direction, m_pPlayer->GetCID(), WEAPON_HAMMER, true, false, -1LL);
             }
 
@@ -1245,8 +1245,8 @@ void CCharacter::HandleSkippableTiles(int Index)
 			GameServer()->Collision()->GetFCollisionAt(m_Pos.x+m_ProximityRadius/3.f, m_Pos.y+m_ProximityRadius/3.f)&CCollision::COLFLAG_DEATH ||
 			GameServer()->Collision()->GetFCollisionAt(m_Pos.x-m_ProximityRadius/3.f, m_Pos.y-m_ProximityRadius/3.f)&CCollision::COLFLAG_DEATH ||
 			GameServer()->Collision()->GetCollisionAt(m_Pos.x-m_ProximityRadius/3.f, m_Pos.y+m_ProximityRadius/3.f)&CCollision::COLFLAG_DEATH ||
-			GameLayerClipped(m_Pos)) &&
-			!m_Super && !(Team() && Teams()->TeeFinished(m_pPlayer->GetCID())))
+			GameLayerClipped(m_Pos)))
+			// !m_Super && !(Team() && Teams()->TeeFinished(m_pPlayer->GetCID())))
 		{
 			Die(m_pPlayer->GetCID(), WEAPON_WORLD);
 			return;
@@ -1719,20 +1719,29 @@ void CCharacter::HandleTiles(int Index)
 	{
 		if (m_LastIndexTile == TILE_RMEXTRAS || m_LastIndexFrontTile == TILE_RMEXTRAS)
 			return;
+        if(         m_pPlayer->m_Rainbow ||
+                    m_FastReload ||
+                    m_Super ||
+                    m_HammerType != 0 ||
+                    m_Bloody ||
+                    m_pPlayer->m_Invisible
 
-		//disable all extras
-        // m_pPlayer->m_TeeInfos.m_ColorBody = cBody;
-        // m_pPlayer->m_TeeInfos.m_ColorFeet = cFeet;
-		m_pPlayer->m_Rainbow = false;
-		m_FastReload = false;
-		m_ReloadMultiplier = 1000;
-		m_Super = false;
-		m_HammerType = 0;
-		m_Bloody = false;
-		m_pPlayer->m_Invisible = false;
-		char aBuf[64];
-		str_format(aBuf, sizeof(aBuf), "ALL extras disabled");
-		GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
+            ) {
+            //disable all extras
+            // m_pPlayer->m_TeeInfos.m_ColorBody = cBody;
+            // m_pPlayer->m_TeeInfos.m_ColorFeet = cFeet;
+            m_pPlayer->m_Rainbow = false;
+            m_FastReload = false;
+            m_ReloadMultiplier = 1000;
+            m_Super = false;
+            m_HammerType = 0;
+            m_Bloody = false;
+            m_pPlayer->m_Invisible = false;
+            char aBuf[64];
+            str_format(aBuf, sizeof(aBuf), "ALL extras disabled");
+            GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
+        }
+
 	}
 
 	if(((m_TileIndex == TILE_RMNINJA) || (m_TileFIndex == TILE_RMNINJA)))
@@ -1774,6 +1783,9 @@ void CCharacter::HandleTiles(int Index)
 
 	if(((m_TileIndex == TILE_ENTER) || (m_TileFIndex == TILE_ENTER)))
 	{
+        if (m_LastIndexTile == TILE_ENTER || m_LastIndexFrontTile == TILE_ENTER)
+            return;
+
 		if(m_CheckMove == 0) {
 			m_CheckMove = 1;
 			//GameServer()->SendChatTarget(GetPlayer()->GetCID(), "You can enter.");
@@ -1785,6 +1797,9 @@ void CCharacter::HandleTiles(int Index)
 
 	if(((m_TileIndex == TILE_EXIT) || (m_TileFIndex == TILE_EXIT)))
 	{
+        if (m_LastIndexTile == TILE_EXIT || m_LastIndexFrontTile == TILE_EXIT)
+            return;
+
 		if(m_CheckMove) {
 			m_CheckMove = 0;
 			//GameServer()->SendChatTarget(GetPlayer()->GetCID(), "You have left.");
@@ -1792,11 +1807,132 @@ void CCharacter::HandleTiles(int Index)
 	}
 	if(((m_TileIndex == TILE_MOVE) || (m_TileFIndex == TILE_MOVE)))
 	{
+        if (m_LastIndexTile == TILE_MOVE || m_LastIndexFrontTile == TILE_MOVE)
+            return;
+
 		if(!m_CheckMove){
             Die(GetPlayer()->GetCID(), WEAPON_WORLD);
             //GameServer()->SendChatTarget(GetPlayer()->GetCID(), "You can not enter.");
         }
 	}
+    /**/
+
+
+
+    if(((m_TileIndex == TILE_HEXP) || (m_TileFIndex == TILE_HEXP)))
+    {
+        if (m_LastIndexTile == TILE_HEXP || m_LastIndexFrontTile == TILE_HEXP)
+            return;
+
+        if(m_checkIT) {
+            m_checkIT = false;
+            char aBuf[64];
+            str_format(aBuf, sizeof(aBuf), "Hammer explosive disabled");
+            GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
+        }
+        else {
+            m_checkIT = true;
+            char aBuf[64];
+            str_format(aBuf, sizeof(aBuf), "Hammer explosive enabled");
+            GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
+        }
+
+    }
+    if(((m_TileIndex == TILE_GBOUNCE) || (m_TileFIndex == TILE_GBOUNCE)))
+    {
+        if (m_LastIndexTile == TILE_GBOUNCE || m_LastIndexFrontTile == TILE_GBOUNCE)
+            return;
+
+        if(m_gBounce) {
+            m_gBounce = false;
+            char aBuf[64];
+            str_format(aBuf, sizeof(aBuf), "Grenade bounce disabled");
+            GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
+        }
+        else {
+            m_gBounce = true;
+            char aBuf[64];
+            str_format(aBuf, sizeof(aBuf), "Grenade bounce enabled");
+            GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
+        }
+    }
+    if(((m_TileIndex == TILE_GUNSPREAD) || (m_TileFIndex == TILE_GUNSPREAD)))
+    {
+        if (m_LastIndexTile == TILE_GUNSPREAD || m_LastIndexFrontTile == TILE_GUNSPREAD)
+            return;
+
+        if(m_SpreadGun != 0) {
+            m_SpreadGun = 0;
+            char aBuf[64];
+            str_format(aBuf, sizeof(aBuf), "Gun Spread disabled");
+            GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
+        }
+        else {
+            m_SpreadGun = 5;
+            char aBuf[64];
+            str_format(aBuf, sizeof(aBuf), "Gun Spread enabled");
+            GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
+        }
+    }
+    if(((m_TileIndex == TILE_SHOTGUNSPREAD) || (m_TileFIndex == TILE_SHOTGUNSPREAD)))
+    {
+        if (m_LastIndexTile == TILE_SHOTGUNSPREAD || m_LastIndexFrontTile == TILE_SHOTGUNSPREAD)
+            return;
+
+        if(m_SpreadShotgun != 0) {
+            m_SpreadShotgun = 0;
+            char aBuf[64];
+            str_format(aBuf, sizeof(aBuf), "Shotgun spread disabled");
+            GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
+        }
+        else {
+            m_SpreadShotgun = 5;
+            char aBuf[64];
+            str_format(aBuf, sizeof(aBuf), "Shotgun spread enabled");
+            GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
+        }
+    }
+    if(((m_TileIndex == TILE_GRENADESPREAD) || (m_TileFIndex == TILE_GRENADESPREAD)))
+    {
+        if (m_LastIndexTile == TILE_GRENADESPREAD || m_LastIndexFrontTile == TILE_GRENADESPREAD)
+            return;
+
+        if(m_SpreadGrenade != 0) {
+            m_SpreadGrenade = 0;
+            char aBuf[64];
+            str_format(aBuf, sizeof(aBuf), "Grenade spread disabled");
+            GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
+        }
+        else {
+            m_SpreadGrenade = 5;
+            char aBuf[64];
+            str_format(aBuf, sizeof(aBuf), "Grenade spread enabled");
+            GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
+        }
+    }
+    if(((m_TileIndex == TILE_LASERSPREAD) || (m_TileFIndex == TILE_LASERSPREAD)))
+    {
+        if (m_LastIndexTile == TILE_LASERSPREAD || m_LastIndexFrontTile == TILE_LASERSPREAD)
+            return;
+
+        if(m_SpreadLaser != 0) {
+            m_SpreadLaser = 0;
+            char aBuf[64];
+            str_format(aBuf, sizeof(aBuf), "Laser spread disabled");
+            GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
+        }
+        else {
+            m_SpreadLaser = 5;
+            char aBuf[64];
+            str_format(aBuf, sizeof(aBuf), "Laser spread enabled");
+            GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
+        }
+    }
+
+
+
+
+    /**/
     //jDDRace
     if(((m_TileIndex == TILE_JUMPS_DEFAULT) || (m_TileFIndex == TILE_JUMPS_DEFAULT))) //87
     {
@@ -2432,23 +2568,18 @@ void CCharacter::HandleJumps()
 void CCharacter::Save()
 {
     if(m_TileIndex == TILE_END || m_TileFIndex == TILE_END) {
-        char aBuf[256];
+        char aBuf[64];
         str_format(aBuf, sizeof(aBuf), "You can't save your position");
         GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
         return;
     }
     else {
         m_PosLas = m_Pos;
-        char aBuf[256];
-        str_format(aBuf, sizeof(aBuf), "Position saved");
-        GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
+        // char aBuf[256];
+        // str_format(aBuf, sizeof(aBuf), "Position saved");
+        // GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
 
     }
-    /*
-    char aBuf[256];
-    str_format(aBuf, sizeof(aBuf), "%f ",m_PosLas);
-    GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
-    */
 }
 void CCharacter::Load()
 {
@@ -2459,10 +2590,10 @@ void CCharacter::Load()
     }
     else {
         Core()->m_Pos = m_PosLas;
+        // char aBuf[256];
+        // str_format(aBuf, sizeof(aBuf), "%d Position Loaded",m_PosLas);
+        // GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
     }
-    // char aBuf[256];
-    // str_format(aBuf, sizeof(aBuf), "%d Position Loaded",m_PosLas);
-    // GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
 }
 int CCharacter::ClnId() {
    return m_pPlayer->GetCID();

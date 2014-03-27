@@ -7,7 +7,7 @@
 #endif
 
 CONSOLE_COMMAND("Kill","v",                 CFGFLAG_SERVER,              ConKillPlayer, this, "Kills player v and announces the kill")
-CONSOLE_COMMAND("Tele", "vv",               CFGFLAG_SERVER|CMDFLAG_TEST, ConTeleport, this, "Teleports v to player v")
+CONSOLE_COMMAND("Tele", "vi",               CFGFLAG_SERVER|CMDFLAG_TEST, ConTeleport, this, "Teleports v to player v")
 CONSOLE_COMMAND("Weapons", "v",             CFGFLAG_SERVER|CMDFLAG_TEST, ConWeapons, this, "Gives all weapons to you")
 CONSOLE_COMMAND("AddWeapon", "i",           CFGFLAG_SERVER|CMDFLAG_TEST, ConAddWeapon, this, "Gives weapon with id i to you (all = -1, hammer = 0, gun = 1, shotgun = 2, grenade = 3, laser = 4, ninja = 5)")
 CONSOLE_COMMAND("UnWeapons", "v",           CFGFLAG_SERVER|CMDFLAG_TEST, ConUnWeapons, this, "Takes all weapons from you")
@@ -26,7 +26,7 @@ CONSOLE_COMMAND("Right", "v",               CFGFLAG_SERVER|CMDFLAG_TEST, ConGoRi
 CONSOLE_COMMAND("Up", "v",                  CFGFLAG_SERVER|CMDFLAG_TEST, ConGoUp, this, "Makes you move 1 tile up")
 CONSOLE_COMMAND("Down", "v",                CFGFLAG_SERVER|CMDFLAG_TEST, ConGoDown, this, "Makes you move 1 tile down")
 
-CONSOLE_COMMAND("Move", "vi",               CFGFLAG_SERVER|CMDFLAG_TEST, ConMove, this, "Moves to the tile with x/y-number ii")
+CONSOLE_COMMAND("Move", "vii",              CFGFLAG_SERVER|CMDFLAG_TEST, ConMove, this, "Moves to the tile with x/y-number ii")
 CONSOLE_COMMAND("Move_raw", "vi",           CFGFLAG_SERVER,              ConMoveRaw, this, "Moves to the point with x/y-coordinates ii")
 CONSOLE_COMMAND("Force_pause", "vi",        CFGFLAG_SERVER,              ConForcePause, this, "Force i to pause for i seconds")
 CONSOLE_COMMAND("Force_unpause", "v",       CFGFLAG_SERVER,              ConForcePause, this, "Set force-pause timer of v to 0.")
