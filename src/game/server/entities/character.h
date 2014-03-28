@@ -142,8 +142,6 @@ private:
 	CCharacterCore m_ReckoningCore; // the dead reckoning core
 
 	// DDRace
-
-
 	void HandleTiles(int Index);
 	float m_Time;
 	int m_LastBroadcast;
@@ -153,7 +151,6 @@ private:
 	void DDRacePostCoreTick();
 	void HandleBroadcast();
 
-	//XXLmod
 	void XXLDDRaceInit();
 	void XXLDDRaceTick();
 	void XXLDDRacePostCoreTick();

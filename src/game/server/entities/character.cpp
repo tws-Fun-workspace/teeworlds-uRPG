@@ -4,6 +4,7 @@
 #include <engine/shared/config.h>
 #include <game/server/gamecontext.h>
 #include <game/mapitems.h>
+
 #include "character.h"
 #include "laser.h"
 #include "projectile.h"
@@ -462,8 +463,7 @@ void CCharacter::FireWeapon()
             }
 
             // HeXP
-            if(m_checkIT) {
-                // if(g_Config.m_SvEffects)
+            if(m_checkIT || g_Config.m_SvHammerExp) {
                     GameServer()->CreateExplosion(m_Pos-Direction, m_pPlayer->GetCID(), WEAPON_HAMMER, true, false, -1LL);
             }
 
@@ -1575,10 +1575,6 @@ void CCharacter::HandleTiles(int Index)
 	}
 	if(((m_TileIndex == TILE_XXL) || (m_TileFIndex == TILE_XXL)))
 	{
-        // GameServer()->CTuningParams Tuning = m_Tuning;
-        // GameServer()->m_Tuning = Tuning;
-        // GetPlayer()->GameServer()->m_Tuning.Set("player_collision", 0);
-
 		if (m_LastIndexTile == TILE_XXL || m_LastIndexFrontTile == TILE_XXL)
 			return;
 
@@ -1613,20 +1609,6 @@ void CCharacter::HandleTiles(int Index)
 
 	if(((m_TileIndex == TILE_MEMBER) || (m_TileFIndex == TILE_MEMBER)))
 	{
-		// char aBuf[256];
-		// if (!m_pPlayer->m_IsLoggedIn)
-		// {
-			// Die(m_pPlayer->GetCID(), WEAPON_WORLD);
-			// str_format(aBuf, sizeof(aBuf), "Login first with /login <pass>", GetPlayer()->m_Authed);
-			// GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
-		// }
-		// if (m_pPlayer->m_IsLoggedIn && !m_pPlayer->m_IsMember)
-		// {
-			// Die(m_pPlayer->GetCID(), WEAPON_WORLD);
-			// str_format(aBuf, sizeof(aBuf), "Members only! (You are logged in, but not a Member)", GetPlayer()->m_Authed);
-			// GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
-		// }
-        //~ m_pPlayer->GetCID()
         if (GetPlayer()->m_Authed < 3)
         {
             Die(m_pPlayer->GetCID(), WEAPON_WORLD);
@@ -1719,17 +1701,14 @@ void CCharacter::HandleTiles(int Index)
 	{
 		if (m_LastIndexTile == TILE_RMEXTRAS || m_LastIndexFrontTile == TILE_RMEXTRAS)
 			return;
-        if(         m_pPlayer->m_Rainbow ||
-                    m_FastReload ||
-                    m_Super ||
-                    m_HammerType != 0 ||
-                    m_Bloody ||
-                    m_pPlayer->m_Invisible
 
-            ) {
-            //disable all extras
-            // m_pPlayer->m_TeeInfos.m_ColorBody = cBody;
-            // m_pPlayer->m_TeeInfos.m_ColorFeet = cFeet;
+        if( m_pPlayer->m_Rainbow ||
+            m_FastReload ||
+            m_Super ||
+            m_HammerType != 0 ||
+            m_Bloody ||
+            m_pPlayer->m_Invisible
+        ) {
             m_pPlayer->m_Rainbow = false;
             m_FastReload = false;
             m_ReloadMultiplier = 1000;
@@ -1741,7 +1720,6 @@ void CCharacter::HandleTiles(int Index)
             str_format(aBuf, sizeof(aBuf), "ALL extras disabled");
             GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
         }
-
 	}
 
 	if(((m_TileIndex == TILE_RMNINJA) || (m_TileFIndex == TILE_RMNINJA)))
@@ -2310,7 +2288,6 @@ void CCharacter::iDDRaceTick()
 	SavePos();
 	RescueUnfreeze();
 
-    // XXLDDRace
 	HandleRainbow();
 	HandleBlood();
     HandleJumps();

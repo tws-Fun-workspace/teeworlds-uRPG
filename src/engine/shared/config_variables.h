@@ -216,6 +216,7 @@ MACRO_CONFIG_INT(SvDummyChangeDelay, sv_dummy_change_delay, 1, 0, 9999, CFGFLAG_
 
 //iDDRace cheat:
 MACRO_CONFIG_INT(SvGunExp, sv_gunexp, 0, 0, 1, CFGFLAG_SERVER, "Gun fire as grenades")
+MACRO_CONFIG_INT(SvHammerExp, sv_hammerexp, 0, 0, 1, CFGFLAG_SERVER, "Hamer fire as grenades")
 
 
 // these might need some fine tuning
