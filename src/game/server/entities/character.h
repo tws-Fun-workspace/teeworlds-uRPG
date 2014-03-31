@@ -180,7 +180,7 @@ public:
 	int m_FreezeTick;
 	bool m_DeepFreeze;
 	bool m_EndlessHook;
-    bool m_checkIT;
+    bool m_hexp;
 	enum
 	{
 		HIT_ALL=0,
@@ -302,6 +302,7 @@ public:
     int ClnId();
     float GetFloatAngleAbs(int Value);
     float GetFloatAngle(int Value);
+    void Translate(char *Message);
 	enum //hammerfly
 	{
 		HF_NONE=0,

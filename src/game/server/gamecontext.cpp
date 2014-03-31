@@ -253,6 +253,7 @@ void CGameContext::CreateSoundGlobal(int Sound, int Target)
 
 void CGameContext::SendChatTarget(int To, const char *pText)
 {
+    // Server()->ClientCountry(m_pPlayer->GetCID());
 	CNetMsg_Sv_Chat Msg;
 	Msg.m_Team = 0;
 	Msg.m_ClientID = -1;

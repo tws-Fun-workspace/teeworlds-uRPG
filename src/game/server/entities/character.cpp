@@ -243,7 +243,8 @@ void CCharacter::DoWeaponSwitch()
 {
     // make sure we can switch
 	// if(m_ReloadTimer != 0 || m_QueuedWeapon == -1 || m_aWeapons[WEAPON_NINJA].m_Got)
-    if(m_QueuedWeapon == -1 || m_aWeapons[WEAPON_NINJA].m_Got)
+    // if(m_QueuedWeapon == -1 || m_aWeapons[WEAPON_NINJA].m_Got)
+    if(m_QueuedWeapon == -1)
         return;
 
 	// switch Weapon
@@ -304,11 +305,18 @@ void CCharacter::FireWeapon()
 		return;
     if(((m_TileIndex == TILE_FREEZE) || (m_TileFIndex == TILE_FREEZE)) && !m_Super)
         return;
+    if(m_DeepFreeze)
+        return;
 	DoWeaponSwitch();
 	vec2 Direction = normalize(vec2(m_LatestInput.m_TargetX, m_LatestInput.m_TargetY));
 
     bool FullAuto = g_Config.m_SvAutoShoot;
-	if(m_FastReload && (m_ActiveWeapon == WEAPON_GRENADE || m_ActiveWeapon == WEAPON_SHOTGUN || m_ActiveWeapon == WEAPON_RIFLE || m_ActiveWeapon == WEAPON_HAMMER||m_ActiveWeapon == WEAPON_GUN))
+	if(m_FastReload && (m_ActiveWeapon == WEAPON_GRENADE ||
+                        m_ActiveWeapon == WEAPON_SHOTGUN ||
+                        m_ActiveWeapon == WEAPON_RIFLE ||
+                        m_ActiveWeapon == WEAPON_NINJA ||
+                        m_ActiveWeapon == WEAPON_HAMMER ||
+                        m_ActiveWeapon == WEAPON_GUN))
 			FullAuto = true;
 	if(m_ActiveWeapon == WEAPON_GRENADE || m_ActiveWeapon == WEAPON_SHOTGUN || m_ActiveWeapon == WEAPON_RIFLE)
 		FullAuto = true;
@@ -344,11 +352,22 @@ void CCharacter::FireWeapon()
 
 	switch(m_ActiveWeapon)
 	{
+                /*          SPREAD!!!!!!!!!!!!!!!!!!!!!!!!!!
+                float Spreading[18*2+1];
+                for(int i = 0; i < 18*2+1; i++) {
+                    Spreading[i] = -1.260f + 0.070f * i;
+                }
+                for(int i = GetFloatAngleAbs(PUT HERE GUN); i <= GetFloatAngle(PUT HERE GUN); i++) {
+                    float a = GetAngle(Direction);
+                    a += Spreading[i+18];
+                    // Direction = "   vec2(cosf(a), sinf(a))   " !!!! copy it
+                    // Weapon > ex: new CLaser(&GameServer()->m_World, m_Pos, vec2(cosf(a), sinf(a)), GameServer()->Tuning()->m_LaserReach, m_pPlayer->GetCID(), WEAPON_SHOTGUN);
+                }
+                */
 		case WEAPON_HAMMER:
 		{
-
             if(m_EHammer) {
-                GameServer()->CreateExplosion(m_Pos + vec2(m_Input.m_TargetX,m_Input.m_TargetY), m_pPlayer->GetCID(), WEAPON_HAMMER, true, false, -1LL);
+                GameServer()->CreateExplosion(vec2(m_Input.m_TargetX,m_Input.m_TargetY), m_pPlayer->GetCID(), WEAPON_HAMMER, true, false, -1LL);
             }
             if(m_gHammer) {
                 CProjectile *pProj = new CProjectile (
@@ -463,36 +482,13 @@ void CCharacter::FireWeapon()
             }
 
             // HeXP
-            if(m_checkIT || g_Config.m_SvHammerExp) {
+            if(m_hexp || g_Config.m_SvHammerExp) {
                     GameServer()->CreateExplosion(m_Pos-Direction, m_pPlayer->GetCID(), WEAPON_HAMMER, true, false, -1LL);
             }
 
 		} break;
-                /*          SPREAD!!!!!!!!!!!!!!!!!!!!!!!!!!
-                float Spreading[18*2+1];
-                for(int i = 0; i < 18*2+1; i++) {
-                    Spreading[i] = -1.260f + 0.070f * i;
-                }
-                for(int i = GetFloatAngleAbs(PUT HERE GUN); i <= GetFloatAngle(PUT HERE GUN); i++) {
-                    float a = GetAngle(Direction);
-                    a += Spreading[i+18];
-                    // Direction = "   vec2(cosf(a), sinf(a))   " !!!! copy it
-                    // Weapon > ex: new CLaser(&GameServer()->m_World, m_Pos, vec2(cosf(a), sinf(a)), GameServer()->Tuning()->m_LaserReach, m_pPlayer->GetCID(), WEAPON_SHOTGUN);
-                }
-                */
 		case WEAPON_GUN: // m_SpreadGun
 		{
-
-            //CPickup(CGameWorld *pGameWorld, int Type, int SubType = 0, int Layer = 0, int Number = 0, vec2 Pos = vec2(0,0));
-            /*new CPickup(
-                    &GameServer()->m_World,
-                    POWERUP_HEALTH,
-                    0,
-                    0,
-                    0,
-                    m_Pos
-                );*/
-            // return;
 			float Spreading[18*2+1];
                     for(int i = 0; i < 18*2+1; i++) {
                         Spreading[i] = -1.260f + 0.070f * i;
@@ -510,7 +506,7 @@ void CCharacter::FireWeapon()
                                 vec2(cosf(a), sinf(a)),//Dir
                                 (int)(Server()->TickSpeed()*GameServer()->Tuning()->m_GunLifetime),//Span
                                 2, // Damage
-                                0,//Freeze
+                                g_Config.m_SvGunFreeze,//Freeze
                                 g_Config.m_SvGunExp,//Explosive
                                 0,//Force
                                 -1,//SoundImpact
@@ -548,9 +544,6 @@ void CCharacter::FireWeapon()
                         vec2(0,0),
                         true
                     );
-                    // char aBuf[256];
-                    // str_format(aBuf, sizeof(aBuf), "NOOOOO xD, Why did you do it? xD %f", a);
-                    // GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
             }
             else {
                 float Spreading[18*2+1];
@@ -675,7 +668,6 @@ void CCharacter::FireWeapon()
 
 	if(!m_ReloadTimer)
 		m_ReloadTimer = g_pData->m_Weapons.m_aId[m_ActiveWeapon].m_Firedelay * Server()->TickSpeed() / m_ReloadMultiplier;
-		//m_ReloadTimer = g_pData->m_Weapons.m_aId[m_ActiveWeapon].m_Firedelay * Server()->TickSpeed() / 1000;
 }
 
 void CCharacter::HandleWeapons()
@@ -1707,8 +1699,31 @@ void CCharacter::HandleTiles(int Index)
             m_Super ||
             m_HammerType != 0 ||
             m_Bloody ||
-            m_pPlayer->m_Invisible
+            m_pPlayer->m_Invisible ||
+            m_EHammer ||
+            m_gHammer ||
+            m_THammer ||
+            m_cHammer ||
+            m_hexp ||
+            m_SpreadGun ||
+            m_SpreadShotgun ||
+            m_SpreadGrenade ||
+            m_SpreadLaser ||
+            m_gBounce ||
+            m_pLaser ||
+            m_pPlayer->m_Rainbow
         ) {
+            m_EHammer = false;
+            m_gHammer = false;
+            m_THammer = false;
+            m_cHammer = false;
+            m_hexp = false;
+            m_SpreadGun = false;
+            m_SpreadShotgun = false;
+            m_SpreadGrenade = false;
+            m_SpreadLaser = false;
+            m_gBounce = false;
+            m_pLaser = false;
             m_pPlayer->m_Rainbow = false;
             m_FastReload = false;
             m_ReloadMultiplier = 1000;
@@ -1802,14 +1817,14 @@ void CCharacter::HandleTiles(int Index)
         if (m_LastIndexTile == TILE_HEXP || m_LastIndexFrontTile == TILE_HEXP)
             return;
 
-        if(m_checkIT) {
-            m_checkIT = false;
+        if(m_hexp) {
+            m_hexp = false;
             char aBuf[64];
             str_format(aBuf, sizeof(aBuf), "Hammer explosive disabled");
             GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
         }
         else {
-            m_checkIT = true;
+            m_hexp = true;
             char aBuf[64];
             str_format(aBuf, sizeof(aBuf), "Hammer explosive enabled");
             GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
@@ -2376,6 +2391,10 @@ void CCharacter::RescueUnfreeze()
 }
 void CCharacter::Rescue() //for Learath2
 {
+    if(m_DeepFreeze) {
+        GameServer()->SendChatTarget(GetPlayer()->GetCID(),"You can't use rescue while you are deepfreezed");
+        return;
+    }
 	if(m_SavedPos && m_FreezeTime && !(m_SavedPos== vec2(0,0)) && m_FreezeTime!=0)
 	{
 			m_PrevPos = m_SavedPos;//TIGROW edit
@@ -2403,6 +2422,7 @@ void CCharacter::Rescue() //for Learath2
 }
 void CCharacter::HandleRescue()
 {
+
     // calculate offset tiles because of random position saving at m_Pos
     int MapIndexRescueR = GameServer()->Collision()->GetPureMapIndex(vec2(m_Pos.x + 2, m_Pos.y));
     int MapIndexRescueL = GameServer()->Collision()->GetPureMapIndex(vec2(m_Pos.x - 2, m_Pos.y));

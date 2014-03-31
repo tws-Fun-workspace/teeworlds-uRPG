@@ -1330,5 +1330,17 @@ void CGameContext::ConUnFreeze(IConsole::IResult *pResult, void *pUserData)
             pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "unfreeze", "Unfreeze is disabled on the server. Set in config sv_unfreeze 1 to enable.");
         }
     }
-
+}
+void CGameContext::ConId(IConsole::IResult *pResult, void *pUserData)
+{
+    CGameContext *pSelf = (CGameContext *)pUserData;
+    if(!CheckClientID(pResult->m_ClientID)) return;
+    CCharacter *pChr = pSelf->m_apPlayers[pResult->m_ClientID]->GetCharacter();
+    if (!pChr)
+        return;
+    if(pChr) {
+        char aBuf[64];
+        str_format(aBuf, sizeof(aBuf), "Your id: %d", pResult->m_ClientID);
+        pSelf->SendChatTarget(pResult->m_ClientID, aBuf);
+    }
 }

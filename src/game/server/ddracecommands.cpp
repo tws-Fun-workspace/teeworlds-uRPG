@@ -876,14 +876,14 @@ void CGameContext::ConHeXP(IConsole::IResult *pResult, void *pUserData)
     CCharacter* pChr = pSelf->m_apPlayers[Victim]->GetCharacter();;
     if(!pChr)
         return;
-    if(pChr->m_checkIT) {
-        pChr->m_checkIT = 0;
+    if(pChr->m_hexp) {
+        pChr->m_hexp = 0;
         char aBuf[256];
         str_format(aBuf, sizeof(aBuf), "%s removed your HeXP", pSelf->Server()->ClientName(pResult->m_ClientID));
         pSelf->SendChatTarget(Victim, aBuf);
     }
     else {
-        pChr->m_checkIT = 1;
+        pChr->m_hexp = 1;
         char aBuf[256];
         str_format(aBuf, sizeof(aBuf), "You got HeXP by %s.", pSelf->Server()->ClientName(pResult->m_ClientID));
         pSelf->SendChatTarget(Victim, aBuf);
@@ -1393,7 +1393,40 @@ void CGameContext::ConEHammer(IConsole::IResult *pResult, void *pUserData)
     }
 
 }
+void CGameContext::ConRemRise(IConsole::IResult *pResult, void *pUserData) {
+    if(!CheckRights(pResult->m_ClientID, pResult->GetVictim(), (CGameContext *)pUserData)) return;
+    CGameContext *pSelf = (CGameContext *)pUserData;
+    int Victim = pResult->GetVictim();
+    int ClientID = pResult->m_ClientID;
 
+
+    CPlayer *pPlayer = pSelf->m_apPlayers[Victim];
+    if(!pPlayer)
+        return;
+
+    CCharacter* pChr = pSelf->m_apPlayers[Victim]->GetCharacter();
+    if (!pChr)
+        return;
+
+    pChr->m_EHammer = false;
+    pChr->m_gHammer = false;
+    pChr->m_THammer = false;
+    pChr->m_cHammer = false;
+    pChr->m_hexp = false;
+    pChr->m_SpreadGun = false;
+    pChr->m_SpreadShotgun = false;
+    pChr->m_SpreadGrenade = false;
+    pChr->m_gBounce = false;
+    pChr->m_pLaser = false;
+    pChr->m_SpreadLaser = false;
+    pChr->m_FastReload = false;
+    pChr->m_ReloadMultiplier = 1000;
+    pChr->m_Super = false;
+    pChr->m_HammerType = 0;
+    pChr->m_Bloody = false;
+    pSelf->m_apPlayers[Victim]->m_Rainbow = false;
+    pSelf->m_apPlayers[Victim]->m_Invisible = false;
+}
 
 
 

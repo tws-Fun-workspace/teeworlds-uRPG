@@ -291,6 +291,9 @@ private:
     static void ConFreezePlayer(IConsole::IResult *pResult, void *pUserData);
     static void ConUnFreezePlayer(IConsole::IResult *pResult, void *pUserData);
 
+    static void ConId(IConsole::IResult *pResult, void *pUserData);
+    static void ConRemRise(IConsole::IResult *pResult, void *pUserData);
+
 
 
     static void ConMute(IConsole::IResult *pResult, void *pUserData);
