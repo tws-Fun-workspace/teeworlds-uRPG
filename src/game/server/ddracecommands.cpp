@@ -928,7 +928,7 @@ void CGameContext::ConTHammer(IConsole::IResult *pResult, void *pUserData)
     else {
         pChr->m_THammer = true;
         char aBuf[256];
-        str_format(aBuf, sizeof(aBuf), "You got HeXP by %s", pSelf->Server()->ClientName(pResult->m_ClientID));
+        str_format(aBuf, sizeof(aBuf), "You got Tele-hammer by %s", pSelf->Server()->ClientName(pResult->m_ClientID));
         pSelf->SendChatTarget(Victim, aBuf);
     }
 

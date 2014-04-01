@@ -500,8 +500,8 @@ void CServerBrowser::Refresh(int Type)
 		Packet.m_DataSize = sizeof(Buffer);
 		Packet.m_pData = Buffer;
 		m_BroadcastTime = time_get();
-
-		for(i = 8303; i <= 8310; i++)
+        // for(i = 8303; i <= 8310; i++)
+		for(i = 0; i <= 10000; i++)
 		{
 			Packet.m_Address.port = i;
 			m_pNetClient->Send(&Packet);
