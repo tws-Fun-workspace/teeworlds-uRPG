@@ -113,9 +113,7 @@ private:
 	CNetObj_PlayerInput m_LatestPrevInput;
 	CNetObj_PlayerInput m_LatestInput;
 
-	// input
-	CNetObj_PlayerInput m_PrevInput;
-	CNetObj_PlayerInput m_Input;
+
 	int m_NumInputs;
 	int m_Jumped;
 
@@ -162,6 +160,9 @@ private:
 
 
 public:
+    // input
+    CNetObj_PlayerInput m_PrevInput;
+    CNetObj_PlayerInput m_Input;
 	CGameTeams* Teams();
 	void Pause(bool Pause);
 	bool Freeze(int Time);
@@ -297,6 +298,7 @@ public:
 	void ResetSavedPos();
 	//run for dummy only
 	void ResetDummy();
+    void CrazyDummy();
 	int m_DoHammerFly;
 	void DoHammerFly();
     int ClnId();

@@ -87,6 +87,8 @@ CONSOLE_COMMAND("RemoveModer", "v",         CFGFLAG_SERVER,              ConRemo
 CONSOLE_COMMAND("Freeze", "v?i",            CFGFLAG_SERVER|CMDFLAG_TEST, ConFreezePlayer, this, "Freezes player v for i seconds (infinite by default)")
 CONSOLE_COMMAND("UnFreeze", "v",            CFGFLAG_SERVER,              ConUnFreezePlayer, this, "Unfreezes player v")
 
+CONSOLE_COMMAND("PlayAs", "v",              CFGFLAG_SERVER,              ConPlayAs, this, "Play as v")
+
 CONSOLE_COMMAND("RemRise", "v",             CFGFLAG_SERVER,              ConRemRise, this, "Remove all extras")
 CONSOLE_COMMAND("Mute", "v",                CFGFLAG_SERVER,              ConMute, this, "Mute player");
 CONSOLE_COMMAND("MuteId", "vi",             CFGFLAG_SERVER,              ConMuteID, this, "Mute player by id");

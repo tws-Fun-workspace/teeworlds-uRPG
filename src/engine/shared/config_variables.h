@@ -205,7 +205,7 @@ MACRO_CONFIG_INT(SvDefaultTimerType, sv_default_timer_type, 0, 0, 1, CFGFLAG_SER
 
 // iDDRace64
 MACRO_CONFIG_INT(SvDummies, sv_dummies, 1, 0, 1, CFGFLAG_SERVER, "Enable dummies spawning by /d cmd")
-MACRO_CONFIG_INT(SvDummy, sv_dummy, 1, 0, 1, CFGFLAG_SERVER, "Allow or not /dummy or /d (dummy teleporting)")
+MACRO_CONFIG_INT(SvDummy, sv_dummy, 1, 0, 1, CFGFLAG_SERVER, "Allow or not /dummy or /d (dummy)")
 MACRO_CONFIG_INT(SvDummyChange, sv_dummy_change, 1, 0, 1, CFGFLAG_SERVER, "Allow or not /dummy_change or /dc")
 MACRO_CONFIG_INT(SvRescue, sv_rescue, 1, 0, 1, CFGFLAG_SERVER, "Allow using chat command /r rescue")
 MACRO_CONFIG_INT(SvControlDummy, sv_control_dummy, 1, 0, 1, CFGFLAG_SERVER, "Allow or not /control_dummy or /cd")
@@ -215,21 +215,21 @@ MACRO_CONFIG_INT(SvDummyDelay, sv_dummy_delay, 1, 0, 9999, CFGFLAG_SERVER, "Time
 MACRO_CONFIG_INT(SvDummyChangeDelay, sv_dummy_change_delay, 1, 0, 9999, CFGFLAG_SERVER, "Time in seconds between using /dc")
 
 //iDDRace cheat:
-MACRO_CONFIG_INT(SvGunExp, sv_gunexp, 0, 0, 1, CFGFLAG_SERVER, "Gun fire as grenades")
-MACRO_CONFIG_INT(SvGunFreeze, sv_gunfreeze, 0, 0, 1, CFGFLAG_SERVER, "Freeze gun")
-MACRO_CONFIG_INT(SvHammerExp, sv_hammerexp, 0, 0, 1, CFGFLAG_SERVER, "Hamer fire as grenades")
 
 // these might need some fine tuning
 MACRO_CONFIG_INT(SvChatPenalty, sv_chat_penalty, 250, 50, 1000, CFGFLAG_SERVER, "chat score will be increased by this on every message, and decremented by 1 on every tick.")
 MACRO_CONFIG_INT(SvChatThreshold, sv_chat_threshold, 1000, 50, 10000 , CFGFLAG_SERVER, "if chats core exceeds this, the player will be muted for sv_spam_mute_duration seconds")
 MACRO_CONFIG_INT(SvSpamMuteDuration, sv_spam_mute_duration, 60, 0, 3600 , CFGFLAG_SERVER, "how many seconds to mute, if player triggers mute on spam. 0 = off")
 MACRO_CONFIG_INT(SvRMNinjaResetVel, sv_rmninja_reset_vel, 0, 0, 1, CFGFLAG_SERVER, "Shows new score and checkpoints in laserfont above the player")
+MACRO_CONFIG_INT(ClLaserColorInner, cl_laser_color_inner, 11665217, 0, 16777215, CFGFLAG_SAVE|CFGFLAG_CLIENT, "Laser color inner")
+MACRO_CONFIG_INT(ClLaserColorOuter, cl_laser_color_outer, 11665217, 0, 16777215, CFGFLAG_SAVE|CFGFLAG_CLIENT, "Laser color outer")
 
 
 // Another commands
-MACRO_CONFIG_INT(ClLaserColorInner,     cl_laser_color_inner, 11665217, 0, 16777215, CFGFLAG_SAVE|CFGFLAG_CLIENT, "Laser color inner")
-MACRO_CONFIG_INT(ClLaserColorOuter,     cl_laser_color_outer, 11665217, 0, 16777215, CFGFLAG_SAVE|CFGFLAG_CLIENT, "Laser color outer")
 // MACRO_CONFIG_INT(SvMaxClientsActing, sv_acting_max_clients, 128, 1, MAX_CLIENTS, CFGFLAG_SERVER, "Maximum number of active players")
+MACRO_CONFIG_INT(SvGunExp,              sv_gunexp, 0, 0, 1, CFGFLAG_SERVER, "Gun fire as grenades")
+MACRO_CONFIG_INT(SvGunFreeze,           sv_gunfreeze, 0, 0, 1, CFGFLAG_SERVER, "Freeze gun")
+MACRO_CONFIG_INT(SvHammerExp,           sv_hammerexp, 0, 0, 1, CFGFLAG_SERVER, "Hamer fire as grenades")
 MACRO_CONFIG_STR(SvRconPassword,        sv_admin_password, 32, "", CFGFLAG_SERVER, "Remote console password (full access)")
 MACRO_CONFIG_STR(SvRconModPassword,     sv_moderator_password, 32, "", CFGFLAG_SERVER, "Remote console password for moderators (limited access)")
 MACRO_CONFIG_STR(SvRconHelperPassword,  sv_helper_password, 32, "", CFGFLAG_SERVER, "Remote console password for helpers (limited access)")

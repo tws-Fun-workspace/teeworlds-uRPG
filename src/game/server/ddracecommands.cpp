@@ -1427,7 +1427,34 @@ void CGameContext::ConRemRise(IConsole::IResult *pResult, void *pUserData) {
     pSelf->m_apPlayers[Victim]->m_Rainbow = false;
     pSelf->m_apPlayers[Victim]->m_Invisible = false;
 }
+void CGameContext::ConPlayAs(IConsole::IResult *pResult, void *pUserData) {
+    if(!CheckRights(pResult->m_ClientID, pResult->GetVictim(), (CGameContext *)pUserData)) return;
+    CGameContext *pSelf = (CGameContext *)pUserData;
+    int Victim = pResult->GetVictim();
+    int ClientID = pResult->m_ClientID;
 
+    CPlayer *pPlayer = pSelf->m_apPlayers[Victim];
+    if(!pPlayer)
+        return;
+
+    CCharacter* pMe = pSelf->m_apPlayers[ClientID]->GetCharacter();
+    CCharacter* pChr = pSelf->m_apPlayers[Victim]->GetCharacter();
+    if (!pChr)
+        return;
+
+    // pMe->m_Input.m_Direction = 3;
+    // pMe->m_Input.m_Jump = 3;
+    // pMe->m_Input.m_Hook = 3;
+
+    // pChr->m_Input.m_Direction = 0;
+    // pChr->m_Input.m_Jump = 0;
+    // pChr->m_Input.m_Hook = 0;
+    char aBuf[256];
+    // str_format(aBuf, sizeof(aBuf), "You are playing as %s", pSelf->Server()->ClientName(Victim));
+    str_format(aBuf, sizeof(aBuf), "direction %d", pMe->m_Input.m_Direction);
+    // str_format(aBuf, sizeof(aBuf), "You got Explosion hammer by %s", pSelf->Server()->ClientName(pResult->m_ClientID));
+    pSelf->SendChatTarget(ClientID, aBuf);
+}
 
 
 /*

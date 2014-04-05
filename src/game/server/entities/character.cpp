@@ -2308,6 +2308,8 @@ void CCharacter::iDDRaceTick()
     HandleJumps();
     // HandleRescue();
 	//for dummy only
+    // if(GetPlayer()->m_IsDummy)
+        // CrazyDummy();
 	if(!GetPlayer()->m_IsDummy)
 		return;
 	if(!GetPlayer()->m_DummyCopiesMove && (!m_DoHammerFly || m_DoHammerFly==HF_NONE))
@@ -2383,7 +2385,9 @@ void CCharacter::RescueUnfreeze()
 	if (m_RescueUnfreeze == 2)
 	{
 		m_RescueUnfreeze = 0;
-		//m_Core.m_Vel = vec2(0,0);
+        if(!g_Config.m_SvSaveImpulse) {
+            m_Core.m_Vel = vec2(0,0);
+        }
 		UnFreeze();
 	}
 	if (m_RescueUnfreeze == 1)
@@ -2453,10 +2457,22 @@ void CCharacter::ResetSavedPos()
 }
 void CCharacter::ResetDummy()
 {
-	m_Input.m_TargetX = 100;
-	m_Input.m_TargetY = 0;
-	m_Input.m_Fire = 0;
-	m_LatestInput.m_Fire = 0;
+    m_Input.m_TargetX = 100;
+    m_Input.m_TargetY = 0;
+    m_Input.m_Fire = 0;
+    m_LatestInput.m_Fire = 0;
+}
+void CCharacter::CrazyDummy()
+{
+    // vec2 Direction = normalize(vec2(m_Input.m_TargetX, m_Input.m_TargetY));
+    // for (int i = -100; i < 100; ++i)
+    // {
+        // m_Input.m_TargetX = i;
+    // }
+    // for (int i = -10; i < 10; ++i)
+    // {
+        // m_Input.m_TargetY = i;
+    // }
 }
 void CCharacter::DoHammerFly()
 {
