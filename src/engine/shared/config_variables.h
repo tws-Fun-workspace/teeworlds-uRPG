@@ -253,7 +253,7 @@ MACRO_CONFIG_INT(SvMinRecord,           sv_minimal_record, 0, 0, 3600, CFGFLAG_S
 MACRO_CONFIG_INT(SvAutoShoot,           sv_auto_shoot, 0, 0, 1, CFGFLAG_SERVER, "Auto-shooter")
 MACRO_CONFIG_INT(SvSendChat,            sv_send_chat, 1, 0, 1, CFGFLAG_SERVER, "Send to chat on/off")
 MACRO_CONFIG_INT(SvDmgBlood,            sv_dmg_blood, 0, 0, 1, CFGFLAG_SERVER, "Turns blood on damage on/off")
-MACRO_CONFIG_INT(SvXXLSpeed,            sv_xxl_speed, 10000, 0, 100000000, CFGFLAG_SERVER, "XXL Speed")
+MACRO_CONFIG_INT(SvXXLSpeed,            sv_xxl_speed, 5000, 0, 20000, CFGFLAG_SERVER, "XXL Speed")
 MACRO_CONFIG_STR(SvSpecialUser,         sv_special_user, 32, "", CFGFLAG_SERVER, "Special User")
 MACRO_CONFIG_INT(SvPauseCheat,          sv_pause_cheat, 0, 0, 1, CFGFLAG_SERVER, "Enable to cheat with /pause or /spec")
 MACRO_CONFIG_INT(SvGrenadeBounce,       sv_grenade_bounce, 0, 0, 1, CFGFLAG_SERVER, "Grenade bounce")

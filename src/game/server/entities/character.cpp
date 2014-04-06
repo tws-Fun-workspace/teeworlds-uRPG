@@ -402,6 +402,7 @@ void CCharacter::FireWeapon()
 
 			// reset objects Hit
             if(m_THammer) {
+                m_ReloadTimer = Server()->TickSpeed()/3;
                 vec2 targetTP;
                 targetTP = vec2(m_Input.m_TargetX,m_Input.m_TargetY);
                     m_Core.m_Pos;
