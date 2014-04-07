@@ -1339,8 +1339,9 @@ void CGameContext::ConId(IConsole::IResult *pResult, void *pUserData)
     if (!pChr)
         return;
     if(pChr) {
-        char aBuf[64];
-        str_format(aBuf, sizeof(aBuf), "Your id: %d", pResult->m_ClientID);
+        char aBuf[128];
+        // str_format(aBuf, sizeof(aBuf), "Your id: %d", pResult->m_ClientID);
+        str_format(aBuf, sizeof(aBuf), "DDRACE_STATE: %d", pChr->m_DDRaceState);
         pSelf->SendChatTarget(pResult->m_ClientID, aBuf);
     }
 }

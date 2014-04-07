@@ -428,10 +428,10 @@ void CGameConsole::OnRender()
 				if(Client()->RconAuthed())
 					pPrompt = "rcon> ";
 				else
-					pPrompt = "ENTER PASSWORD> ";
+					pPrompt = "Enter password> ";
 			}
 			else
-				pPrompt = "NOT CONNECTED> ";
+				pPrompt = "Not connected> ";
 		}
 		TextRender()->TextEx(&Cursor, pPrompt, -1);
 

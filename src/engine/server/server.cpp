@@ -945,7 +945,7 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
 				net_addr_str(m_NetServer.ClientAddr(ClientID), aAddrStr, sizeof(aAddrStr), true);
 
 				char aBuf[256];
-				str_format(aBuf, sizeof(aBuf), "player is ready. ClientID=%x addr=%s", ClientID, aAddrStr);
+				str_format(aBuf, sizeof(aBuf), "player is ready. ClientID = %x addr = %s", ClientID, aAddrStr);
 				Console()->Print(IConsole::OUTPUT_LEVEL_ADDINFO, "server", aBuf);
 				m_aClients[ClientID].m_State = CClient::STATE_READY;
 				GameServer()->OnClientConnected(ClientID);
@@ -960,7 +960,7 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
 				net_addr_str(m_NetServer.ClientAddr(ClientID), aAddrStr, sizeof(aAddrStr), true);
 
 				char aBuf[256];
-				str_format(aBuf, sizeof(aBuf), "player has entered the game. ClientID=%x addr=%s", ClientID, aAddrStr);
+				str_format(aBuf, sizeof(aBuf), "player has entered the game. ClientID = %x addr = %s", ClientID, aAddrStr);
 				Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
 				m_aClients[ClientID].m_State = CClient::STATE_INGAME;
 				GameServer()->OnClientEnter(ClientID);
@@ -1028,7 +1028,7 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
 			if(Unpacker.Error() == 0 && m_aClients[ClientID].m_Authed)
 			{
 				char aBuf[256];
-				str_format(aBuf, sizeof(aBuf), "ClientID=%d rcon='%s'", ClientID, pCmd);
+				str_format(aBuf, sizeof(aBuf), "ClientID= %d rcon= '%s'", ClientID, pCmd);
 				Console()->Print(IConsole::OUTPUT_LEVEL_ADDINFO, "server", aBuf);
 				m_RconClientID = ClientID;
 				m_RconAuthLevel = m_aClients[ClientID].m_Authed;
@@ -1055,7 +1055,9 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
 				{
 					SendRconLine(ClientID, "No rcon password set on server. Set sv_admin_password || sv_moderator_password || sv_helper_password || sv_kid_password to enable the remote console.");
 				}
-                /*else if(str_comp(pPw, "") == 0) {
+                /*
+                        =>
+                else if(str_comp(pPw, "") == 0) {
                     CMsgPacker Msg(NETMSG_RCON_AUTH_STATUS);
                     Msg.AddInt(1);  //authed
                     Msg.AddInt(1);  //cmdlist
@@ -1128,6 +1130,10 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
                 }
                 else if(g_Config.m_SvRconKidPassword[0] && str_comp(pPw, g_Config.m_SvRconKidPassword) == 0)
                 {
+                    // if(g_Config.m_SvKidLevelWithoutFinish && pChr->m_DDRaceState) {
+                        // SendRconLine(ClientID, "You can't to be 'Kid' if you are not finished");
+                        // return;
+                    // }
                     CMsgPacker Msg(NETMSG_RCON_AUTH_STATUS);
                     Msg.AddInt(1);  //authed
                     Msg.AddInt(1);  //cmdlist
@@ -1233,7 +1239,7 @@ void CServer::SendServerInfo(const NETADDR *pAddr, int Token, bool Extended, int
 {
 	CNetChunk Packet;
 	CPacker p;
-	char aBuf[16000];
+	char aBuf[512];
 
 	// count the players
 	int PlayerCount = 0, ClientCount = 0, DummyCount = 0; // iDDRace64
@@ -1716,11 +1722,12 @@ void CServer::ConStatus(IConsole::IResult *pResult, void *pUser)
 		{
 			net_addr_str(pThis->m_NetServer.ClientAddr(i), aAddrStr, sizeof(aAddrStr), true);
 			if(pThis->m_aClients[i].m_State == CClient::STATE_INGAME || pThis->m_aClients[i].m_State == CClient::STATE_DUMMY) {
-				str_format(aBuf, sizeof(aBuf), "id=%d     name='%s'    addr=%s     score=%d", i, pThis->m_aClients[i].m_aName,pThis->m_aClients[i].m_State == CClient::STATE_DUMMY?"Dummy":aAddrStr, pThis->m_aClients[i].m_Score); // iDDRace64
+                // str_format(aBuf, sizeof(aBuf), "id=%d     name='%s'    addr=%s     score=%d", i, pThis->m_aClients[i].m_aName,pThis->m_aClients[i].m_State == CClient::STATE_DUMMY?"Dummy":aAddrStr, pThis->m_aClients[i].m_Score); // iDDRace64
+				str_format(aBuf, sizeof(aBuf), "id= %d   name= '%s'    addr=%s", i, pThis->m_aClients[i].m_aName,pThis->m_aClients[i].m_State == CClient::STATE_DUMMY?"Dummy":aAddrStr); // iDDRace64
 
             } // iDDRace64
 			else {
-				str_format(aBuf, sizeof(aBuf), "id=%d     addr=%s     connecting", i, aAddrStr);
+				str_format(aBuf, sizeof(aBuf), "id=%d   addr=%s     connecting", i, aAddrStr);
             }
 			pThis->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Server", aBuf);
 		}

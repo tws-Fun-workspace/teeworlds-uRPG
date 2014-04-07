@@ -360,6 +360,9 @@ void CConsole::ExecuteLineStroked(int Stroke, const char *pStr, int ClientID)
                         {
                             if (m_AccessLevel == ACCESS_LEVEL_HELPER && Result.GetVictim() != ClientID)
                                 Print(OUTPUT_LEVEL_STANDARD, "Console", "Helpers can execute commands only on their self.");
+                            else if (m_AccessLevel == ACCESS_LEVEL_KID && Result.GetVictim() != ClientID && g_Config.m_SvKidSelf) {
+                                Print(OUTPUT_LEVEL_STANDARD, "Console", "Kids can execute commands only on their self.");
+                            }
                             else
                             {
                                 if(Result.GetVictim() == CResult::VICTIM_ALL)
