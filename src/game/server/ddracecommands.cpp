@@ -1168,7 +1168,6 @@ void CGameContext::ConGiveKid(IConsole::IResult *pResult, void *pUserData) {
     if (!pChr)
         return;
 
-
     int Level = 1;
     CServer* pServer = (CServer*)pSelf->Server();
     if(pSelf->m_apPlayers[Victim] && Victim != pResult->m_ClientID)
@@ -1223,7 +1222,7 @@ void CGameContext::ConGiveModer(IConsole::IResult *pResult, void *pUserData) {
     pSelf->SendChatTarget(Victim, aBuf);
 
 }
-void CGameContext::ConRemoveKid(IConsole::IResult *pResult, void *pUserData) {
+void CGameContext::ConRemoveLevel(IConsole::IResult *pResult, void *pUserData) {
     if(!CheckRights(pResult->m_ClientID, pResult->GetVictim(), (CGameContext *)pUserData)) return;
     CGameContext *pSelf = (CGameContext *)pUserData;
     int Victim = pResult->GetVictim();
@@ -1244,53 +1243,6 @@ void CGameContext::ConRemoveKid(IConsole::IResult *pResult, void *pUserData) {
     char aBuf[64];
     str_format(aBuf, sizeof(aBuf), "%s Removed your Level", pSelf->Server()->ClientName(pResult->m_ClientID));
     pSelf->SendChatTarget(Victim, aBuf);
-
-}
-void CGameContext::ConRemoveHelper(IConsole::IResult *pResult, void *pUserData) {
-    if(!CheckRights(pResult->m_ClientID, pResult->GetVictim(), (CGameContext *)pUserData)) return;
-    CGameContext *pSelf = (CGameContext *)pUserData;
-    int Victim = pResult->GetVictim();
-
-    CPlayer *pPlayer = pSelf->m_apPlayers[Victim];
-    if(!pPlayer)
-        return;
-
-    CCharacter* pChr = pSelf->m_apPlayers[Victim]->GetCharacter();
-    if (!pChr)
-        return;
-
-
-    int Level = 0;
-    CServer* pServer = (CServer*)pSelf->Server();
-    if(pSelf->m_apPlayers[Victim] && Victim != pResult->m_ClientID)
-        pServer->SetRconLevel(Victim, Level);
-    char aBuf[64];
-    str_format(aBuf, sizeof(aBuf), "%s Removed your Level", pSelf->Server()->ClientName(pResult->m_ClientID));
-    pSelf->SendChatTarget(Victim, aBuf);
-
-}
-void CGameContext::ConRemoveModer(IConsole::IResult *pResult, void *pUserData) {
-    if(!CheckRights(pResult->m_ClientID, pResult->GetVictim(), (CGameContext *)pUserData)) return;
-    CGameContext *pSelf = (CGameContext *)pUserData;
-    int Victim = pResult->GetVictim();
-
-    CPlayer *pPlayer = pSelf->m_apPlayers[Victim];
-    if(!pPlayer)
-        return;
-
-    CCharacter* pChr = pSelf->m_apPlayers[Victim]->GetCharacter();
-    if (!pChr)
-        return;
-
-
-    int Level = 0;
-    CServer* pServer = (CServer*)pSelf->Server();
-    if(pSelf->m_apPlayers[Victim] && Victim != pResult->m_ClientID)
-        pServer->SetRconLevel(Victim, Level);
-    char aBuf[64];
-    str_format(aBuf, sizeof(aBuf), "%s Removed your Level", pSelf->Server()->ClientName(pResult->m_ClientID));
-    pSelf->SendChatTarget(Victim, aBuf);
-
 }
 void CGameContext::ConUnFreezePlayer(IConsole::IResult *pResult, void *pUserData) {
     if(!CheckRights(pResult->m_ClientID, pResult->GetVictim(), (CGameContext *)pUserData)) return;
@@ -1449,11 +1401,11 @@ void CGameContext::ConPlayAs(IConsole::IResult *pResult, void *pUserData) {
     // pChr->m_Input.m_Direction = 0;
     // pChr->m_Input.m_Jump = 0;
     // pChr->m_Input.m_Hook = 0;
-    char aBuf[256];
-    // str_format(aBuf, sizeof(aBuf), "You are playing as %s", pSelf->Server()->ClientName(Victim));
-    str_format(aBuf, sizeof(aBuf), "direction %d", pMe->m_Input.m_Direction);
-    // str_format(aBuf, sizeof(aBuf), "You got Explosion hammer by %s", pSelf->Server()->ClientName(pResult->m_ClientID));
+    char aBuf[128];
+    str_format(aBuf, sizeof(aBuf), "Command tested");
     pSelf->SendChatTarget(ClientID, aBuf);
+    // str_format(aBuf, sizeof(aBuf), "You are playing as %s", pSelf->Server()->ClientName(Victim));
+    // str_format(aBuf, sizeof(aBuf), "You got Explosion hammer by %s", pSelf->Server()->ClientName(pResult->m_ClientID));
 }
 
 

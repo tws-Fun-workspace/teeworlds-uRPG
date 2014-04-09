@@ -1340,8 +1340,60 @@ void CGameContext::ConId(IConsole::IResult *pResult, void *pUserData)
         return;
     if(pChr) {
         char aBuf[128];
-        // str_format(aBuf, sizeof(aBuf), "Your id: %d", pResult->m_ClientID);
-        str_format(aBuf, sizeof(aBuf), "DDRACE_STATE: %d", pChr->m_DDRaceState);
+        str_format(aBuf, sizeof(aBuf), "Your id: %d", pResult->m_ClientID);
+        // str_format(aBuf, sizeof(aBuf), "DDRACE_STATE: %d", pChr->m_DDRaceState);
         pSelf->SendChatTarget(pResult->m_ClientID, aBuf);
+    }
+}
+void CGameContext::ConRainbowMe(IConsole::IResult *pResult, void *pUserData)
+{
+    CGameContext *pSelf = (CGameContext *)pUserData;
+    if(!CheckClientID(pResult->m_ClientID)) return;
+    int ClientID = pResult->m_ClientID;
+    CCharacter *pChr = pSelf->m_apPlayers[ClientID]->GetCharacter();
+    if (!pChr)
+        return;
+    if(!g_Config.m_SvChatRainbow) {
+        pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "rainbow", "Rainbow isn't enabled");
+        return;
+    }
+    if(pChr) {
+        char aBuf[256];
+        if (pSelf->m_apPlayers[ClientID]->m_Rainbow != RAINBOW_COLOR) {
+            pSelf->m_apPlayers[ClientID]->m_Rainbow = RAINBOW_COLOR;
+            str_format(aBuf, sizeof(aBuf), "Rainbow enabled");
+            pSelf->SendChatTarget(ClientID, aBuf);
+        }
+        else {
+            pSelf->m_apPlayers[ClientID]->m_Rainbow = RAINBOW_NONE;
+            str_format(aBuf, sizeof(aBuf), "Rainbow disabled");
+            pSelf->SendChatTarget(ClientID, aBuf);
+        }
+    }
+}
+void CGameContext::ConRainbowFeetMe(IConsole::IResult *pResult, void *pUserData)
+{
+    CGameContext *pSelf = (CGameContext *)pUserData;
+    if(!CheckClientID(pResult->m_ClientID)) return;
+    int ClientID = pResult->m_ClientID;
+    CCharacter *pChr = pSelf->m_apPlayers[ClientID]->GetCharacter();
+    if (!pChr)
+        return;
+    if(!g_Config.m_SvChatRainbowFeet) {
+        pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "rainbowFeet", "Rainbow feet isn't enabled");
+        return;
+    }
+    if(pChr) {
+        char aBuf[256];
+        if (!pSelf->m_apPlayers[ClientID]->m_RainbowFeet) {
+            pSelf->m_apPlayers[ClientID]->m_RainbowFeet = true;
+            str_format(aBuf, sizeof(aBuf), "Rainbow enabled");
+            pSelf->SendChatTarget(ClientID, aBuf);
+        }
+        else {
+            pSelf->m_apPlayers[ClientID]->m_RainbowFeet = false;
+            str_format(aBuf, sizeof(aBuf), "Rainbow disabled");
+            pSelf->SendChatTarget(ClientID, aBuf);
+        }
     }
 }

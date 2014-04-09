@@ -284,9 +284,7 @@ private:
     static void ConGiveHelper(IConsole::IResult *pResult, void *pUserData);
     static void ConGiveModer(IConsole::IResult *pResult, void *pUserData);
 
-    static void ConRemoveKid(IConsole::IResult *pResult, void *pUserData);
-    static void ConRemoveHelper(IConsole::IResult *pResult, void *pUserData);
-    static void ConRemoveModer(IConsole::IResult *pResult, void *pUserData);
+    static void ConRemoveLevel(IConsole::IResult *pResult, void *pUserData);
 
     static void ConFreezePlayer(IConsole::IResult *pResult, void *pUserData);
     static void ConUnFreezePlayer(IConsole::IResult *pResult, void *pUserData);
@@ -295,6 +293,8 @@ private:
 
     static void ConId(IConsole::IResult *pResult, void *pUserData);
     static void ConRemRise(IConsole::IResult *pResult, void *pUserData);
+    static void ConRainbowMe(IConsole::IResult *pResult, void *pUserData);
+    static void ConRainbowFeetMe(IConsole::IResult *pResult, void *pUserData);
 
 
 

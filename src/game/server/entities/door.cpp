@@ -57,10 +57,7 @@ void CDoor::ResetCollision()
                     m_Number);
     }
 }
-void CDoor::Open(int Team)
-{
-
-}
+void CDoor::Open(int Team) {}
 
 void CDoor::Close(int Team)
 {
@@ -81,10 +78,7 @@ void CDoor::Close(int Team)
     }
 }
 
-void CDoor::Reset()
-{
-
-}
+void CDoor::Reset() {}
 
 void CDoor::Tick()
 {
@@ -101,9 +95,6 @@ void CDoor::Snap(int SnappingClient)
 {
     Tick();
     if(m_isShotgunWall && m_lifeTime <= 0) return;
-    // if(m_isShotgunWall && m_lifeTime <= 0) {
-        // return;
-    // }
     // m_lifeTime--;
 	if (NetworkClipped(SnappingClient, m_Pos)
 			&& NetworkClipped(SnappingClient, m_To))
@@ -111,31 +102,40 @@ void CDoor::Snap(int SnappingClient)
 
 	CNetObj_Laser *pObj = static_cast<CNetObj_Laser *>(Server()->SnapNewItem(
 			NETOBJTYPE_LASER, m_ID, sizeof(CNetObj_Laser)));
+    if(!pObj) return;
+
 	pObj->m_X = (int) m_Pos.x;
 	pObj->m_Y = (int) m_Pos.y;
+
 	CCharacter * Char = GameServer()->GetPlayerChar(SnappingClient);
+    if(!Char) return;
 	int Tick = (Server()->Tick() % Server()->TickSpeed()) % 11;
 	if (Char == 0)
 		return;
-	if (Char->IsAlive()
-			&& !GameServer()->Collision()->m_pSwitchers[m_Number].m_Status[Char->Team()]
-			&& (!Tick))
-		return;
-
-	if (Char->Team() == TEAM_SUPER)
-	{
-		pObj->m_FromX = (int) m_Pos.x;
-		pObj->m_FromY = (int) m_Pos.y;
-	}
-	else if (GameServer()->Collision()->m_pSwitchers[m_Number].m_Status[Char->Team()])
-	{
-		pObj->m_FromX = (int) m_To.x;
-		pObj->m_FromY = (int) m_To.y;
-	}
-	else
-	{
-		pObj->m_FromX = (int) m_Pos.x;
-		pObj->m_FromY = (int) m_Pos.y;
-	}
-	pObj->m_StartTick = Server()->Tick();
+    if(!m_isShotgunWall) {
+        if (Char->IsAlive() && !GameServer()->Collision()->m_pSwitchers[m_Number].m_Status[Char->Team()] && (!Tick))
+        return;
+    }
+    if(m_isShotgunWall) {
+        pObj->m_FromX = (int) m_To.x;
+        pObj->m_FromY = (int) m_To.y;
+    }
+    else {
+            if (Char->Team() == TEAM_SUPER)
+            {
+                pObj->m_FromX = (int) m_Pos.x;
+                pObj->m_FromY = (int) m_Pos.y;
+            }
+            if (GameServer()->Collision()->m_pSwitchers[m_Number].m_Status[Char->Team()])
+            {
+                pObj->m_FromX = (int) m_To.x;
+                pObj->m_FromY = (int) m_To.y;
+            }
+            else
+            {
+                pObj->m_FromX = (int) m_Pos.x;
+                pObj->m_FromY = (int) m_Pos.y;
+            }
+    }
+    pObj->m_StartTick = Server()->Tick();
 }

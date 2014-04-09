@@ -106,7 +106,8 @@ public:
 		int m_Max;
 	} m_Latency;
 	//XXL
-	int m_Rainbow;
+    int m_Rainbow;
+	bool m_RainbowFeet;
 	int m_LastRainbow;
 	bool m_RainbowBwUp;
 	int m_Helped;

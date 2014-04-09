@@ -264,6 +264,8 @@ MACRO_CONFIG_INT(SvNewRescue,             sv_new_rescue, 1, 0, 1, CFGFLAG_SERVER
 MACRO_CONFIG_INT(SvSoloPart,              sv_solo_part, 1, 0, 1, CFGFLAG_SERVER, "Enable to use /solo")
 MACRO_CONFIG_INT(SvKidSelf,               sv_kid_self, 1, 0, 1, CFGFLAG_SERVER, "Kid's command only for self")
 MACRO_CONFIG_INT(SvKidLevelWithoutFinish, sv_klwf, 1, 0, 1, CFGFLAG_SERVER, "Enable set kid level without finish")
+MACRO_CONFIG_INT(SvChatRainbow,           sv_chat_rainbow, 1, 0, 1, CFGFLAG_SERVER, "Rainbow chat")
+MACRO_CONFIG_INT(SvChatRainbowFeet,       sv_chat_rainbow_feet, 1, 0, 1, CFGFLAG_SERVER, "Rainbow-feet chat")
 
 
 

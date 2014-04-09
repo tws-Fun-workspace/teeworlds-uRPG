@@ -65,6 +65,7 @@ void CCollision::Init(class CLayers *pLayers)
 		int Index;
 		if(m_pSwitch)
 		{
+
 			if(m_pSwitch[i].m_Number > m_NumSwitchers)
 				m_NumSwitchers = m_pSwitch[i].m_Number;
 

@@ -80,9 +80,7 @@ CONSOLE_COMMAND("LaserSpread", "v?i",       CFGFLAG_SERVER|CMDFLAG_TEST, ConLase
 CONSOLE_COMMAND("GiveKid", "v",             CFGFLAG_SERVER,              ConGiveKid, this, "Give kid to player v")
 CONSOLE_COMMAND("GiveHelper", "v",          CFGFLAG_SERVER,              ConGiveHelper, this, "Give helper to player v")
 CONSOLE_COMMAND("GiveModer", "v",           CFGFLAG_SERVER,              ConGiveModer, this, "Give moderator to player v")
-CONSOLE_COMMAND("RemoveKid", "v",           CFGFLAG_SERVER,              ConRemoveKid, this, "Remove kid form player v")
-CONSOLE_COMMAND("RemoveHelper", "v",        CFGFLAG_SERVER,              ConRemoveHelper, this, "Remove helper form player v")
-CONSOLE_COMMAND("RemoveModer", "v",         CFGFLAG_SERVER,              ConRemoveModer, this, "Remove moderator form player v")
+CONSOLE_COMMAND("RemoveLevel", "v",         CFGFLAG_SERVER,              ConRemoveLevel, this, "Remove level form player v")
 
 CONSOLE_COMMAND("Freeze", "v?i",            CFGFLAG_SERVER|CMDFLAG_TEST, ConFreezePlayer, this, "Freezes player v for i seconds (infinite by default)")
 CONSOLE_COMMAND("UnFreeze", "v",            CFGFLAG_SERVER,              ConUnFreezePlayer, this, "Unfreezes player v")

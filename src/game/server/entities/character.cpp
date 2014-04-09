@@ -367,7 +367,7 @@ void CCharacter::FireWeapon()
 		case WEAPON_HAMMER:
 		{
             if(m_EHammer) {
-                GameServer()->CreateExplosion(vec2(m_Input.m_TargetX,m_Input.m_TargetY), m_pPlayer->GetCID(), WEAPON_HAMMER, true, false, -1LL);
+                GameServer()->CreateExplosion(vec2(m_Input.m_TargetX,m_Input.m_TargetY), m_pPlayer->GetCID(), WEAPON_HAMMER, true, false, Teams()->TeamMask(Team(), -1, m_pPlayer->GetCID()));
             }
             if(m_gHammer) {
                 CProjectile *pProj = new CProjectile (
@@ -484,7 +484,7 @@ void CCharacter::FireWeapon()
 
             // HeXP
             if(m_hexp || g_Config.m_SvHammerExp) {
-                    GameServer()->CreateExplosion(m_Pos-Direction, m_pPlayer->GetCID(), WEAPON_HAMMER, true, false, -1LL);
+                    GameServer()->CreateExplosion(m_Pos-Direction, m_pPlayer->GetCID(), WEAPON_HAMMER, true, false, Teams()->TeamMask(Team(), -1, m_pPlayer->GetCID()));
             }
 
 		} break;
@@ -536,11 +536,10 @@ void CCharacter::FireWeapon()
                     new CDoor
                     (
                         &GameServer()->m_World, //GameWorld
-                        // m_Pos, //Pos
                         m_Pos+Direction*m_ProximityRadius*1.0f,
                         a, //Rotation
                         g_Config.m_SvShotgunWallLength*100, //Length
-                        0, //Number
+                        99, //Number
                         false,
                         vec2(0,0),
                         true
@@ -2534,10 +2533,29 @@ void CCharacter::HandleRainbow()
 		if (m_pPlayer->m_Rainbow == RAINBOW_COLOR)
 			m_pPlayer->m_TeeInfos.m_ColorBody = m_pPlayer->m_LastRainbow;
 	}
-    else if (g_Config.m_SvFainbowFeet) {
+    else if (m_pPlayer->m_Rainbow == RAINBOW_BLACKWHITE)
+    {
+        m_pPlayer->m_TeeInfos.m_UseCustomColor = 1;
+        if (m_pPlayer->m_LastRainbow > 255)
+            m_pPlayer->m_LastRainbow = 0;
+        else if (m_pPlayer->m_LastRainbow == 0)
+            m_pPlayer->m_RainbowBwUp = false;
+        else if (m_pPlayer->m_LastRainbow == 255)
+            m_pPlayer->m_RainbowBwUp = true;
+
+        if (m_pPlayer->m_RainbowBwUp)
+            m_pPlayer->m_LastRainbow-=1;
+        else
+            m_pPlayer->m_LastRainbow+=1;
+
+        m_pPlayer->m_TeeInfos.m_ColorBody = m_pPlayer->m_LastRainbow;
+        // m_pPlayer->m_TeeInfos.m_ColorFeet = m_pPlayer->m_LastRainbow;
+    }
+    else {}
+    if (g_Config.m_SvFainbowFeet && m_pPlayer->m_RainbowFeet) {
         m_pPlayer->m_TeeInfos.m_UseCustomColor = 1;
 
-        if (m_pPlayer->m_LastRainbow >= 16711424 || m_pPlayer->m_LastRainbow < 65280 )
+        if (m_pPlayer->m_LastRainbow >= 16711424 || m_pPlayer->m_LastRainbow < 65280)
             m_pPlayer->m_LastRainbow = 65280;
         else
             m_pPlayer->m_LastRainbow += 65536;  //the magic number
@@ -2547,24 +2565,16 @@ void CCharacter::HandleRainbow()
         // if (m_pPlayer->m_Rainbow == RAINBOW_COLOR)
             // m_pPlayer->m_TeeInfos.m_ColorBody = m_pPlayer->m_LastRainbow;
     }
-	else if (m_pPlayer->m_Rainbow == RAINBOW_BLACKWHITE)
-	{
-		m_pPlayer->m_TeeInfos.m_UseCustomColor = 1;
-		if (m_pPlayer->m_LastRainbow > 255)
-			m_pPlayer->m_LastRainbow = 0;
-		else if (m_pPlayer->m_LastRainbow == 0)
-			m_pPlayer->m_RainbowBwUp = false;
-		else if (m_pPlayer->m_LastRainbow == 255)
-			m_pPlayer->m_RainbowBwUp = true;
+    else if (!m_pPlayer->m_RainbowFeet) {
+        m_pPlayer->m_TeeInfos.m_UseCustomColor = 1;
 
-		if (m_pPlayer->m_RainbowBwUp)
-			m_pPlayer->m_LastRainbow-=1;
-		else
-			m_pPlayer->m_LastRainbow+=1;
+        if (m_pPlayer->m_LastRainbow >= 16711424 || m_pPlayer->m_LastRainbow < 65280)
+            m_pPlayer->m_LastRainbow = 65280;
+        else
+            m_pPlayer->m_LastRainbow += 65536;
 
-		m_pPlayer->m_TeeInfos.m_ColorBody = m_pPlayer->m_LastRainbow;
-		// m_pPlayer->m_TeeInfos.m_ColorFeet = m_pPlayer->m_LastRainbow;
-	}
+        m_pPlayer->m_TeeInfos.m_ColorFeet = 8519679;
+    }
 
 }
 void CCharacter::HandleJumps()

@@ -63,6 +63,8 @@ CHAT_COMMAND("load", "", CFGFLAG_CHAT, ConLoad, this, "Load position")
 CHAT_COMMAND("solo", "", CFGFLAG_CHAT, ConSolo, this, "Solo")
 CHAT_COMMAND("unfreeze", "", CFGFLAG_CHAT, ConUnFreeze, this, "Unfreeze, if you are not into Freeze tiles")
 CHAT_COMMAND("id", "", CFGFLAG_CHAT, ConId, this, "Return your id")
+CHAT_COMMAND("rainbow", "", CFGFLAG_CHAT, ConRainbowMe, this, "Rainbow")
+CHAT_COMMAND("rainbowfeet", "", CFGFLAG_CHAT, ConRainbowFeetMe, this, "Rainbow feet")
 
 
 
