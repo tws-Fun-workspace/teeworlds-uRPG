@@ -870,7 +870,6 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
                     pPlayer->m_Authed == CServer::AUTHED_MOD ? IConsole::ACCESS_LEVEL_MOD :
                     pPlayer->m_Authed == CServer::AUTHED_HELPER ? IConsole::ACCESS_LEVEL_HELPER :IConsole::ACCESS_LEVEL_KID
                 );
-// pPlayer->m_Authed == CServer::AUTHED_ADMIN ? IConsole::ACCESS_LEVEL_ADMIN : pPlayer->m_Authed == CServer::AUTHED_SUBADMIN ? IConsole::ACCESS_LEVEL_SUBADMIN : pPlayer->m_Authed == CServer::AUTHED_MOD ? IConsole::ACCESS_LEVEL_MOD : IConsole::ACCESS_LEVEL_HELPER
 			else
 				Console()->SetAccessLevel(IConsole::ACCESS_LEVEL_USER);
 			Console()->SetPrintOutputLevel(m_ChatPrintCBIndex, 0);

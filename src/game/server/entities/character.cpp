@@ -2385,9 +2385,6 @@ void CCharacter::RescueUnfreeze()
 	if (m_RescueUnfreeze == 2)
 	{
 		m_RescueUnfreeze = 0;
-        if(!g_Config.m_SvSaveImpulse) {
-            m_Core.m_Vel = vec2(0,0);
-        }
 		UnFreeze();
 	}
 	if (m_RescueUnfreeze == 1)
@@ -2414,6 +2411,9 @@ void CCharacter::Rescue() //for Learath2
                     Core()->m_Pos,
                     Teams()->TeamMask(Team(), -1, m_pPlayer->GetCID())
                 );*/
+            }
+            if(!g_Config.m_SvSaveImpulse) {
+                m_Core.m_Vel = vec2(0,0);
             }
             Core()->m_Pos = m_SavedPos;
             m_RescueUnfreeze = 1;

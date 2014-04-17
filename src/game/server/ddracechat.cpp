@@ -1043,9 +1043,9 @@ void CGameContext::ConRescue(IConsole::IResult *pResult, void *pUserData)
 	{
 		if(pPlayer->GetCharacter()) {
             pPlayer->GetCharacter()->Rescue();
-            if(!g_Config.m_SvSaveImpulse)
-                pSelf->GetPlayerChar(ClientID)->Core()->m_Vel = vec2(0,0);
-        }
+            // if(!g_Config.m_SvSaveImpulse)
+                // pSelf->GetPlayerChar(ClientID)->Core()->m_Vel = vec2(0,0);
+            }
 
 	}
 	//rescue for dummy

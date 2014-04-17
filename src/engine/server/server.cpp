@@ -1733,7 +1733,22 @@ void CServer::ConStatus(IConsole::IResult *pResult, void *pUser)
 		}
 	}
 }
+void CServer::ConRconList(IConsole::IResult *pResult, void *pUser)
+{
+    char aBuf[256];
+    CServer* pThis = static_cast<CServer *>(pUser);
 
+    for(int i = 0; i < MAX_CLIENTS; i++)
+    {
+        if(pThis->m_aClients[i].m_State != CClient::STATE_EMPTY && pThis->m_aClients[i].m_Authed > 0)
+        {
+            if(pThis->m_aClients[i].m_State == CClient::STATE_INGAME || pThis->m_aClients[i].m_State == CClient::STATE_DUMMY) {
+                str_format(aBuf, sizeof(aBuf), "id= %d   name= '%s'    level= %d", i, pThis->m_aClients[i].m_aName, pThis->m_aClients[i].m_Authed);
+                pThis->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Server", aBuf);
+            }
+        }
+    }
+}
 void CServer::ConShutdown(IConsole::IResult *pResult, void *pUser)
 {
 	((CServer *)pUser)->m_RunServer = 0;
@@ -1853,7 +1868,8 @@ void CServer::RegisterCommands()
 
 	// register console commands
 	Console()->Register("kick", "i?r", CFGFLAG_SERVER, ConKick, this, "Kick player with specified id for any reason");
-	Console()->Register("status", "", CFGFLAG_SERVER, ConStatus, this, "List players");
+    Console()->Register("status", "", CFGFLAG_SERVER, ConStatus, this, "List players");
+	Console()->Register("rconlist", "", CFGFLAG_SERVER, ConRconList, this, "List players with level");
 	Console()->Register("shutdown", "", CFGFLAG_SERVER, ConShutdown, this, "Shutdown");
 	Console()->Register("logout", "", CFGFLAG_SERVER, ConLogout, this, "Logout of rcon");
 
