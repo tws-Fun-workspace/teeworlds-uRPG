@@ -1066,7 +1066,7 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 			}
 
 			//if(Server()->IsAuthed(KickID))
-			if(m_apPlayers[KickID]->m_Authed > 0 && m_apPlayers[KickID]->m_Authed >= pPlayer->m_Authed)
+			if(m_apPlayers[KickID]->m_Authed > 1 && m_apPlayers[KickID]->m_Authed >= pPlayer->m_Authed)
 			{
 				SendChatTarget(ClientID, "You can't kick admins/moders/helpers");
 				m_apPlayers[ClientID]->m_Last_KickVote = time_get();

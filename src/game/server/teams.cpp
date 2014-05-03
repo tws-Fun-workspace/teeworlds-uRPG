@@ -28,9 +28,8 @@ void CGameTeams::OnCharacterStart(int ClientID)
 		return;
 	if (pStartingChar->m_DDRaceState == DDRACE_FINISHED)
 		pStartingChar->m_DDRaceState = DDRACE_NONE;
-	if (m_Core.Team(ClientID) == TEAM_FLOCK //)
-			|| m_Core.Team(ClientID) == TEAM_SUPER)
-	{
+
+    // if (m_Core.Team(ClientID) == TEAM_FLOCK || m_Core.Team(ClientID) == TEAM_SUPER) {
 		pStartingChar->m_DDRaceState = DDRACE_STARTED;
 		pStartingChar->m_StartTime = Tick;
 		pStartingChar->m_RefreshTime = Tick;
@@ -41,7 +40,8 @@ void CGameTeams::OnCharacterStart(int ClientID)
 			return;
 		if (Character(DummyID) && Character(DummyID)->m_DDRaceState != DDRACE_NONE)
 			GetPlayer(DummyID)->KillCharacter();
-	}
+	// }
+/*
 	else
 	{
 		bool Waiting = false;
@@ -101,10 +101,18 @@ void CGameTeams::OnCharacterStart(int ClientID)
 			}
 		}
 	}
+*/
 }
 
 void CGameTeams::OnCharacterFinish(int ClientID)
 {
+    CPlayer* pPlayer = GetPlayer(ClientID);
+    if (pPlayer && pPlayer->IsPlaying())
+        OnFinish(pPlayer);
+    return;
+
+/*
+// i dont know what for this? 
 	if (m_Core.Team(ClientID) == TEAM_FLOCK
 			|| m_Core.Team(ClientID) == TEAM_SUPER)
 	{
@@ -134,6 +142,7 @@ void CGameTeams::OnCharacterFinish(int ClientID)
 
 		}
 	}
+    */
 }
 
 bool CGameTeams::SetCharacterTeam(int ClientID, int Team)
@@ -353,8 +362,10 @@ float *CGameTeams::GetCpCurrent(CPlayer* Player)
 void CGameTeams::OnFinish(CPlayer* Player)
 {
     bool veryMinRecord = false;
-	if (!Player || !Player->IsPlaying() || Player->m_IsDummy)
+
+	if (!Player || !Player->IsPlaying() || Player->m_IsDummy) {
 		return;
+    }
 	//TODO:DDRace:btd: this ugly
 	float time = (float) (Server()->Tick() - GetStartTime(Player))
 			/ ((float) Server()->TickSpeed());
