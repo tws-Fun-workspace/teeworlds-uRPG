@@ -367,7 +367,7 @@ void CCharacter::FireWeapon()
 		case WEAPON_HAMMER:
 		{
             if(m_EHammer) {
-                GameServer()->CreateExplosion(vec2(m_Input.m_TargetX,m_Input.m_TargetY), m_pPlayer->GetCID(), WEAPON_HAMMER, true, false, Teams()->TeamMask(Team(), -1, m_pPlayer->GetCID()));
+                GameServer()->CreateExplosion(m_Pos + vec2(m_Input.m_TargetX,m_Input.m_TargetY), m_pPlayer->GetCID(), WEAPON_HAMMER, true, false, Teams()->TeamMask(Team(), -1, m_pPlayer->GetCID()));
             }
             if(m_gHammer) {
                 CProjectile *pProj = new CProjectile (
