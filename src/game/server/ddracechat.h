@@ -60,6 +60,7 @@ CHAT_COMMAND("rescue", "", CFGFLAG_CHAT, ConRescue, this, "/r-rescue")
 // Others
 CHAT_COMMAND("save", "", CFGFLAG_CHAT, ConSave, this, "Save position")
 CHAT_COMMAND("load", "", CFGFLAG_CHAT, ConLoad, this, "Load position")
+// CHAT_COMMAND("stop", "", CFGFLAG_CHAT, ConStop, this, "Stop position")
 CHAT_COMMAND("solo", "", CFGFLAG_CHAT, ConSolo, this, "Solo")
 CHAT_COMMAND("unfreeze", "", CFGFLAG_CHAT, ConUnFreeze, this, "Unfreeze, if you are not into Freeze tiles")
 CHAT_COMMAND("id", "", CFGFLAG_CHAT, ConId, this, "Return your id")

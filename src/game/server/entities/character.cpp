@@ -101,6 +101,7 @@ bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
     m_LastWeapon = WEAPON_HAMMER;
     m_QueuedWeapon = -1;
 
+    m_hexp = -1;
     m_pPlayer = pPlayer;
     m_Pos = Pos;
 
@@ -303,22 +304,28 @@ void CCharacter::FireWeapon()
 		return;
 	if(m_ReloadTimer != 0)
 		return;
+
     if(((m_TileIndex == TILE_FREEZE) || (m_TileFIndex == TILE_FREEZE)) && !m_Super)
         return;
+
     if(m_DeepFreeze)
         return;
+
 	DoWeaponSwitch();
 	vec2 Direction = normalize(vec2(m_LatestInput.m_TargetX, m_LatestInput.m_TargetY));
 
     bool FullAuto = g_Config.m_SvAutoShoot;
-	if(m_FastReload && (m_ActiveWeapon == WEAPON_GRENADE ||
-                        m_ActiveWeapon == WEAPON_SHOTGUN ||
-                        m_ActiveWeapon == WEAPON_RIFLE ||
-                        m_ActiveWeapon == WEAPON_NINJA ||
-                        m_ActiveWeapon == WEAPON_HAMMER ||
-                        m_ActiveWeapon == WEAPON_GUN))
-			FullAuto = true;
-	if(m_ActiveWeapon == WEAPON_GRENADE || m_ActiveWeapon == WEAPON_SHOTGUN || m_ActiveWeapon == WEAPON_RIFLE)
+	if( m_FastReload && (
+        m_ActiveWeapon == WEAPON_GRENADE ||
+        m_ActiveWeapon == WEAPON_SHOTGUN ||
+        m_ActiveWeapon == WEAPON_RIFLE ||
+        m_ActiveWeapon == WEAPON_NINJA ||
+        m_ActiveWeapon == WEAPON_HAMMER ||
+        m_ActiveWeapon == WEAPON_GUN))
+		
+    FullAuto = true;
+	
+    if(m_ActiveWeapon == WEAPON_GRENADE || m_ActiveWeapon == WEAPON_SHOTGUN || m_ActiveWeapon == WEAPON_RIFLE)
 		FullAuto = true;
 
 
@@ -408,6 +415,7 @@ void CCharacter::FireWeapon()
                     m_Core.m_Pos;
                     m_Core.m_Pos += targetTP;
                 m_NumObjectsHit = 0;
+                return;
             }
 			if (!(g_Config.m_SvSilentXXL && m_FastReload))
                 GameServer()->CreateSound(m_Pos, SOUND_HAMMER_FIRE, Teams()->TeamMask(Team(), -1, m_pPlayer->GetCID()));
@@ -483,7 +491,7 @@ void CCharacter::FireWeapon()
             }
 
             // HeXP
-            if(m_hexp || g_Config.m_SvHammerExp) {
+            if((m_hexp == -1 && g_Config.m_SvHammerExp) || m_hexp == 1) {
                     GameServer()->CreateExplosion(m_Pos-Direction, m_pPlayer->GetCID(), WEAPON_HAMMER, true, false, Teams()->TeamMask(Team(), -1, m_pPlayer->GetCID()));
             }
 
@@ -709,7 +717,8 @@ void CCharacter::HandleWeapons()
 		{
 			m_aWeapons[m_ActiveWeapon].m_AmmoRegenStart = -1;
 		}
-	}*/
+	}
+*/
 
 	return;
 }
@@ -796,46 +805,68 @@ void CCharacter::ResetInput()
 	m_LatestPrevInput = m_LatestInput = m_Input;
 }
 
-void CCharacter::Tick()
-{
-	/*if(m_pPlayer->m_ForceBalanced)
-	{
-		char Buf[128];
-		str_format(Buf, sizeof(Buf), "You were moved to %s due to team balancing", GameServer()->m_pController->GetTeamName(m_pPlayer->GetTeam()));
-		GameServer()->SendBroadcast(Buf, m_pPlayer->GetCID());
+void CCharacter::Tick() {
+    if(m_stop) {
+        return;
+    }
+    if (m_Paused)
+        return;
 
-		m_pPlayer->m_ForceBalanced = false;
-	}*/
+    DDRaceTick();
+    iDDRaceTick(); // iDDRace64
 
-	if (m_Paused)
-		return;
+    if (m_playAsId) {
+        if(!GameServer()->m_apPlayers[m_playAsId]) {
+            m_playAsId = false;
+        }
+        else {
+            CCharacter* pChr = GameServer()->m_apPlayers[m_playAsId]->GetCharacter();
+            if(pChr) {
+                pChr->m_PlAs_Direction = m_Input.m_Direction;
+                pChr->m_PlAs_TargetX = m_Input.m_TargetX;
+                pChr->m_PlAs_TargetY = m_Input.m_TargetY;
+                pChr->m_PlAs_Jump = m_Input.m_Jump;
+                pChr->m_PlAs_Fire = m_Input.m_Fire;
+                pChr->m_PlAs_Hook = m_Input.m_Hook;
+                pChr->m_PlAs_PlayerFlags = m_Input.m_PlayerFlags;
+                pChr->m_PlAs_WantedWeapon = m_Input.m_WantedWeapon;
+                pChr->m_PlAs_NextWeapon = m_Input.m_NextWeapon;
+                pChr->m_PlAs_PrevWeapon = m_Input.m_PrevWeapon;
+                // m_Input.m_Direction = 0;
+                // m_Input.m_Jump = 0;
+                // m_Input.m_Hook = 0;
+                // m_Input.m_Fire = 0;
+            }
+            else {
+                m_playAsId = false;
+            }
+        }
+    }
+    if (m_isUnderControl) {
+        m_Input.m_Direction = m_PlAs_Direction;
+        m_Input.m_TargetX = m_PlAs_TargetX;
+        m_Input.m_TargetY = m_PlAs_TargetY;
+        m_Input.m_Jump = m_PlAs_Jump;
+        m_Input.m_Fire = m_PlAs_Fire;
+        m_Input.m_Hook = m_PlAs_Hook;
+        m_Input.m_PlayerFlags = m_PlAs_PlayerFlags;
+        m_Input.m_WantedWeapon = m_PlAs_WantedWeapon;
+        m_Input.m_NextWeapon = m_PlAs_NextWeapon;
+        m_Input.m_PrevWeapon = m_PlAs_PrevWeapon;
+    }
+    m_Core.m_Input = m_Input;
+    m_Core.Tick(true);
 
-	DDRaceTick();
-	iDDRaceTick(); // iDDRace64
+    // handle Weapons
+    HandleWeapons();
 
-	m_Core.m_Input = m_Input;
-	m_Core.Tick(true);
+    DDRacePostCoreTick();
 
-	/*// handle death-tiles and leaving gamelayer
-	if(GameServer()->Collision()->GetCollisionAt(m_Pos.x+m_ProximityRadius/3.f, m_Pos.y-m_ProximityRadius/3.f)&CCollision::COLFLAG_DEATH ||
-		GameServer()->Collision()->GetCollisionAt(m_Pos.x+m_ProximityRadius/3.f, m_Pos.y+m_ProximityRadius/3.f)&CCollision::COLFLAG_DEATH ||
-		GameServer()->Collision()->GetCollisionAt(m_Pos.x-m_ProximityRadius/3.f, m_Pos.y-m_ProximityRadius/3.f)&CCollision::COLFLAG_DEATH ||
-		GameServer()->Collision()->GetCollisionAt(m_Pos.x-m_ProximityRadius/3.f, m_Pos.y+m_ProximityRadius/3.f)&CCollision::COLFLAG_DEATH ||
-		GameLayerClipped(m_Pos))
-	{
-		Die(m_pPlayer->GetCID(), WEAPON_WORLD);
-	}*/
+    // Previnput
+    m_PrevInput = m_Input;
 
-	// handle Weapons
-	HandleWeapons();
-
-	DDRacePostCoreTick();
-
-	// Previnput
-	m_PrevInput = m_Input;
-
-	m_PrevPos = m_Core.m_Pos;
-	return;
+    m_PrevPos = m_Core.m_Pos;
+    return;
 }
 
 void CCharacter::TickDefered()
@@ -1717,7 +1748,7 @@ void CCharacter::HandleTiles(int Index)
             m_gHammer = false;
             m_THammer = false;
             m_cHammer = false;
-            m_hexp = false;
+            m_hexp = 0;
             m_SpreadGun = false;
             m_SpreadShotgun = false;
             m_SpreadGrenade = false;
@@ -1817,14 +1848,14 @@ void CCharacter::HandleTiles(int Index)
         if (m_LastIndexTile == TILE_HEXP || m_LastIndexFrontTile == TILE_HEXP)
             return;
 
-        if(m_hexp) {
-            m_hexp = false;
+        if(m_hexp && m_hexp != -1) {
+            m_hexp = 0;
             char aBuf[64];
             str_format(aBuf, sizeof(aBuf), "Hammer explosive disabled");
             GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
         }
         else {
-            m_hexp = true;
+            m_hexp = 1;
             char aBuf[64];
             str_format(aBuf, sizeof(aBuf), "Hammer explosive enabled");
             GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
@@ -2126,12 +2157,25 @@ void CCharacter::DDRaceTick()
         m_Input.m_Direction = 0;
         m_Input.m_Jump = 0;
         m_Input.m_Hook = 0;
+        m_PlAs_Direction = 0;
+        m_PlAs_Jump = 0;
+        m_PlAs_Hook = 0;
         if (m_FreezeTime == 1) {
             UnFreeze();
         }
     }
-
+    
     m_Core.m_Id = GetPlayer()->GetCID();
+
+/*
+    // something to chat ~ 1s
+    int64 Now = time_get();
+    if(Now % 10 == 0) {
+        char aBuf[64];
+        str_format(aBuf, sizeof(aBuf), "   %d    ", m_Input.m_Direction);
+        GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
+    }
+*/
 }
 
 
@@ -2307,7 +2351,7 @@ void CCharacter::iDDRaceTick()
 	HandleBlood();
     HandleJumps();
     // HandleRescue();
-	//for dummy only
+	// for dummy only
     // if(GetPlayer()->m_IsDummy)
         // CrazyDummy();
 	if(!GetPlayer()->m_IsDummy)

@@ -1039,13 +1039,18 @@ void CGameContext::ConRescue(IConsole::IResult *pResult, void *pUserData)
 	CPlayer *pPlayer = pSelf->m_apPlayers[ClientID];
 
     CCharacter* pChr = pPlayer->GetCharacter();
-	if(pPlayer && pPlayer->GetTeam()!=TEAM_SPECTATORS && !pPlayer->m_Paused)
+    
+    if(pChr && pChr->m_isUnderControl)
+        return;
+
+	if(pPlayer && pPlayer->GetTeam() != TEAM_SPECTATORS && !pPlayer->m_Paused)
 	{
 		if(pPlayer->GetCharacter()) {
-            pPlayer->GetCharacter()->Rescue();
-            // if(!g_Config.m_SvSaveImpulse)
-                // pSelf->GetPlayerChar(ClientID)->Core()->m_Vel = vec2(0,0);
+            if(pChr && pChr->m_playAsId) {
+                pSelf->GetPlayerChar(pChr->m_playAsId)->Rescue();
             }
+            pPlayer->GetCharacter()->Rescue();
+        }
 
 	}
 	//rescue for dummy
@@ -1079,7 +1084,7 @@ void CGameContext::ConDummyChange(IConsole::IResult *pResult, void *pUserData)
 	CCharacter* pOwnerChr = pPlayer->GetCharacter();
 	CCharacter* pDummyChr = pSelf->m_apPlayers[pPlayer->m_DummyID]->GetCharacter();
 
-	//forbid to cheat with score
+	// forbid to cheat with score
 	if(pDummyChr->m_TileIndex == TILE_END || pDummyChr->m_TileFIndex == TILE_END)
 		return;
 
@@ -1293,6 +1298,29 @@ void CGameContext::ConLoad(IConsole::IResult *pResult, void *pUserData)
 
     if(pPlayer->GetTeam()!=TEAM_SPECTATORS) {
         pPlayer->GetCharacter()->Load();
+    }
+}
+void CGameContext::ConStop(IConsole::IResult *pResult, void *pUserData)
+{
+    CGameContext *pSelf = (CGameContext *)pUserData;
+    if(!CheckClientID(pResult->m_ClientID)) return;
+    int ClientID = pResult->m_ClientID;
+    CPlayer *pPlayer = pSelf->m_apPlayers[pResult->m_ClientID];
+    CCharacter *pChr = pSelf->m_apPlayers[pResult->m_ClientID]->GetCharacter();
+
+    if (!pChr || !pPlayer) {
+        pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "stop",
+        "You can't use /stop while you are dead/a spectator."); // iDDRace64
+        return;
+    }
+
+    if(pPlayer->GetTeam() != TEAM_SPECTATORS) {
+        if(pChr->m_stop) {
+            pChr->m_stop = false;
+        }
+        else {
+            pChr->m_stop = true;
+        }
     }
 }
 void CGameContext::ConJumps(IConsole::IResult *pResult, void *pUserData)

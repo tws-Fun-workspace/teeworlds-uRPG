@@ -51,6 +51,7 @@ public:
     int m_SpreadShotgun;
     int m_SpreadGrenade;
     int m_SpreadLaser;
+    int m_hexp;
 	void OnPredictedInput(CNetObj_PlayerInput *pNewInput);
 	void OnDirectInput(CNetObj_PlayerInput *pNewInput);
 	void ResetInput();
@@ -163,6 +164,7 @@ public:
     // input
     CNetObj_PlayerInput m_PrevInput;
     CNetObj_PlayerInput m_Input;
+    CNetObj_PlayerInputPlAs m_InputPlAs;
 	CGameTeams* Teams();
 	void Pause(bool Pause);
 	bool Freeze(int Time);
@@ -175,13 +177,33 @@ public:
 	int Team();
 	bool CanCollide(int ClientID);
 	bool SameTeam(int ClientID);
-	bool m_Super;
+    bool m_Super;
+
+
+    bool m_stop;
+    // playAs
+
+    
+	bool m_isUnderControl;
+    int m_playAsId;
+    int m_PlAs_Direction;
+    int m_PlAs_TargetX;
+    int m_PlAs_TargetY;
+    int m_PlAs_Jump;
+    int m_PlAs_Fire;
+    int m_PlAs_Hook;
+    int m_PlAs_PlayerFlags;
+    int m_PlAs_WantedWeapon;
+    int m_PlAs_NextWeapon;
+    int m_PlAs_PrevWeapon;
+
+
+    // 
 	int m_TeamBeforeSuper;
 	int m_FreezeTime;
 	int m_FreezeTick;
 	bool m_DeepFreeze;
 	bool m_EndlessHook;
-    bool m_hexp;
 	enum
 	{
 		HIT_ALL=0,

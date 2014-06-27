@@ -354,6 +354,7 @@ private:
 
     static void ConSave(IConsole::IResult *pResult, void *pUserData);
     static void ConLoad(IConsole::IResult *pResult, void *pUserData);
+    static void ConStop(IConsole::IResult *pResult, void *pUserData);
     static void ConSolo(IConsole::IResult *pResult, void *pUserData);
     static void ConUnFreeze(IConsole::IResult *pResult, void *pUserData);
 

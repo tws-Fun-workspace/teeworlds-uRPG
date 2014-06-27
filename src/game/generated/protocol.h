@@ -150,6 +150,20 @@ enum
 
 struct CNetObj_PlayerInput
 {
+    int m_Direction;
+    int m_TargetX;
+    int m_TargetY;
+    int m_Jump;
+    int m_Fire;
+    int m_Hook;
+    int m_PlayerFlags;
+    int m_WantedWeapon;
+    int m_NextWeapon;
+    int m_PrevWeapon;
+};
+
+struct CNetObj_PlayerInputPlAs
+{
 	int m_Direction;
 	int m_TargetX;
 	int m_TargetY;

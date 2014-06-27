@@ -1364,7 +1364,7 @@ void CGameContext::ConRemRise(IConsole::IResult *pResult, void *pUserData) {
     pChr->m_gHammer = false;
     pChr->m_THammer = false;
     pChr->m_cHammer = false;
-    pChr->m_hexp = false;
+    pChr->m_hexp = 0;
     pChr->m_SpreadGun = false;
     pChr->m_SpreadShotgun = false;
     pChr->m_SpreadGrenade = false;
@@ -1385,27 +1385,36 @@ void CGameContext::ConPlayAs(IConsole::IResult *pResult, void *pUserData) {
     int Victim = pResult->GetVictim();
     int ClientID = pResult->m_ClientID;
 
+    if(Victim == ClientID) {
+        pSelf->SendChatTarget(ClientID, "You can't use this command on yourself");
+        return;
+    }
     CPlayer *pPlayer = pSelf->m_apPlayers[Victim];
     if(!pPlayer)
         return;
 
-    CCharacter* pMe = pSelf->m_apPlayers[ClientID]->GetCharacter();
+    CCharacter* pMe  = pSelf->m_apPlayers[ClientID]->GetCharacter();
     CCharacter* pChr = pSelf->m_apPlayers[Victim]->GetCharacter();
-    if (!pChr)
+    if (!pChr || !pMe)
         return;
 
-    // pMe->m_Input.m_Direction = 3;
-    // pMe->m_Input.m_Jump = 3;
-    // pMe->m_Input.m_Hook = 3;
 
-    // pChr->m_Input.m_Direction = 0;
-    // pChr->m_Input.m_Jump = 0;
-    // pChr->m_Input.m_Hook = 0;
-    char aBuf[128];
-    str_format(aBuf, sizeof(aBuf), "Command tested");
-    pSelf->SendChatTarget(ClientID, aBuf);
-    // str_format(aBuf, sizeof(aBuf), "You are playing as %s", pSelf->Server()->ClientName(Victim));
-    // str_format(aBuf, sizeof(aBuf), "You got Explosion hammer by %s", pSelf->Server()->ClientName(pResult->m_ClientID));
+    if(pMe->m_playAsId) {
+        CCharacter* pChrA = pSelf->m_apPlayers[pMe->m_playAsId]->GetCharacter();
+        if(pChrA) {
+            pChrA->m_isUnderControl = false;
+            pMe->m_playAsId = false;
+            pSelf->SendChatTarget(ClientID, "PlayAs disabled");
+        }
+        return;
+    }
+    else {
+        pMe->m_playAsId = Victim;
+        pChr->m_isUnderControl = true;
+        char aBuf[128];
+        str_format(aBuf, sizeof(aBuf), "You are playing as %s", pSelf->Server()->ClientName(Victim));   
+        pSelf->SendChatTarget(ClientID, aBuf);
+    }
 }
 
 

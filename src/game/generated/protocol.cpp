@@ -139,7 +139,7 @@ int CNetObjHandler::ValidateObj(int Type, void *pData, int Size)
 		ClampInt("m_PlayerFlags", pObj->m_PlayerFlags, 0, 256);
 		return 0;
 	}
-
+	
 	case NETOBJTYPE_PROJECTILE:
 	{
 		CNetObj_Projectile *pObj = (CNetObj_Projectile *)pData;
@@ -148,7 +148,7 @@ int CNetObjHandler::ValidateObj(int Type, void *pData, int Size)
 		ClampInt("m_StartTick", pObj->m_StartTick, 0, max_int);
 		return 0;
 	}
-
+	
 	case NETOBJTYPE_LASER:
 	{
 		CNetObj_Laser *pObj = (CNetObj_Laser *)pData;
@@ -156,7 +156,7 @@ int CNetObjHandler::ValidateObj(int Type, void *pData, int Size)
 		ClampInt("m_StartTick", pObj->m_StartTick, 0, max_int);
 		return 0;
 	}
-
+	
 	case NETOBJTYPE_PICKUP:
 	{
 		CNetObj_Pickup *pObj = (CNetObj_Pickup *)pData;
@@ -165,7 +165,7 @@ int CNetObjHandler::ValidateObj(int Type, void *pData, int Size)
 		ClampInt("m_Subtype", pObj->m_Subtype, 0, max_int);
 		return 0;
 	}
-
+	
 	case NETOBJTYPE_FLAG:
 	{
 		CNetObj_Flag *pObj = (CNetObj_Flag *)pData;
@@ -173,7 +173,7 @@ int CNetObjHandler::ValidateObj(int Type, void *pData, int Size)
 		ClampInt("m_Team", pObj->m_Team, TEAM_RED, TEAM_BLUE);
 		return 0;
 	}
-
+	
 	case NETOBJTYPE_GAMEINFO:
 	{
 		CNetObj_GameInfo *pObj = (CNetObj_GameInfo *)pData;
@@ -188,7 +188,7 @@ int CNetObjHandler::ValidateObj(int Type, void *pData, int Size)
 		ClampInt("m_RoundCurrent", pObj->m_RoundCurrent, 0, max_int);
 		return 0;
 	}
-
+	
 	case NETOBJTYPE_GAMEDATA:
 	{
 		CNetObj_GameData *pObj = (CNetObj_GameData *)pData;
@@ -197,7 +197,7 @@ int CNetObjHandler::ValidateObj(int Type, void *pData, int Size)
 		ClampInt("m_FlagCarrierBlue", pObj->m_FlagCarrierBlue, FLAG_MISSING, MAX_CLIENTS-1);
 		return 0;
 	}
-
+	
 	case NETOBJTYPE_CHARACTERCORE:
 	{
 		CNetObj_CharacterCore *pObj = (CNetObj_CharacterCore *)pData;
@@ -209,7 +209,7 @@ int CNetObjHandler::ValidateObj(int Type, void *pData, int Size)
 		ClampInt("m_HookTick", pObj->m_HookTick, 0, max_int);
 		return 0;
 	}
-
+	
 	case NETOBJTYPE_CHARACTER:
 	{
 		CNetObj_Character *pObj = (CNetObj_Character *)pData;
@@ -223,7 +223,7 @@ int CNetObjHandler::ValidateObj(int Type, void *pData, int Size)
 		ClampInt("m_AttackTick", pObj->m_AttackTick, 0, max_int);
 		return 0;
 	}
-
+	
 	case NETOBJTYPE_PLAYERINFO:
 	{
 		CNetObj_PlayerInfo *pObj = (CNetObj_PlayerInfo *)pData;
@@ -233,7 +233,7 @@ int CNetObjHandler::ValidateObj(int Type, void *pData, int Size)
 		ClampInt("m_Team", pObj->m_Team, TEAM_SPECTATORS, TEAM_BLUE);
 		return 0;
 	}
-
+	
 	case NETOBJTYPE_CLIENTINFO:
 	{
 		CNetObj_ClientInfo *pObj = (CNetObj_ClientInfo *)pData;
@@ -241,7 +241,7 @@ int CNetObjHandler::ValidateObj(int Type, void *pData, int Size)
 		ClampInt("m_UseCustomColor", pObj->m_UseCustomColor, 0, 1);
 		return 0;
 	}
-
+	
 	case NETOBJTYPE_SPECTATORINFO:
 	{
 		CNetObj_SpectatorInfo *pObj = (CNetObj_SpectatorInfo *)pData;
@@ -249,35 +249,35 @@ int CNetObjHandler::ValidateObj(int Type, void *pData, int Size)
 		ClampInt("m_SpectatorID", pObj->m_SpectatorID, SPEC_FREEVIEW, MAX_CLIENTS-1);
 		return 0;
 	}
-
+	
 	case NETEVENTTYPE_COMMON:
 	{
 		CNetEvent_Common *pObj = (CNetEvent_Common *)pData;
 		if(sizeof(*pObj) != Size) return -1;
 		return 0;
 	}
-
+	
 	case NETEVENTTYPE_EXPLOSION:
 	{
 		CNetEvent_Explosion *pObj = (CNetEvent_Explosion *)pData;
 		if(sizeof(*pObj) != Size) return -1;
 		return 0;
 	}
-
+	
 	case NETEVENTTYPE_SPAWN:
 	{
 		CNetEvent_Spawn *pObj = (CNetEvent_Spawn *)pData;
 		if(sizeof(*pObj) != Size) return -1;
 		return 0;
 	}
-
+	
 	case NETEVENTTYPE_HAMMERHIT:
 	{
 		CNetEvent_HammerHit *pObj = (CNetEvent_HammerHit *)pData;
 		if(sizeof(*pObj) != Size) return -1;
 		return 0;
 	}
-
+	
 	case NETEVENTTYPE_DEATH:
 	{
 		CNetEvent_Death *pObj = (CNetEvent_Death *)pData;
@@ -285,7 +285,7 @@ int CNetObjHandler::ValidateObj(int Type, void *pData, int Size)
 		ClampInt("m_ClientID", pObj->m_ClientID, 0, MAX_CLIENTS-1);
 		return 0;
 	}
-
+	
 	case NETEVENTTYPE_SOUNDGLOBAL:
 	{
 		CNetEvent_SoundGlobal *pObj = (CNetEvent_SoundGlobal *)pData;
@@ -293,7 +293,7 @@ int CNetObjHandler::ValidateObj(int Type, void *pData, int Size)
 		ClampInt("m_SoundID", pObj->m_SoundID, 0, NUM_SOUNDS-1);
 		return 0;
 	}
-
+	
 	case NETEVENTTYPE_SOUNDWORLD:
 	{
 		CNetEvent_SoundWorld *pObj = (CNetEvent_SoundWorld *)pData;
@@ -301,14 +301,14 @@ int CNetObjHandler::ValidateObj(int Type, void *pData, int Size)
 		ClampInt("m_SoundID", pObj->m_SoundID, 0, NUM_SOUNDS-1);
 		return 0;
 	}
-
+	
 	case NETEVENTTYPE_DAMAGEIND:
 	{
 		CNetEvent_DamageInd *pObj = (CNetEvent_DamageInd *)pData;
 		if(sizeof(*pObj) != Size) return -1;
 		return 0;
 	}
-
+	
 	}
 	return -1;
 };
@@ -324,14 +324,14 @@ void *CNetObjHandler::SecureUnpackMsg(int Type, CUnpacker *pUnpacker)
 		(void)pMsg;
 		pMsg->m_pMessage = pUnpacker->GetString();
 	} break;
-
+	
 	case NETMSGTYPE_SV_BROADCAST:
 	{
 		CNetMsg_Sv_Broadcast *pMsg = (CNetMsg_Sv_Broadcast *)m_aMsgData;
 		(void)pMsg;
 		pMsg->m_pMessage = pUnpacker->GetString();
 	} break;
-
+	
 	case NETMSGTYPE_SV_CHAT:
 	{
 		CNetMsg_Sv_Chat *pMsg = (CNetMsg_Sv_Chat *)m_aMsgData;
@@ -342,7 +342,7 @@ void *CNetObjHandler::SecureUnpackMsg(int Type, CUnpacker *pUnpacker)
 		if(pMsg->m_Team < TEAM_SPECTATORS || pMsg->m_Team > TEAM_BLUE) { m_pMsgFailedOn = "m_Team"; break; }
 		if(pMsg->m_ClientID < -1 || pMsg->m_ClientID > MAX_CLIENTS-1) { m_pMsgFailedOn = "m_ClientID"; break; }
 	} break;
-
+	
 	case NETMSGTYPE_SV_KILLMSG:
 	{
 		CNetMsg_Sv_KillMsg *pMsg = (CNetMsg_Sv_KillMsg *)m_aMsgData;
@@ -355,7 +355,7 @@ void *CNetObjHandler::SecureUnpackMsg(int Type, CUnpacker *pUnpacker)
 		if(pMsg->m_Victim < 0 || pMsg->m_Victim > MAX_CLIENTS-1) { m_pMsgFailedOn = "m_Victim"; break; }
 		if(pMsg->m_Weapon < -3 || pMsg->m_Weapon > NUM_WEAPONS-1) { m_pMsgFailedOn = "m_Weapon"; break; }
 	} break;
-
+	
 	case NETMSGTYPE_SV_SOUNDGLOBAL:
 	{
 		CNetMsg_Sv_SoundGlobal *pMsg = (CNetMsg_Sv_SoundGlobal *)m_aMsgData;
@@ -363,25 +363,25 @@ void *CNetObjHandler::SecureUnpackMsg(int Type, CUnpacker *pUnpacker)
 		pMsg->m_SoundID = pUnpacker->GetInt();
 		if(pMsg->m_SoundID < 0 || pMsg->m_SoundID > NUM_SOUNDS-1) { m_pMsgFailedOn = "m_SoundID"; break; }
 	} break;
-
+	
 	case NETMSGTYPE_SV_TUNEPARAMS:
 	{
 		CNetMsg_Sv_TuneParams *pMsg = (CNetMsg_Sv_TuneParams *)m_aMsgData;
 		(void)pMsg;
 	} break;
-
+	
 	case NETMSGTYPE_SV_EXTRAPROJECTILE:
 	{
 		CNetMsg_Sv_ExtraProjectile *pMsg = (CNetMsg_Sv_ExtraProjectile *)m_aMsgData;
 		(void)pMsg;
 	} break;
-
+	
 	case NETMSGTYPE_SV_READYTOENTER:
 	{
 		CNetMsg_Sv_ReadyToEnter *pMsg = (CNetMsg_Sv_ReadyToEnter *)m_aMsgData;
 		(void)pMsg;
 	} break;
-
+	
 	case NETMSGTYPE_SV_WEAPONPICKUP:
 	{
 		CNetMsg_Sv_WeaponPickup *pMsg = (CNetMsg_Sv_WeaponPickup *)m_aMsgData;
@@ -389,7 +389,7 @@ void *CNetObjHandler::SecureUnpackMsg(int Type, CUnpacker *pUnpacker)
 		pMsg->m_Weapon = pUnpacker->GetInt();
 		if(pMsg->m_Weapon < 0 || pMsg->m_Weapon > NUM_WEAPONS-1) { m_pMsgFailedOn = "m_Weapon"; break; }
 	} break;
-
+	
 	case NETMSGTYPE_SV_EMOTICON:
 	{
 		CNetMsg_Sv_Emoticon *pMsg = (CNetMsg_Sv_Emoticon *)m_aMsgData;
@@ -399,13 +399,13 @@ void *CNetObjHandler::SecureUnpackMsg(int Type, CUnpacker *pUnpacker)
 		if(pMsg->m_ClientID < 0 || pMsg->m_ClientID > MAX_CLIENTS-1) { m_pMsgFailedOn = "m_ClientID"; break; }
 		if(pMsg->m_Emoticon < 0 || pMsg->m_Emoticon > NUM_EMOTICONS-1) { m_pMsgFailedOn = "m_Emoticon"; break; }
 	} break;
-
+	
 	case NETMSGTYPE_SV_VOTECLEAROPTIONS:
 	{
 		CNetMsg_Sv_VoteClearOptions *pMsg = (CNetMsg_Sv_VoteClearOptions *)m_aMsgData;
 		(void)pMsg;
 	} break;
-
+	
 	case NETMSGTYPE_SV_VOTEOPTIONLISTADD:
 	{
 		CNetMsg_Sv_VoteOptionListAdd *pMsg = (CNetMsg_Sv_VoteOptionListAdd *)m_aMsgData;
@@ -428,21 +428,21 @@ void *CNetObjHandler::SecureUnpackMsg(int Type, CUnpacker *pUnpacker)
 		pMsg->m_pDescription14 = pUnpacker->GetString(CUnpacker::SANITIZE_CC|CUnpacker::SKIP_START_WHITESPACES);
 		if(pMsg->m_NumOptions < 1 || pMsg->m_NumOptions > 15) { m_pMsgFailedOn = "m_NumOptions"; break; }
 	} break;
-
+	
 	case NETMSGTYPE_SV_VOTEOPTIONADD:
 	{
 		CNetMsg_Sv_VoteOptionAdd *pMsg = (CNetMsg_Sv_VoteOptionAdd *)m_aMsgData;
 		(void)pMsg;
 		pMsg->m_pDescription = pUnpacker->GetString(CUnpacker::SANITIZE_CC|CUnpacker::SKIP_START_WHITESPACES);
 	} break;
-
+	
 	case NETMSGTYPE_SV_VOTEOPTIONREMOVE:
 	{
 		CNetMsg_Sv_VoteOptionRemove *pMsg = (CNetMsg_Sv_VoteOptionRemove *)m_aMsgData;
 		(void)pMsg;
 		pMsg->m_pDescription = pUnpacker->GetString(CUnpacker::SANITIZE_CC|CUnpacker::SKIP_START_WHITESPACES);
 	} break;
-
+	
 	case NETMSGTYPE_SV_VOTESET:
 	{
 		CNetMsg_Sv_VoteSet *pMsg = (CNetMsg_Sv_VoteSet *)m_aMsgData;
@@ -452,7 +452,7 @@ void *CNetObjHandler::SecureUnpackMsg(int Type, CUnpacker *pUnpacker)
 		pMsg->m_pReason = pUnpacker->GetString(CUnpacker::SANITIZE_CC|CUnpacker::SKIP_START_WHITESPACES);
 		if(pMsg->m_Timeout < 0 || pMsg->m_Timeout > 60) { m_pMsgFailedOn = "m_Timeout"; break; }
 	} break;
-
+	
 	case NETMSGTYPE_SV_VOTESTATUS:
 	{
 		CNetMsg_Sv_VoteStatus *pMsg = (CNetMsg_Sv_VoteStatus *)m_aMsgData;
@@ -466,7 +466,7 @@ void *CNetObjHandler::SecureUnpackMsg(int Type, CUnpacker *pUnpacker)
 		if(pMsg->m_Pass < 0 || pMsg->m_Pass > MAX_CLIENTS) { m_pMsgFailedOn = "m_Pass"; break; }
 		if(pMsg->m_Total < 0 || pMsg->m_Total > MAX_CLIENTS) { m_pMsgFailedOn = "m_Total"; break; }
 	} break;
-
+	
 	case NETMSGTYPE_CL_SAY:
 	{
 		CNetMsg_Cl_Say *pMsg = (CNetMsg_Cl_Say *)m_aMsgData;
@@ -475,7 +475,7 @@ void *CNetObjHandler::SecureUnpackMsg(int Type, CUnpacker *pUnpacker)
 		pMsg->m_pMessage = pUnpacker->GetString();
 		if(pMsg->m_Team < 0 || pMsg->m_Team > 1) { m_pMsgFailedOn = "m_Team"; break; }
 	} break;
-
+	
 	case NETMSGTYPE_CL_SETTEAM:
 	{
 		CNetMsg_Cl_SetTeam *pMsg = (CNetMsg_Cl_SetTeam *)m_aMsgData;
@@ -483,7 +483,7 @@ void *CNetObjHandler::SecureUnpackMsg(int Type, CUnpacker *pUnpacker)
 		pMsg->m_Team = pUnpacker->GetInt();
 		if(pMsg->m_Team < TEAM_SPECTATORS || pMsg->m_Team > TEAM_BLUE) { m_pMsgFailedOn = "m_Team"; break; }
 	} break;
-
+	
 	case NETMSGTYPE_CL_SETSPECTATORMODE:
 	{
 		CNetMsg_Cl_SetSpectatorMode *pMsg = (CNetMsg_Cl_SetSpectatorMode *)m_aMsgData;
@@ -491,7 +491,7 @@ void *CNetObjHandler::SecureUnpackMsg(int Type, CUnpacker *pUnpacker)
 		pMsg->m_SpectatorID = pUnpacker->GetInt();
 		if(pMsg->m_SpectatorID < SPEC_FREEVIEW || pMsg->m_SpectatorID > MAX_CLIENTS-1) { m_pMsgFailedOn = "m_SpectatorID"; break; }
 	} break;
-
+	
 	case NETMSGTYPE_CL_STARTINFO:
 	{
 		CNetMsg_Cl_StartInfo *pMsg = (CNetMsg_Cl_StartInfo *)m_aMsgData;
@@ -505,7 +505,7 @@ void *CNetObjHandler::SecureUnpackMsg(int Type, CUnpacker *pUnpacker)
 		pMsg->m_ColorFeet = pUnpacker->GetInt();
 		if(pMsg->m_UseCustomColor < 0 || pMsg->m_UseCustomColor > 1) { m_pMsgFailedOn = "m_UseCustomColor"; break; }
 	} break;
-
+	
 	case NETMSGTYPE_CL_CHANGEINFO:
 	{
 		CNetMsg_Cl_ChangeInfo *pMsg = (CNetMsg_Cl_ChangeInfo *)m_aMsgData;
@@ -519,13 +519,13 @@ void *CNetObjHandler::SecureUnpackMsg(int Type, CUnpacker *pUnpacker)
 		pMsg->m_ColorFeet = pUnpacker->GetInt();
 		if(pMsg->m_UseCustomColor < 0 || pMsg->m_UseCustomColor > 1) { m_pMsgFailedOn = "m_UseCustomColor"; break; }
 	} break;
-
+	
 	case NETMSGTYPE_CL_KILL:
 	{
 		CNetMsg_Cl_Kill *pMsg = (CNetMsg_Cl_Kill *)m_aMsgData;
 		(void)pMsg;
 	} break;
-
+	
 	case NETMSGTYPE_CL_EMOTICON:
 	{
 		CNetMsg_Cl_Emoticon *pMsg = (CNetMsg_Cl_Emoticon *)m_aMsgData;
@@ -533,7 +533,7 @@ void *CNetObjHandler::SecureUnpackMsg(int Type, CUnpacker *pUnpacker)
 		pMsg->m_Emoticon = pUnpacker->GetInt();
 		if(pMsg->m_Emoticon < 0 || pMsg->m_Emoticon > NUM_EMOTICONS-1) { m_pMsgFailedOn = "m_Emoticon"; break; }
 	} break;
-
+	
 	case NETMSGTYPE_CL_VOTE:
 	{
 		CNetMsg_Cl_Vote *pMsg = (CNetMsg_Cl_Vote *)m_aMsgData;
@@ -541,7 +541,7 @@ void *CNetObjHandler::SecureUnpackMsg(int Type, CUnpacker *pUnpacker)
 		pMsg->m_Vote = pUnpacker->GetInt();
 		if(pMsg->m_Vote < -1 || pMsg->m_Vote > 1) { m_pMsgFailedOn = "m_Vote"; break; }
 	} break;
-
+	
 	case NETMSGTYPE_CL_CALLVOTE:
 	{
 		CNetMsg_Cl_CallVote *pMsg = (CNetMsg_Cl_CallVote *)m_aMsgData;
@@ -550,13 +550,13 @@ void *CNetObjHandler::SecureUnpackMsg(int Type, CUnpacker *pUnpacker)
 		pMsg->m_Value = pUnpacker->GetString(CUnpacker::SANITIZE_CC|CUnpacker::SKIP_START_WHITESPACES);
 		pMsg->m_Reason = pUnpacker->GetString(CUnpacker::SANITIZE_CC|CUnpacker::SKIP_START_WHITESPACES);
 	} break;
-
+	
 	case NETMSGTYPE_CL_ISDDRACE:
 	{
 		CNetMsg_Cl_IsDDRace *pMsg = (CNetMsg_Cl_IsDDRace *)m_aMsgData;
 		(void)pMsg;
 	} break;
-
+	
 	case NETMSGTYPE_CL_SHOWOTHERS:
 	{
 		CNetMsg_Cl_ShowOthers *pMsg = (CNetMsg_Cl_ShowOthers *)m_aMsgData;
@@ -564,7 +564,7 @@ void *CNetObjHandler::SecureUnpackMsg(int Type, CUnpacker *pUnpacker)
 		pMsg->m_Show = pUnpacker->GetInt();
 		if(pMsg->m_Show < 0 || pMsg->m_Show > 1) { m_pMsgFailedOn = "m_Show"; break; }
 	} break;
-
+	
 	case NETMSGTYPE_SV_DDRACETIME:
 	{
 		CNetMsg_Sv_DDRaceTime *pMsg = (CNetMsg_Sv_DDRaceTime *)m_aMsgData;
@@ -574,7 +574,7 @@ void *CNetObjHandler::SecureUnpackMsg(int Type, CUnpacker *pUnpacker)
 		pMsg->m_Finish = pUnpacker->GetInt();
 		if(pMsg->m_Finish < 0 || pMsg->m_Finish > 1) { m_pMsgFailedOn = "m_Finish"; break; }
 	} break;
-
+	
 	case NETMSGTYPE_SV_RECORD:
 	{
 		CNetMsg_Sv_Record *pMsg = (CNetMsg_Sv_Record *)m_aMsgData;
@@ -582,7 +582,7 @@ void *CNetObjHandler::SecureUnpackMsg(int Type, CUnpacker *pUnpacker)
 		pMsg->m_ServerTimeBest = pUnpacker->GetInt();
 		pMsg->m_PlayerTimeBest = pUnpacker->GetInt();
 	} break;
-
+	
 	case NETMSGTYPE_SV_PLAYERTIME:
 	{
 		CNetMsg_Sv_PlayerTime *pMsg = (CNetMsg_Sv_PlayerTime *)m_aMsgData;
@@ -591,7 +591,7 @@ void *CNetObjHandler::SecureUnpackMsg(int Type, CUnpacker *pUnpacker)
 		pMsg->m_ClientID = pUnpacker->GetInt();
 		if(pMsg->m_ClientID < 0 || pMsg->m_ClientID > MAX_CLIENTS-1) { m_pMsgFailedOn = "m_ClientID"; break; }
 	} break;
-
+	
 	case NETMSGTYPE_CL_TEAMSSTATE:
 	{
 		CNetMsg_Cl_TeamsState *pMsg = (CNetMsg_Cl_TeamsState *)m_aMsgData;
@@ -613,21 +613,21 @@ void *CNetObjHandler::SecureUnpackMsg(int Type, CUnpacker *pUnpacker)
 		pMsg->m_Tee14 = pUnpacker->GetInt();
 		pMsg->m_Tee15 = pUnpacker->GetInt();
 	} break;
-
+	
 	case NETMSGTYPE_CL_ISDDRACE64:
 	{
 		CNetMsg_Cl_IsDDRace64 *pMsg = (CNetMsg_Cl_IsDDRace64 *)m_aMsgData;
 		(void)pMsg;
 	} break;
-
+	
 	default:
 		m_pMsgFailedOn = "(type out of range)";
 		break;
 	}
-
+	
 	if(pUnpacker->Error())
 		m_pMsgFailedOn = "(unpack error)";
-
+	
 	if(m_pMsgFailedOn)
 		return 0;
 	m_pMsgFailedOn = "";
