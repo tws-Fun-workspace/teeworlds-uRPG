@@ -256,6 +256,7 @@ private:
     static void ConTHammer(IConsole::IResult *pResult, void *pUserData);
     static void ConEHammer(IConsole::IResult *pResult, void *pUserData);
     static void ConHeXP(IConsole::IResult *pResult, void *pUserData);
+    static void ConGuneXP(IConsole::IResult *pResult, void *pUserData);
 
     static void ConGrenadeBounce(IConsole::IResult *pResult, void *pUserData);
     static void ConShotgunWall(IConsole::IResult *pResult, void *pUserData);
@@ -290,6 +291,8 @@ private:
     static void ConUnFreezePlayer(IConsole::IResult *pResult, void *pUserData);
 
     static void ConPlayAs(IConsole::IResult *pResult, void *pUserData);
+    
+    static void ConCanKill(IConsole::IResult *pResult, void *pUserData);
 
     static void ConId(IConsole::IResult *pResult, void *pUserData);
     static void ConRemRise(IConsole::IResult *pResult, void *pUserData);

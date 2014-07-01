@@ -35,14 +35,15 @@ bool CPlasma::HitCharacter()
         return false;
     }
     else {
-        Hit->TakeDamage(vec2(0.f, 0.f), GameServer()->Tuning()->m_LaserDamage*2, m_Owner, WEAPON_RIFLE);
+        if(m_Owner != -1) {
+            Hit->TakeDamage(vec2(0.f, 0.f), GameServer()->Tuning()->m_LaserDamage*2, m_Owner, WEAPON_RIFLE);
+        }
     }
     if (Hit->Team() != m_ResponsibleTeam)
         return false;
     m_Freeze ? Hit->Freeze() : Hit->UnFreeze();
     if (m_Explosive)
-        GameServer()->CreateExplosion(m_Pos, -1, WEAPON_GRENADE, true,
-                m_ResponsibleTeam, Hit->Teams()->TeamMask(m_ResponsibleTeam));
+        GameServer()->CreateExplosion(m_Pos, m_Owner, WEAPON_GRENADE, true, m_ResponsibleTeam, Hit->Teams()->TeamMask(m_ResponsibleTeam));
     GameServer()->m_World.DestroyEntity(this);
     return true;
 }
@@ -77,7 +78,7 @@ void CPlasma::Tick()
         if (m_Explosive)
             GameServer()->CreateExplosion(
                     m_Pos,
-                    -1,
+                    m_Owner,
                     WEAPON_GRENADE,
                     true,
                     m_ResponsibleTeam,

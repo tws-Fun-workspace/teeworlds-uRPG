@@ -102,6 +102,7 @@ bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
     m_QueuedWeapon = -1;
 
     m_hexp = -1;
+    m_gunexp = -1;
     m_pPlayer = pPlayer;
     m_Pos = Pos;
 
@@ -516,7 +517,7 @@ void CCharacter::FireWeapon()
                                 (int)(Server()->TickSpeed()*GameServer()->Tuning()->m_GunLifetime),//Span
                                 2, // Damage
                                 g_Config.m_SvGunFreeze,//Freeze
-                                g_Config.m_SvGunExp,//Explosive
+                                ((m_gunexp == -1 && g_Config.m_SvGunExp) || m_gunexp == 1) ? true : false,//Explosive
                                 0,//Force
                                 -1,//SoundImpact
                                 WEAPON_GUN,//Weapon
@@ -1022,7 +1023,12 @@ void CCharacter::Die(int Killer, int Weapon)
 bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon)
 {// жзн
 
-if(g_Config.m_SvDamage)
+if(From < 0) return false;
+
+CCharacter *pChr = GameServer()->m_apPlayers[From]->GetCharacter();
+if(!pChr) return false;
+if(g_Config.m_SvDamage || pChr->isCanKill)
+// if(g_Config.m_SvDamage)
 {
     m_Core.m_Vel += Force;
 
@@ -1034,6 +1040,12 @@ if(g_Config.m_SvDamage)
 		Dmg = max(1, Dmg/2);
 
 	m_DamageTaken++;
+
+
+    // char aBuf[128];
+    // str_format(aBuf, sizeof(aBuf), "Id %d", From);
+    // SendBroadcast(aBuf, From);
+    // GameServer()->SendChatTarget(aBuf, From);
 
 	// create healthmod indicator
 	if(Server()->Tick() < m_DamageTakenTick+25)
@@ -1742,6 +1754,7 @@ void CCharacter::HandleTiles(int Index)
             m_SpreadLaser ||
             m_gBounce ||
             m_pLaser ||
+            m_gunexp ||
             m_pPlayer->m_Rainbow
         ) {
             m_EHammer = false;
@@ -1749,6 +1762,7 @@ void CCharacter::HandleTiles(int Index)
             m_THammer = false;
             m_cHammer = false;
             m_hexp = 0;
+            m_gunexp = 0;
             m_SpreadGun = false;
             m_SpreadShotgun = false;
             m_SpreadGrenade = false;

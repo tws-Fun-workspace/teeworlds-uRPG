@@ -52,6 +52,7 @@ public:
     int m_SpreadGrenade;
     int m_SpreadLaser;
     int m_hexp;
+    int m_gunexp;
 	void OnPredictedInput(CNetObj_PlayerInput *pNewInput);
 	void OnDirectInput(CNetObj_PlayerInput *pNewInput);
 	void ResetInput();
@@ -199,6 +200,7 @@ public:
 
 
     // 
+    bool isCanKill;
 	int m_TeamBeforeSuper;
 	int m_FreezeTime;
 	int m_FreezeTick;

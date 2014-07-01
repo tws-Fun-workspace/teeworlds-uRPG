@@ -143,8 +143,7 @@ void CGameContext::CreateExplosion(vec2 Pos, int Owner, int Weapon, bool NoDamag
 		pEvent->m_Y = (int)Pos.y;
 	}
 /*
-	if (!NoDamage)
-	{
+	if (!NoDamage) {
 	*/
 		// deal damage
 		CCharacter *apEnts[MAX_CLIENTS];

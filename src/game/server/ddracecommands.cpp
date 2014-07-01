@@ -876,19 +876,44 @@ void CGameContext::ConHeXP(IConsole::IResult *pResult, void *pUserData)
     CCharacter* pChr = pSelf->m_apPlayers[Victim]->GetCharacter();;
     if(!pChr)
         return;
-    if(pChr->m_hexp) {
-        pChr->m_hexp = 0;
-        char aBuf[256];
-        str_format(aBuf, sizeof(aBuf), "%s removed your HeXP", pSelf->Server()->ClientName(pResult->m_ClientID));
-        pSelf->SendChatTarget(Victim, aBuf);
-    }
-    else {
+    if(pChr->m_hexp <= 0) {
         pChr->m_hexp = 1;
         char aBuf[256];
         str_format(aBuf, sizeof(aBuf), "You got HeXP by %s.", pSelf->Server()->ClientName(pResult->m_ClientID));
         pSelf->SendChatTarget(Victim, aBuf);
     }
+    else {
+        pChr->m_hexp = 0;
+        char aBuf[256];
+        str_format(aBuf, sizeof(aBuf), "%s removed your HeXP", pSelf->Server()->ClientName(pResult->m_ClientID));
+        pSelf->SendChatTarget(Victim, aBuf);
+    }
+}
+void CGameContext::ConGuneXP(IConsole::IResult *pResult, void *pUserData)
+{
+    if(!CheckRights(pResult->m_ClientID, pResult->GetVictim(), (CGameContext *)pUserData)) return;
+    int Victim = pResult->GetVictim();
 
+    CGameContext *pSelf = (CGameContext *)pUserData;
+    CPlayer *pPlayer = pSelf->m_apPlayers[Victim];
+    if(!pPlayer)
+        return;
+
+    CCharacter* pChr = pSelf->m_apPlayers[Victim]->GetCharacter();;
+    if(!pChr)
+        return;
+    if(pChr->m_gunexp <= 0) {
+        pChr->m_gunexp = 1;
+        char aBuf[256];
+        str_format(aBuf, sizeof(aBuf), "You got Gunexp by %s.", pSelf->Server()->ClientName(pResult->m_ClientID));
+        pSelf->SendChatTarget(Victim, aBuf);
+    }
+    else {
+        pChr->m_gunexp = 0;
+        char aBuf[256];
+        str_format(aBuf, sizeof(aBuf), "%s removed your Gunexp", pSelf->Server()->ClientName(pResult->m_ClientID));
+        pSelf->SendChatTarget(Victim, aBuf);
+    }
 }
 void CGameContext::ConSetJumps(IConsole::IResult *pResult, void *pUserData)
 {
@@ -1416,6 +1441,42 @@ void CGameContext::ConPlayAs(IConsole::IResult *pResult, void *pUserData) {
         pSelf->SendChatTarget(ClientID, aBuf);
     }
 }
+
+void CGameContext::ConCanKill(IConsole::IResult *pResult, void *pUserData)
+{
+    if(!CheckRights(pResult->m_ClientID, pResult->GetVictim(), (CGameContext *)pUserData)) return;
+    CGameContext *pSelf = (CGameContext *)pUserData;
+    int Victim = pResult->GetVictim();
+
+    CPlayer *pPlayer = pSelf->m_apPlayers[Victim];
+    if(!pPlayer)
+        return;
+
+    CCharacter* pChr = pSelf->m_apPlayers[Victim]->GetCharacter();
+    if (!pChr)
+        return;
+
+    if(pChr->isCanKill) {
+        pChr->isCanKill = false;
+        char aBuf[256];
+        str_format(aBuf, sizeof(aBuf), "You can't kill players");
+        pSelf->SendChatTarget(Victim, aBuf);
+    }
+    else {
+        pChr->isCanKill = true;
+        char aBuf[256];
+        str_format(aBuf, sizeof(aBuf), "You can kill players");
+        pSelf->SendChatTarget(Victim, aBuf);
+    }
+
+}
+
+
+
+
+
+
+
 
 
 /*

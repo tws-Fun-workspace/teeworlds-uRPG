@@ -53,7 +53,8 @@ CONSOLE_COMMAND("Score", "vi",              CFGFLAG_SERVER|CMDFLAG_TEST, ConScor
 CONSOLE_COMMAND("Hammer", "vi",             CFGFLAG_SERVER|CMDFLAG_TEST, ConHammer, this, "Sets the hammer power of player v to i")
 CONSOLE_COMMAND("tHammer", "v",             CFGFLAG_SERVER|CMDFLAG_TEST, ConTHammer, this, "Tele-hammer to your cursor")
 CONSOLE_COMMAND("eHammer", "v",             CFGFLAG_SERVER|CMDFLAG_TEST, ConEHammer, this, "Create Explosion near cursor")
-CONSOLE_COMMAND("HeXP", "v",                CFGFLAG_SERVER|CMDFLAG_TEST, ConHeXP, this, "Hammer explosion")
+CONSOLE_COMMAND("Hexp", "v",                CFGFLAG_SERVER|CMDFLAG_TEST, ConHeXP, this, "Hammer explosion")
+CONSOLE_COMMAND("Gunexp", "v",              CFGFLAG_SERVER|CMDFLAG_TEST, ConGuneXP, this, "Gun explosion")
 CONSOLE_COMMAND("gBounce", "v",             CFGFLAG_SERVER|CMDFLAG_TEST, ConGrenadeBounce, this, "Bounce grenades")
 CONSOLE_COMMAND("sWall", "v",               CFGFLAG_SERVER|CMDFLAG_TEST, ConShotgunWall, this, "Shotgun Walls")
 
@@ -86,6 +87,8 @@ CONSOLE_COMMAND("Freeze", "v?i",            CFGFLAG_SERVER|CMDFLAG_TEST, ConFree
 CONSOLE_COMMAND("UnFreeze", "v",            CFGFLAG_SERVER,              ConUnFreezePlayer, this, "Unfreezes player v")
 
 CONSOLE_COMMAND("PlayAs", "v",              CFGFLAG_SERVER,              ConPlayAs, this, "Play as v")
+
+CONSOLE_COMMAND("canKill", "v",             CFGFLAG_SERVER,              ConCanKill, this, "Enable to kill players with gun")
 
 CONSOLE_COMMAND("RemRise", "v",             CFGFLAG_SERVER,              ConRemRise, this, "Remove all extras")
 CONSOLE_COMMAND("Mute", "v",                CFGFLAG_SERVER,              ConMute, this, "Mute player");
