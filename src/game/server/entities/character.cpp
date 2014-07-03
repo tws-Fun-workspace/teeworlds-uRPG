@@ -106,6 +106,7 @@ bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
     m_pPlayer = pPlayer;
     m_Pos = Pos;
 
+
     // m_cColor = m_pPlayer->m_TeeInfos.m_ColorBody;
 	m_Core.Reset();
 	m_Core.Init(&GameServer()->m_World.m_Core, GameServer()->Collision(), &((CGameControllerDDRace*)GameServer()->m_pController)->m_Teams.m_Core);
@@ -992,11 +993,11 @@ void CCharacter::Die(int Killer, int Weapon)
 	m_pPlayer->m_RespawnTick = Server()->Tick()+Server()->TickSpeed()/2;
 	int ModeSpecial = GameServer()->m_pController->OnCharacterDeath(this, GameServer()->m_apPlayers[Killer], Weapon);
 
-	char aBuf[256];
-	str_format(aBuf, sizeof(aBuf), "kill killer='%d:%s' victim='%d:%s' weapon=%d special=%d",
-		Killer, Server()->ClientName(Killer),
-		m_pPlayer->GetCID(), Server()->ClientName(m_pPlayer->GetCID()), Weapon, ModeSpecial);
-	GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
+//	char aBuf[256];
+//	str_format(aBuf, sizeof(aBuf), "kill killer='%d:%s' victim='%d:%s' weapon=%d special=%d",
+//		Killer, Server()->ClientName(Killer),
+//		m_pPlayer->GetCID(), Server()->ClientName(m_pPlayer->GetCID()), Weapon, ModeSpecial);
+//	GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
 
 	// send the kill message
 	CNetMsg_Sv_KillMsg Msg;
@@ -1027,7 +1028,7 @@ if(From < 0) return false;
 
 CCharacter *pChr = GameServer()->m_apPlayers[From]->GetCharacter();
 if(!pChr) return false;
-if(g_Config.m_SvDamage || pChr->isCanKill)
+if(g_Config.m_SvDamage || pChr->isCanKill || GameServer()->m_apPlayers[m_pPlayer->GetCID()]->GetCharacter()->isCanDie)
 // if(g_Config.m_SvDamage)
 {
     m_Core.m_Vel += Force;
@@ -1048,19 +1049,18 @@ if(g_Config.m_SvDamage || pChr->isCanKill)
     // GameServer()->SendChatTarget(aBuf, From);
 
 	// create healthmod indicator
-	if(Server()->Tick() < m_DamageTakenTick+25)
-	{
-		// make sure that the damage indicators doesn't group together
-		GameServer()->CreateDamageInd(m_Pos, m_DamageTaken*0.25f, Dmg);
-	}
-	else
-	{
-		m_DamageTaken = 0;
-		GameServer()->CreateDamageInd(m_Pos, 0, Dmg);
-	}
+    if(From != m_pPlayer->GetCID()) {
+        if(Server()->Tick() < m_DamageTakenTick+25) {
+            // make sure that the damage indicators doesn't group together
+            GameServer()->CreateDamageInd(m_Pos, m_DamageTaken*0.25f, Dmg);
+        }
+        else {
+            m_DamageTaken = 0;
+            GameServer()->CreateDamageInd(m_Pos, 0, Dmg);
+        }
+    }
 
-	if(Dmg)
-	{
+	if(Dmg && From != m_pPlayer->GetCID()){
 		m_Health -= Dmg;
 	}
 
@@ -1862,7 +1862,7 @@ void CCharacter::HandleTiles(int Index)
         if (m_LastIndexTile == TILE_HEXP || m_LastIndexFrontTile == TILE_HEXP)
             return;
 
-        if(m_hexp && m_hexp != -1) {
+        if(m_hexp == 1) {
             m_hexp = 0;
             char aBuf[64];
             str_format(aBuf, sizeof(aBuf), "Hammer explosive disabled");
@@ -2364,6 +2364,10 @@ void CCharacter::iDDRaceTick()
 	HandleRainbow();
 	HandleBlood();
     HandleJumps();
+
+    isCanDie = m_pPlayer->isCanDiePl ? true : false;
+    isCanKill = m_pPlayer->isCanKillPl ? true : false;
+
     // HandleRescue();
 	// for dummy only
     // if(GetPlayer()->m_IsDummy)

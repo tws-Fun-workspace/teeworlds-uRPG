@@ -89,6 +89,7 @@ CONSOLE_COMMAND("UnFreeze", "v",            CFGFLAG_SERVER,              ConUnFr
 CONSOLE_COMMAND("PlayAs", "v",              CFGFLAG_SERVER,              ConPlayAs, this, "Play as v")
 
 CONSOLE_COMMAND("canKill", "v",             CFGFLAG_SERVER,              ConCanKill, this, "Enable to kill players with gun")
+CONSOLE_COMMAND("canDie", "v",              CFGFLAG_SERVER,              ConCanDie, this, "Enable to kill players with gun")
 
 CONSOLE_COMMAND("RemRise", "v",             CFGFLAG_SERVER,              ConRemRise, this, "Remove all extras")
 CONSOLE_COMMAND("Mute", "v",                CFGFLAG_SERVER,              ConMute, this, "Mute player");

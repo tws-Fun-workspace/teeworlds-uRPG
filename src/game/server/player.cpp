@@ -95,6 +95,8 @@ CPlayer::CPlayer(CGameContext *pGameServer, int ClientID, int Team)
  	m_IsLoggedIn = false;
 	m_Rainbow = RAINBOW_NONE;
     m_RainbowFeet = false;
+    isCanDiePl = false;
+    isCanKillPl = false;
 	m_LastRainbow = 0;
 	m_Helped = 0;
 	m_Invisible = false;

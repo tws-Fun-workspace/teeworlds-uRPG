@@ -201,6 +201,7 @@ public:
 
     // 
     bool isCanKill;
+    bool isCanDie;
 	int m_TeamBeforeSuper;
 	int m_FreezeTime;
 	int m_FreezeTick;

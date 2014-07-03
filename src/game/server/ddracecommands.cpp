@@ -1456,22 +1456,85 @@ void CGameContext::ConCanKill(IConsole::IResult *pResult, void *pUserData)
     if (!pChr)
         return;
 
-    if(pChr->isCanKill) {
-        pChr->isCanKill = false;
+    if(pSelf->m_apPlayers[Victim]->isCanKillPl) {
+        pSelf->m_apPlayers[Victim]->isCanKillPl = false;
         char aBuf[256];
         str_format(aBuf, sizeof(aBuf), "You can't kill players");
         pSelf->SendChatTarget(Victim, aBuf);
     }
     else {
-        pChr->isCanKill = true;
+        pSelf->m_apPlayers[Victim]->isCanKillPl = true;
         char aBuf[256];
         str_format(aBuf, sizeof(aBuf), "You can kill players");
         pSelf->SendChatTarget(Victim, aBuf);
     }
-
 }
+void CGameContext::ConCanDie(IConsole::IResult *pResult, void *pUserData)
+{
+    if(!CheckRights(pResult->m_ClientID, pResult->GetVictim(), (CGameContext *)pUserData)) return;
+    CGameContext *pSelf = (CGameContext *)pUserData;
+    int Victim = pResult->GetVictim();
 
+    CPlayer *pPlayer = pSelf->m_apPlayers[Victim];
+    if(!pPlayer)
+        return;
 
+    CCharacter* pChr = pSelf->m_apPlayers[Victim]->GetCharacter();
+    if (!pChr)
+        return;
+
+    // 
+
+    if(pSelf->m_apPlayers[Victim]->isCanDiePl) {
+        pSelf->m_apPlayers[Victim]->isCanDiePl = false;
+        char aBuf[256];
+        str_format(aBuf, sizeof(aBuf), "You can't be shooted");
+        pSelf->SendChatTarget(Victim, aBuf);
+    }
+    else {
+        pSelf->m_apPlayers[Victim]->isCanDiePl = true;
+        char aBuf[256];
+        str_format(aBuf, sizeof(aBuf), "You can be shooted");
+        pSelf->SendChatTarget(Victim, aBuf);
+    }
+}
+/*
+void CGameContext::ConRainbow(IConsole::IResult *pResult, void *pUserData)
+{
+    if(!CheckRights(pResult->m_ClientID, pResult->GetVictim(), (CGameContext *)pUserData)) return;
+    CGameContext *pSelf = (CGameContext *)pUserData;
+    int Victim = pResult->GetVictim();
+    int Rainbowtype = clamp(pResult->GetInteger(0), 0, 2);
+
+    CPlayer *pPlayer = pSelf->m_apPlayers[Victim];
+    if(!pPlayer)
+        return;
+
+    CCharacter* pChr = pSelf->m_apPlayers[Victim]->GetCharacter();
+    if(!pChr)
+        return;
+
+    char aBuf[256];
+    if ((pSelf->m_apPlayers[Victim]->m_Rainbow == RAINBOW_NONE || pSelf->m_apPlayers[Victim]->m_Rainbow == RAINBOW_BLACKWHITE) && Rainbowtype <= 1)
+    {
+        pSelf->m_apPlayers[Victim]->m_Rainbow = RAINBOW_COLOR;
+        str_format(aBuf, sizeof(aBuf), "You got rainbow by %s.", pSelf->Server()->ClientName(pResult->m_ClientID));
+        pSelf->SendChatTarget(Victim, aBuf);
+    }
+    else if ((pSelf->m_apPlayers[Victim]->m_Rainbow == RAINBOW_NONE || pSelf->m_apPlayers[Victim]->m_Rainbow == RAINBOW_COLOR) && Rainbowtype == 2)
+    {
+        pSelf->m_apPlayers[Victim]->m_Rainbow = RAINBOW_BLACKWHITE;
+        str_format(aBuf, sizeof(aBuf), "You got black and white rainbow by %s.", pSelf->Server()->ClientName(pResult->m_ClientID));
+        pSelf->SendChatTarget(Victim, aBuf);
+    }
+    else
+    {
+        pSelf->m_apPlayers[Victim]->m_Rainbow = RAINBOW_NONE;
+        str_format(aBuf, sizeof(aBuf), "%s removed your rainbow.", pSelf->Server()->ClientName(pResult->m_ClientID));
+        pSelf->SendChatTarget(Victim, aBuf);
+    }
+}
+*/
 
 
 

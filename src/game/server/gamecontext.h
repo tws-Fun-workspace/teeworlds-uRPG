@@ -293,6 +293,7 @@ private:
     static void ConPlayAs(IConsole::IResult *pResult, void *pUserData);
     
     static void ConCanKill(IConsole::IResult *pResult, void *pUserData);
+    static void ConCanDie(IConsole::IResult *pResult, void *pUserData);
 
     static void ConId(IConsole::IResult *pResult, void *pUserData);
     static void ConRemRise(IConsole::IResult *pResult, void *pUserData);
