@@ -481,10 +481,11 @@ void CConsole::ExecuteFile(const char *pFilename, int ClientID)
 
 		io_close(File);
 	}
-	else
-	{
-		str_format(aBuf, sizeof(aBuf), "failed to open '%s'", pFilename);
-		Print(IConsole::OUTPUT_LEVEL_STANDARD, "console", aBuf);
+	else {
+        if(g_Config.m_SvConsoleMsg) {
+            str_format(aBuf, sizeof(aBuf), "failed to open '%s'", pFilename);
+            Print(IConsole::OUTPUT_LEVEL_STANDARD, "console", aBuf);
+        }
 	}
 
 	m_pFirstExec = pPrev;

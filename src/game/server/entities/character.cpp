@@ -468,7 +468,6 @@ void CCharacter::FireWeapon()
 					pTarget->UnFreeze();
 
 				if(m_DeepHammer) {
-					pTarget->m_Super = false;
 					pTarget->DeephFreeze();
 				}
                 if(m_unDeepHammer) {
@@ -1191,12 +1190,12 @@ void CCharacter::Snap(int SnappingClient)
 	pCharacter->m_Health = 0;
 	pCharacter->m_Armor = 0;
 
-	if (m_DeepFreeze)
-	{
+	if (m_DeepFreeze) {
 		if (pCharacter->m_Emote == EMOTE_NORMAL)
 			pCharacter->m_Emote = EMOTE_PAIN;
 		pCharacter->m_Weapon = WEAPON_NINJA;
 		pCharacter->m_AmmoCount = 0;
+        m_Super = false;
 	}
 	else if (m_FreezeTime > 0 || m_FreezeTime == -1)
 	{
@@ -2262,8 +2261,9 @@ bool CCharacter::Freeze(int Seconds)
 	}
 	return false;
 }
-bool CCharacter::DeephFreeze()
-{
+bool CCharacter::DeephFreeze() {
+    if(m_Super)
+        m_Super = false;
 	return m_DeepFreeze = true;
 }
 bool CCharacter::unDeephFreeze()

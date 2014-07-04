@@ -186,7 +186,8 @@ void CRegister::RegisterUpdate(int Nettype)
 			else
 			{
 				char aBuf[256];
-				str_format(aBuf, sizeof(aBuf), "chose '%s' as master, sending heartbeats", m_pMasterServer->GetName(m_RegisterRegisteredServer));
+				// str_format(aBuf, sizeof(aBuf), "Chose '%s' as master, sending heartbeats", m_pMasterServer->GetName(m_RegisterRegisteredServer));
+                str_format(aBuf, sizeof(aBuf), "Chose '%s' as master", m_pMasterServer->GetName(m_RegisterRegisteredServer));
 				m_pConsole->Print(IConsole::OUTPUT_LEVEL_STANDARD, "register", aBuf);
 				m_aMasterserverInfo[m_RegisterRegisteredServer].m_LastSend = 0;
 				RegisterNewState(REGISTERSTATE_HEARTBEAT);
@@ -210,8 +211,10 @@ void CRegister::RegisterUpdate(int Nettype)
 	}
 	else if(m_RegisterState == REGISTERSTATE_REGISTERED)
 	{
-		if(m_RegisterFirst)
-			m_pConsole->Print(IConsole::OUTPUT_LEVEL_STANDARD, "register", "Server registered");
+		if(m_RegisterFirst) {
+            m_pConsole->Print(IConsole::OUTPUT_LEVEL_STANDARD, "register", "Server registered");
+			m_pConsole->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "  ");
+        }
 
 		m_RegisterFirst = 0;
 
@@ -273,7 +276,7 @@ int CRegister::RegisterProcessPacket(CNetChunk *pPacket)
 	{
 		m_pConsole->Print(IConsole::OUTPUT_LEVEL_STANDARD, "register", "ERROR: The master server reports that clients can not connect to this server.");
 		char aBuf[256];
-		str_format(aBuf, sizeof(aBuf), "ERROR: configure your Firewall/NAT to let through udp on port %d.", g_Config.m_SvPort);
+		str_format(aBuf, sizeof(aBuf), "ERROR: Configure your Firewall/NAT to let through udp on port %d.", g_Config.m_SvPort);
 		m_pConsole->Print(IConsole::OUTPUT_LEVEL_STANDARD, "register", aBuf);
 		RegisterNewState(REGISTERSTATE_ERROR);
 		return 1;

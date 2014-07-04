@@ -97,7 +97,6 @@ void CProjectile::Tick() {
 
     CCharacter *pTargetChr = GameServer()->m_World.IntersectCharacter(PrevPos, ColPos, m_Freeze ? 1.0f : 6.0f, ColPos, pOwnerChar);
 
-    // if(!pTargetChr) { GameServer()->m_World.DestroyEntity(this); }
     if(m_LifeSpan > -1)
         m_LifeSpan--;
 

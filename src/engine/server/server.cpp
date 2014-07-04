@@ -326,9 +326,16 @@ int CServer::TrySetClientName(int ClientID, const char *pName)
 	if(m_aClients[ClientID].m_aName[0] && str_comp(m_aClients[ClientID].m_aName, aTrimmedName) == 0)
 		return 0;
 
-	char aBuf[256];
-	str_format(aBuf, sizeof(aBuf), "'%s' -> '%s'", pName, aTrimmedName);
-	Console()->Print(IConsole::OUTPUT_LEVEL_ADDINFO, "server", aBuf);
+/* old 
+    char aBuf[256];
+    str_format(aBuf, sizeof(aBuf), "'%s' -> '%s'", pName, aTrimmedName);
+    Console()->Print(IConsole::OUTPUT_LEVEL_ADDINFO, "server", aBuf);
+*/
+    // new
+    char aBuf[256];
+    str_format(aBuf, sizeof(aBuf), " '%s' ", pName);
+    Console()->Print(IConsole::OUTPUT_LEVEL_ADDINFO, "server", aBuf);
+	
 	pName = aTrimmedName;
 
 
@@ -743,9 +750,11 @@ int CServer::DelClientCallback(int ClientID, const char *pReason, void *pUser)
 
 	char aAddrStr[NETADDR_MAXSTRSIZE];
 	net_addr_str(pThis->m_NetServer.ClientAddr(ClientID), aAddrStr, sizeof(aAddrStr), true);
-	char aBuf[256];
-	str_format(aBuf, sizeof(aBuf), "client dropped. cid=%d addr=%s reason='%s'", ClientID, aAddrStr,	pReason);
-	pThis->Console()->Print(IConsole::OUTPUT_LEVEL_ADDINFO, "server", aBuf);
+    if(g_Config.m_SvConsoleMsg) {
+	   char aBuf[256];
+	   str_format(aBuf, sizeof(aBuf), "client dropped. cid=%d addr=%s reason='%s'", ClientID, aAddrStr,	pReason);
+	   pThis->Console()->Print(IConsole::OUTPUT_LEVEL_ADDINFO, "server", aBuf);
+    }
 
 	// notify the mod about the drop
 	if(pThis->m_aClients[ClientID].m_State >= CClient::STATE_READY)
@@ -1026,7 +1035,7 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
 			if(Unpacker.Error() == 0 && m_aClients[ClientID].m_Authed)
 			{
 				char aBuf[256];
-				str_format(aBuf, sizeof(aBuf), "ClientID= %d rcon= '%s'", ClientID, pCmd);
+				str_format(aBuf, sizeof(aBuf), "ClientID = %d rcon = '%s'", ClientID, pCmd);
 				Console()->Print(IConsole::OUTPUT_LEVEL_ADDINFO, "server", aBuf);
 				m_RconClientID = ClientID;
 				m_RconAuthLevel = m_aClients[ClientID].m_Authed;
@@ -1079,7 +1088,7 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
 						m_aClients[ClientID].m_pRconCmdToSend = Console()->FirstCommandInfo(IConsole::ACCESS_LEVEL_ADMIN, CFGFLAG_SERVER);
 					SendRconLine(ClientID, "Admin authentication successful. Full remote console access granted.");
 					char aBuf[256];
-					str_format(aBuf, sizeof(aBuf), "ClientID=%d authed (admin)", ClientID);
+					str_format(aBuf, sizeof(aBuf), "ClientID = %d authed (admin)", ClientID);
 					Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
 
 					// DDRace
@@ -1099,7 +1108,7 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
 						m_aClients[ClientID].m_pRconCmdToSend = Console()->FirstCommandInfo(IConsole::ACCESS_LEVEL_MOD, CFGFLAG_SERVER);
 					SendRconLine(ClientID, "Moderator authentication successful. Limited remote console access granted.");
 					char aBuf[256];
-					str_format(aBuf, sizeof(aBuf), "ClientID=%d authed (moderator)", ClientID);
+					str_format(aBuf, sizeof(aBuf), "ClientID = %d authed (moderator)", ClientID);
 					Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
 
 					// DDRace
@@ -1119,7 +1128,7 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
                         m_aClients[ClientID].m_pRconCmdToSend = Console()->FirstCommandInfo(IConsole::ACCESS_LEVEL_HELPER, CFGFLAG_SERVER);
                     SendRconLine(ClientID, "Helper authentication successful. Limited remote console access granted.");
                     char aBuf[256];
-                    str_format(aBuf, sizeof(aBuf), "ClientID=%d authed (helper)", ClientID);
+                    str_format(aBuf, sizeof(aBuf), "ClientID = %d authed (helper)", ClientID);
                     Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
 
                     // DDRace
@@ -1143,7 +1152,7 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
                         m_aClients[ClientID].m_pRconCmdToSend = Console()->FirstCommandInfo(IConsole::ACCESS_LEVEL_KID, CFGFLAG_SERVER);
                     SendRconLine(ClientID, "Kid's authentication successful.");
                     char aBuf[256];
-                    str_format(aBuf, sizeof(aBuf), "ClientID=%d authed (kid)", ClientID);
+                    str_format(aBuf, sizeof(aBuf), "ClientID = %d authed (kid)", ClientID);
                     Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
 
                     // DDRace
@@ -1190,9 +1199,12 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
 					aBuf[b*3+3] = 0;
 				}
 
-				char aBufMsg[256];
-				str_format(aBufMsg, sizeof(aBufMsg), "strange message ClientID=%d msg=%d data_size=%d", ClientID, Msg, pPacket->m_DataSize);
-				Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "server", aBufMsg);
+
+                if(g_Config.m_SvConsoleMsg) {
+				    char aBufMsg[256];
+				    str_format(aBufMsg, sizeof(aBufMsg), "strange message ClientID=%d msg=%d data_size=%d", ClientID, Msg, pPacket->m_DataSize);
+				    Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "server", aBufMsg);
+                }
 				Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "server", aBuf);
 			}
 		}
@@ -1447,10 +1459,12 @@ char *CServer::GetMapName()
 	return pMapShortName;
 }
 
-int CServer::LoadMap(const char *pMapName)
-{
+int CServer::LoadMap(const char *pMapName) {
 	//DATAFILE *df;
-	char aBuf[512];
+    char aBufMap[128];
+    str_format(aBufMap, sizeof(aBufMap), "%s.map", pMapName);
+	
+    char aBuf[512];
 	str_format(aBuf, sizeof(aBuf), "maps/%s.map", pMapName);
 
 	/*df = datafile_load(buf);
@@ -1475,9 +1489,18 @@ int CServer::LoadMap(const char *pMapName)
 
 	// get the crc of the map
 	m_CurrentMapCrc = m_pMap->Crc();
-	char aBufMsg[256];
-	str_format(aBufMsg, sizeof(aBufMsg), "%s crc is %08x", aBuf, m_CurrentMapCrc);
-	Console()->Print(IConsole::OUTPUT_LEVEL_ADDINFO, "server", aBufMsg);
+/*
+    // old
+    char aBufMsg[256];
+    str_format(aBufMsg, sizeof(aBufMsg), "%s crc is %08x", aBuf, m_CurrentMapCrc);
+    Console()->Print(IConsole::OUTPUT_LEVEL_ADDINFO, "server", aBufMsg);
+*/
+    // new
+    char aBufMsg[256];
+    str_format(aBufMsg, sizeof(aBufMsg), "Map is: %s", aBufMap);
+    Console()->Print(IConsole::OUTPUT_LEVEL_ADDINFO, "server", aBufMsg);
+
+
 
 	str_copy(m_aCurrentMap, pMapName, sizeof(m_aCurrentMap));
 	//map_set(df);
@@ -1504,16 +1527,31 @@ void CServer::InitRegister(CNetServer *pNetServer, IEngineMasterServer *pMasterS
 	m_Register.Init(pNetServer, pMasterServer, pConsole);
 }
 
-int CServer::Run()
-{
+int CServer::Run() {
 	//
 	m_PrintCBIndex = Console()->RegisterPrintCallback(g_Config.m_ConsoleOutputLevel, SendRconLineAuthed, this);
 
 	// load map
-	if(!LoadMap(g_Config.m_SvMap))
-	{
-		dbg_msg("server", "failed to load map. mapname='%s'", g_Config.m_SvMap);
-		return -1;
+	if(!LoadMap(g_Config.m_SvMap)) {
+        dbg_msg("server", "failed to load map. mapname = '%s'", g_Config.m_SvMap);
+        dbg_msg("server", "  ");
+        dbg_msg("server", "CHECK MAP NAME IN CONFIG. TRYING TO LOAD 'dm*'");
+        dbg_msg("server", "  ");
+
+        // xD Я не знаю конкатенацию строк
+        if(!LoadMap("dm1")) {
+            if(!LoadMap("dm2")) {
+                if(!LoadMap("dm3")) {
+                    if(!LoadMap("dm4")) {
+                        if(!LoadMap("dm5")) {
+                            if(!LoadMap("dm6")) {
+                                return -1;
+                            }
+                        }
+                    }
+                }
+            }
+        }
 	}
 
 	// start server
@@ -1532,7 +1570,7 @@ int CServer::Run()
 
 	if(!m_NetServer.Open(BindAddr, &m_ServerBan, g_Config.m_SvMaxClients, g_Config.m_SvMaxClientsPerIP, 0))
 	{
-		dbg_msg("server", "couldn't open socket. port %d might already be in use", g_Config.m_SvPort);
+        dbg_msg("server", "couldn't open socket. port %d might already be in use", g_Config.m_SvPort);
 		return -1;
 	}
 
@@ -1541,11 +1579,11 @@ int CServer::Run()
 	m_Econ.Init(Console(), &m_ServerBan);
 
 	char aBuf[256];
-	str_format(aBuf, sizeof(aBuf), "server name is '%s'", g_Config.m_SvName);
+	str_format(aBuf, sizeof(aBuf), "Server name is \"%s\" ", g_Config.m_SvName);
 	Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
 
 	GameServer()->OnInit();
-	str_format(aBuf, sizeof(aBuf), "version %s", GameServer()->NetVersion());
+	str_format(aBuf, sizeof(aBuf), "Version is \"%s\"", GameServer()->Version());
 	Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
 
 	// process pending commands
@@ -1559,14 +1597,22 @@ int CServer::Run()
 		m_Lastheartbeat = 0;
 		m_GameStartTime = time_get();
 
-		if(g_Config.m_Debug)
-		{
+		if(g_Config.m_Debug) {
 			str_format(aBuf, sizeof(aBuf), "baseline memory usage %dk", mem_stats()->allocated/1024);
 			Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "server", aBuf);
 		}
 
-		while(m_RunServer)
-		{
+        dbg_msg("server", "  ");
+        char aBuf[256];
+        str_format(aBuf, sizeof(aBuf), "Server started...");
+        Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
+        dbg_msg("server", "  ");
+
+        if(!g_Config.m_SvRegister) {
+            str_format(aBuf, sizeof(aBuf), "Server doesn't registered, set \"sv_register 1\" ");
+            Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "server", aBuf);
+        }
+		while(m_RunServer) {
 			int64 t = time_get();
 			int NewTicks = 0;
 
@@ -1576,8 +1622,7 @@ int CServer::Run()
 				m_MapReload = 0;
 
 				// load map
-				if(LoadMap(g_Config.m_SvMap))
-				{
+				if(LoadMap(g_Config.m_SvMap)) {
 					// new map loaded
 					GameServer()->OnShutdown();
 
@@ -1604,16 +1649,14 @@ int CServer::Run()
 					GameServer()->OnInit();
 					UpdateServerInfo();
 				}
-				else
-				{
-					str_format(aBuf, sizeof(aBuf), "failed to load map. mapname='%s'", g_Config.m_SvMap);
+				else {
+					str_format(aBuf, sizeof(aBuf), "failed to load map. mapname = '%s'", g_Config.m_SvMap);
 					Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
 					str_copy(g_Config.m_SvMap, m_aCurrentMap, sizeof(g_Config.m_SvMap));
 				}
 			}
 
-			while(t > TickStartTime(m_CurrentGameTick+1))
-			{
+			while(t > TickStartTime(m_CurrentGameTick+1)) {
 				m_CurrentGameTick++;
 				NewTicks++;
 
@@ -1741,7 +1784,7 @@ void CServer::ConRconList(IConsole::IResult *pResult, void *pUser)
         if(pThis->m_aClients[i].m_State != CClient::STATE_EMPTY && pThis->m_aClients[i].m_Authed > 0)
         {
             if(pThis->m_aClients[i].m_State == CClient::STATE_INGAME || pThis->m_aClients[i].m_State == CClient::STATE_DUMMY) {
-                str_format(aBuf, sizeof(aBuf), "id= %d   name= '%s'    level= %d", i, pThis->m_aClients[i].m_aName, pThis->m_aClients[i].m_Authed);
+                str_format(aBuf, sizeof(aBuf), "id = %d   name = '%s'    level = %d", i, pThis->m_aClients[i].m_aName, pThis->m_aClients[i].m_Authed);
                 pThis->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "Server", aBuf);
             }
         }
@@ -1983,7 +2026,9 @@ int main(int argc, const char **argv) // ignore_convention
 	pEngine->InitLogfile();
 
 	// run the server
-	dbg_msg("server", "starting...");
+    dbg_msg("server", "   ");
+    dbg_msg("server", "starting...");
+    dbg_msg("server", "   ");
 	pServer->Run();
 
 	// free
@@ -2072,7 +2117,7 @@ void CServer::ConLogout(IConsole::IResult *pResult, void *pUser)
         pServer->m_aClients[pServer->m_RconClientID].m_pRconCmdToSend = 0;
         pServer->SendRconLine(pServer->m_RconClientID, "Logout successful.");
         char aBuf[32];
-        str_format(aBuf, sizeof(aBuf), "ClientID=%d logged out", pServer->m_RconClientID);
+        str_format(aBuf, sizeof(aBuf), "ClientID = %d logged out", pServer->m_RconClientID);
         pServer->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
         pServer->GameServer()->OnSetAuthed(pServer->m_RconClientID, AUTHED_NO);
     }
@@ -2130,7 +2175,7 @@ void CServer::SetRconLevel(int ClientID, int Level)
         if(ConsoleAccessLevel)
             SendRconLine(ClientID, "Authentication successful. Limited remote console access granted.");
         char aBuf[128];
-        str_format(aBuf, sizeof(aBuf), "ClientID=%d authed (level: %s)", ClientID, LevelName);
+        str_format(aBuf, sizeof(aBuf), "ClientID = %d authed (level: %s)", ClientID, LevelName);
         Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
 }
 

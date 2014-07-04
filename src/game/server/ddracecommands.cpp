@@ -73,8 +73,7 @@ void CGameContext::ConDeepHammer(IConsole::IResult *pResult, void *pUserData)
 		return;
 
 	CCharacter* pChr = pSelf->GetPlayerChar(pResult->m_ClientID);
-	if (pChr && !pChr->m_Super)
-	{
+	if (pChr && !pChr->m_Super) {
 		pChr->m_Super = false;
 	}
 	pChr->m_DeepHammer = true;

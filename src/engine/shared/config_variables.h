@@ -268,6 +268,7 @@ MACRO_CONFIG_INT(SvKidLevelWithoutFinish, sv_kid_lvl_w_finish, 1, 0, 1, CFGFLAG_
 MACRO_CONFIG_INT(SvChatRainbow,           sv_chat_rainbow, 1, 0, 1, CFGFLAG_SERVER, "Rainbow chat")
 MACRO_CONFIG_INT(SvChatRainbowFeet,       sv_chat_rainbow_feet, 1, 0, 1, CFGFLAG_SERVER, "Rainbow-feet chat")
 MACRO_CONFIG_INT(SvKidKick,               sv_kid_kick, 1, 0, 1, CFGFLAG_SERVER, "Enable to kick kid level")
+MACRO_CONFIG_INT(SvConsoleMsg,            sv_console_msg, 0, 0, 1, CFGFLAG_SERVER, "On/Off send to console any unnecessary info")
 
 
 

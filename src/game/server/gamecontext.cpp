@@ -712,8 +712,8 @@ void CGameContext::OnClientEnter(int ClientID)
 		SendChatTarget(ClientID, "please visit http://DDRace.info or say /info for more info");
 		*/
 		if(g_Config.m_SvWelcome[0]!=0)
-			SendChatTarget(ClientID,g_Config.m_SvWelcome);
-		str_format(aBuf, sizeof(aBuf), "team_join player='%d:%s' team=%d", ClientID, Server()->ClientName(ClientID), m_apPlayers[ClientID]->GetTeam());
+			SendChatTarget(ClientID, g_Config.m_SvWelcome);
+		// str_format(aBuf, sizeof(aBuf), "team_join player='%d:%s' team=%d", ClientID, Server()->ClientName(ClientID), m_apPlayers[ClientID]->GetTeam());
 
 		Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
 
@@ -818,9 +818,11 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 
 	if(!pRawMsg)
 	{
-		char aBuf[256];
-		str_format(aBuf, sizeof(aBuf), "dropped weird message '%s' (%d), failed on '%s'", m_NetObjHandler.GetMsgName(MsgID), MsgID, m_NetObjHandler.FailedMsgOn());
-		Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "server", aBuf);
+        if(g_Config.m_SvConsoleMsg) {
+		  char aBuf[256];
+		  str_format(aBuf, sizeof(aBuf), "dropped weird message '%s' (%d), failed on '%s'", m_NetObjHandler.GetMsgName(MsgID), MsgID, m_NetObjHandler.FailedMsgOn());
+		  Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "server", aBuf);  
+        }
 		return;
 	}
 
@@ -875,7 +877,8 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 
 			Console()->ExecuteLine(pMsg->m_pMessage + 1, ClientID);
 			char aBuf[256];
-			str_format(aBuf, sizeof(aBuf), "%d used %s", ClientID, pMsg->m_pMessage);
+
+			str_format(aBuf, sizeof(aBuf), "%d (%s) used %s", ClientID, Server()->ClientName(ClientID), pMsg->m_pMessage);
 			Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "chat-command", aBuf);
 
 			Console()->SetAccessLevel(IConsole::ACCESS_LEVEL_ADMIN);
@@ -1216,18 +1219,20 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 	{
 		pPlayer->m_IsUsingDDRaceClient = true;
 
-		char aBuf[128];
-		str_format(aBuf, sizeof(aBuf), "%d use DDRace Client", ClientID);
-		dbg_msg("DDRace", aBuf);
+        if(g_Config.m_SvConsoleMsg && g_Config.m_SvConsoleMsg) {
+            char aBuf[128];
+            str_format(aBuf, sizeof(aBuf), "%d use DDRace Client", ClientID);
+            dbg_msg("DDRace", aBuf);
+        }
 
-		//first update his teams state
+		// first update his teams state
 		((CGameControllerDDRace*)m_pController)->m_Teams.SendTeamsState(ClientID);
 
-		//second give him records
+		// second give him records
 		SendRecord(ClientID);
 
 
-		//third give him others current time for table score
+		// third give him others current time for table score
 		if(g_Config.m_SvHideScore) return;
 		for(int i = 0; i < MAX_CLIENTS; i++)
 		{
@@ -1241,9 +1246,10 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 
 			}
 		}
-		//also send its time to others
+		// also send its time to others
 		if(Score()->PlayerData(ClientID)->m_CurrentTime > 0) {
 			//TODO: make function for this fucking steps
+            // xD                             ^
 			CNetMsg_Sv_PlayerTime Msg;
 			Msg.m_Time = Score()->PlayerData(ClientID)->m_CurrentTime * 100;
 			Msg.m_ClientID = ClientID;
@@ -1668,18 +1674,22 @@ void CGameContext::ConAddVote(IConsole::IResult *pResult, void *pUserData)
 	// check for valid option
 	if(!pSelf->Console()->LineIsValid(pCommand) || str_length(pCommand) >= VOTE_CMD_LENGTH)
 	{
-		char aBuf[256];
-		str_format(aBuf, sizeof(aBuf), "skipped invalid command '%s'", pCommand);
-		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
+        if(g_Config.m_SvConsoleMsg) {
+		  char aBuf[256];
+		  str_format(aBuf, sizeof(aBuf), "skipped invalid command '%s'", pCommand);
+		  pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);  
+        }
 		return;
 	}
 	while(*pDescription && *pDescription == ' ')
 		pDescription++;
 	if(str_length(pDescription) >= VOTE_DESC_LENGTH || *pDescription == 0)
 	{
-		char aBuf[256];
-		str_format(aBuf, sizeof(aBuf), "skipped invalid option '%s'", pDescription);
-		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
+        if(g_Config.m_SvConsoleMsg) {
+		  char aBuf[256];
+		  str_format(aBuf, sizeof(aBuf), "skipped invalid option '%s'", pDescription);
+		  pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", aBuf);
+        }
 		return;
 	}
 
