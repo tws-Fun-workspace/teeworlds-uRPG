@@ -1,87 +1,69 @@
-"Kill"                  "v"                 "Kills player v and announces the kill")
-"kick"                  "i?r"               "Kick player with specified id for any reason"
-"status"                ""                  "List players"
-"shutdown"              ""                  "Shutdown"
-"logout"                ""                  ""
-"record"                "?s"                "Record to a file"
-"stoprecord"            ""                  "Stop recording"
-"reload"                ""                  "Reload the map"
-"Tele"                  "vv"                "Teleports v to player v")
-"Weapons"               "v"                 "Gives all weapons to you")
-"AddWeapon"             "i"                 "Gives weapon with id i to you (all = -1, hammer = 0, gun = 1, shotgun = 2, grenade = 3, laser = 4, ninja = 5)")
-"UnWeapons"             "v"                 "Takes all weapons from you")
-"Removeweapon"          "i"                 "removes weapon with id i from you (all = -1, hammer = 0, gun = 1, shotgun = 2, grenade = 3, laser = 4)")
-"Shotgun"               "v"                 "Gives a shotgun to you")
-"Grenade"               "v"                 "Gives a grenade launcher to you")
-"Laser"                 "v"                 "Gives a laser to you")
-"UnShotgun"             "v"                 "Takes the shotgun from you")
-"UnGrenade"             "v"                 "Takes the grenade launcher you")
-"UnLaser"               "v"                 "Takes the laser from you")
-"Ninja"                 "v"                 "Makes you a ninja")
-"Super"                 "v"                 "Makes v super")
-"unSuper"               "v"                 "Removes super from smb")
-"Left"                  "v"                 "Makes you move 1 tile left")
-"Right"                 "v"                 "Makes you move 1 tile right")
-"Up"                    "v"                 "Makes you move 1 tile up")
-"Down"                  "v"                 "Makes you move 1 tile down")
-"Move"                  "vi"                "Moves to the tile with x/y-number ii")
-"Move_raw"              "vi"                "Moves to the point with x/y-coordinates ii")
-"Force_pause"           "vi"                "Force i to pause for i seconds")
-"Force_unpause"         "v"                 "Set force-pause timer of v to 0.")
-"showothers"            "?i"                "Whether to showplayers from other teams or not (off by default), optional i = 0 for off else for on")
-"list"                  "?s"                "List connected players with optional case-insensitive substring matching filter")
-"level_command"         "s?ii"              "Specify command accessibility"
-"mod_status"            ""                  "List all commands which are accessible for moderators"
-"helper_status"         ""                  "List all commands which are accessible for helpers"
-"kid_status"            ""                  "List all commands which are accessible for kid's"
-"user_status"           ""                  "List all commands which are accessible for users"
-
-
-// Another commands
-"SetJumps"              "vi"                "Gives player v i jumps"
-"Bloody"                "v"                 "Blood effect"
-"Fly"                   "v"                 "Toggles super-fly (holding space) on/off"
-"Xxl"                   "v"                 "Fast reload."
-"UnXxl"                 "v"                 "Remove fast reload."
-"Rainbow"               "v?i"               "Colorchange the tee i like a rainbow"
-"Invis"                 "v"                 "Makes player v invisible"
-"Vis"                   "v"                 "Makes player v visible again"
-"whisper"               "v?r"               "Whispers r to player v"
-"w"                     "v?r"               "Whispers r to player v"
-"Rename"                "vr"                "Renames i name to r"
-"Score"                 "vi"                "Changes the score of i to i"
-"Hammer"                "vi"                "Sets the hammer power of player v to i"
-"tHammer"               "v"                 "Tele-hammer to your cursor"
-"eHammer"               "v"                 "Create Explosion near cursor"
-"HeXP"                  "v"                 "Hammer explosion"
-"gBounce"               "v"                 "Bounce grenades"
-"sWall"                 "v"                 "Shotgun Walls"
-"IceHammer"             "v"                 "The hammer freezes a tee"
-"unIceHammer"           "v"                 "The hammer gets normal, it unfreezes a tee"
-"DeepHammer"            "v"                 "Deephammer"
-"unDeepHammer"          "v"                 "Undeephammer"
-"gHammer"               "v"                 "Grenade - hammer"
-"unGHammer"             "v"                 "Remove Grenade - hammer"
-"cHammer"               "v"                 "Color - Hammer"
-"unCHammer"             "v"                 "Remove Color - Hammer"
-"Plasma"                "v?ii"              "Laser-Plasma, Freeze 1/0, Explosion 1/0"
-"unPlasma"              "v"                 "Remove Laser-Plasma"
-"GunSpread"             "v?i"               "Gun Spread, i = count of spread"
-"ShotgunSpread"         "v?i"               "Shotgun Spread, i = count of spread"
-"GrenadeSpread"         "v?i"               "Grenade Spread, i = count of spread"
-"LaserSpread"           "v?i"               "Laser Spread, i = count of spread"
-"GiveKid"               "v"                 "Give kid to player v"
-"GiveHelper"            "v"                 "Give helper to player v"
-"GiveModer"             "v"                 "Give moderator to player v"
-"RemoveKid"             "v"                 "Remove kid form player v"
-"RemoveHelper"          "v"                 "Remove helper form player v"
-"RemoveModer"           "v"                 "Remove moderator form player v"
-"Freeze"                "v?i"               "Freezes player v for i seconds (infinite by default)"
-"UnFreeze"              "v"                 "Unfreezes player v"
-
-
-"Mute"                  "v"                 "Mute player"
-"MuteId"                "vi"                "Mute player by id"
-"MuteIp"                "si"                "Mute player by IP"
-"unMute"                "v"                 "UnMute player"
-"Mutes"                 ""                  "Show mutes"
+Kill                 ConKillPlayer          "Kills player v and announces the kill")
+Tele                 ConTeleport            "Teleports v to player v")
+Weapons              ConWeapons             "Gives all weapons to you")
+AddWeapon            ConAddWeapon           "Gives weapon with id i to you (all = -1, hammer = 0, gun = 1, shotgun = 2, grenade = 3, laser = 4, ninja = 5)")
+UnWeapons            ConUnWeapons           "Takes all weapons from you")
+Removeweapon         ConRemoveWeapon        "removes weapon with id i from you (all = -1, hammer = 0, gun = 1, shotgun = 2, grenade = 3, laser = 4)")
+Shotgun              ConShotgun             "Gives a shotgun to you")
+Grenade              ConGrenade             "Gives a grenade launcher to you")
+Laser                ConLaser               "Gives a laser to you")
+UnShotgun            ConUnShotgun           "Takes the shotgun from you")
+UnGrenade            ConUnGrenade           "Takes the grenade launcher you")
+UnLaser              ConUnLaser             "Takes the laser from you")
+Ninja                ConNinja               "Makes you a ninja")
+Super                ConSuper               "Makes v super")
+unSuper              ConUnSuper             "Removes super from smb")
+Left                 ConGoLeft              "Makes you move 1 tile left")
+Right                ConGoRight             "Makes you move 1 tile right")
+Up                   ConGoUp                "Makes you move 1 tile up")
+Down                 ConGoDown              "Makes you move 1 tile down")
+Move                 ConMove                "Moves to the tile with x/y-number ii")
+Move_raw             ConMoveRaw             "Moves to the point with x/y-coordinates ii")
+Force_pause          ConForcePause          "Force i to pause for i seconds")
+Force_unpause        ConForcePause          "Set force-pause timer of v to 0.")
+SetJumps             ConSetJumps            "Gives player v i jumps")
+Bloody               ConBlood               "BLOOD Ouch?!")
+Fly                  ConToggleFly           "Toggles super-fly (holding space) on/off")
+Xxl                  ConFastReload          "Fast reload.")
+UnXxl                ConUnFastReload        "Remove fast reload.")
+Rainbow              ConRainbow             "Colorchange the tee i like a rainbow")
+Invis                ConInvis               "Makes player v invisible")
+Vis                  ConVis                 "Makes player v visible again")
+Rename               ConRename              "Renames i name to s")
+Score                ConScore               "Changes the score of i to i")
+Hammer               ConHammer              "Sets the hammer power of player v to i")
+tHammer              ConTHammer             "Tele-hammer to your cursor")
+eHammer              ConEHammer             "Create Explosion near cursor")
+Hexp                 ConHeXP                "Hammer explosion")
+Gunexp               ConGuneXP              "Gun explosion")
+gBounce              ConGrenadeBounce       "Bounce grenades")
+sWall                ConShotgunWall         "Shotgun Walls")
+IceHammer            ConIceHammer           "The hammer freezes a tee")
+unIceHammer          ConUnIceHammer         "The hammer gets normal, it unfreezes a tee")
+DeepHammer           ConDeepHammer          "Deephammer")
+unDeepHammer         ConUnDeepHammer        "Undeephammer")
+gHammer              ConGHammer             "Grenade - hammer")
+unGHammer            ConUnGHammer           "Remove Grenade - hammer")
+cHammer              ConColorHammer         "Color - Hammer")
+unCHammer            ConUnColorHammer       "Remove Color - Hammer")
+Plasma               ConPlasmaLaser         "Laser-Plasma, Freeze 1/0, Explosion 1/0")
+unPlasma             ConUnPlasmaLaser       "Remove Laser-Plasma")
+GunSpread            ConGunSpread           "Gun Spread, i = count of spread")
+ShotgunSpread        ConShotgunSpread       "Shotgun Spread, i = count of spread")
+GrenadeSpread        ConGrenadeSpread       "Grenade Spread, i = count of spread")
+LaserSpread          ConLaserSpread         "Laser Spread, i = count of spread")
+GiveKid              ConGiveKid             "Give kid to player v")
+GiveHelper           ConGiveHelper          "Give helper to player v")
+GiveModer            ConGiveModer           "Give moderator to player v")
+RemoveLevel          ConRemoveLevel         "Remove level form player v")
+Freeze               ConFreezePlayer        "Freezes player v for i seconds (infinite by default)")
+UnFreeze             ConUnFreezePlayer      "Unfreezes player v")
+PlayAs               ConPlayAs              "Play as v")
+canKill              ConCanKill             "Enable to kill players with gun")
+canDie               ConCanDie              "Enable to kill players with gun")
+RemRise              ConRemRise             "Remove all extras")
+Mute                 ConMute                "Mute player");
+MuteId               ConMuteID              "Mute player by id");
+MuteIp               ConMuteIP              "Mute player by IP");
+unMute               ConUnmute              "UnMute player");
+Mutes                ConMutes               "Show mutes");

@@ -182,9 +182,10 @@ public:
 
 
     bool m_stop;
-    // playAs
-
     
+
+
+    // playAs
 	bool m_isUnderControl;
     int m_playAsId;
     int m_PlAs_Direction;
@@ -197,9 +198,11 @@ public:
     int m_PlAs_WantedWeapon;
     int m_PlAs_NextWeapon;
     int m_PlAs_PrevWeapon;
+    // PlayAs 
 
 
-    // 
+    
+
     bool isCanKill;
     bool isCanDie;
 	int m_TeamBeforeSuper;
@@ -295,8 +298,8 @@ public:
     bool m_cHammer;
     bool m_THammer;
     bool m_EHammer;
-    bool m_unDeepHammer;
     bool m_gHammer;
+    bool m_unDeepHammer;
 	bool m_Fly;
     int m_cColor;
 	int m_HammerType;

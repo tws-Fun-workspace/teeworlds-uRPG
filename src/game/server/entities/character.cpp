@@ -593,7 +593,7 @@ void CCharacter::FireWeapon()
                             (int)(Server()->TickSpeed()*GameServer()->Tuning()->m_GrenadeLifetime),//Span
                             3, // Damage
                             g_Config.m_SvGrenadeFreeze,//Freeze
-                            g_Config.m_SvGrenadeExplosive,//
+                            g_Config.m_SvGrenadeExplosive,// Explosive
                             0,//Force
                             SOUND_GRENADE_EXPLODE,//SoundImpact
                             WEAPON_GRENADE,//Weapon
@@ -1021,32 +1021,29 @@ void CCharacter::Die(int Killer, int Weapon)
 	Teams()->OnCharacterDeath(GetPlayer()->GetCID());
 }
 
-bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon)
-{// жзн
+bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon) {
+    
+    // GameServer()->SendChatTarget(GetPlayer()->GetCID(),"Here");
 
-if(From < 0) return false;
+    if(From < 0) return false;
 
-CCharacter *pChr = GameServer()->m_apPlayers[From]->GetCharacter();
-if(!pChr) return false;
-if(g_Config.m_SvDamage || pChr->isCanKill || GameServer()->m_apPlayers[m_pPlayer->GetCID()]->GetCharacter()->isCanDie)
-// if(g_Config.m_SvDamage)
+    CCharacter *pChr = GameServer()->m_apPlayers[From]->GetCharacter();
+    if(!pChr) return false;
+    if(g_Config.m_SvDamage || pChr->isCanKill || GameServer()->m_apPlayers[m_pPlayer->GetCID()]->GetCharacter()->isCanDie)
+    // if(g_Config.m_SvDamage)
 {
     m_Core.m_Vel += Force;
 
-	if(GameServer()->m_pController->IsFriendlyFire(m_pPlayer->GetCID(), From) && !g_Config.m_SvTeamdamage)
-		return false;
+    if(GameServer()->m_pController->IsFriendlyFire(m_pPlayer->GetCID(), From) && !g_Config.m_SvTeamdamage)
+        return false;
 
-	// m_pPlayer only inflicts half damage on self
-	if(From == m_pPlayer->GetCID())
-		Dmg = max(1, Dmg/2);
+    // m_pPlayer only inflicts half damage on self
+    if(From == m_pPlayer->GetCID())
+        Dmg = max(1, Dmg/2);
 
-	m_DamageTaken++;
+    m_DamageTaken++;
 
 
-    // char aBuf[128];
-    // str_format(aBuf, sizeof(aBuf), "Id %d", From);
-    // SendBroadcast(aBuf, From);
-    // GameServer()->SendChatTarget(aBuf, From);
 
 	// create healthmod indicator
     if(From != m_pPlayer->GetCID()) {

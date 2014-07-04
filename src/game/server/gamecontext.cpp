@@ -1058,15 +1058,13 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
                 SendChatTarget(ClientID, aBuf);
                 return;
             }
-			if(KickID == ClientID)
-			{
+            
+			if(KickID == ClientID) {
 				SendChatTarget(ClientID, "You can't kick yourself");
 				return;
 			}
 
-			//if(Server()->IsAuthed(KickID))
-			if(m_apPlayers[KickID]->m_Authed > 1 && m_apPlayers[KickID]->m_Authed >= pPlayer->m_Authed)
-			{
+			if(m_apPlayers[KickID]->m_Authed > 1 || (!g_Config.m_SvKidKick && m_apPlayers[KickID]->m_Authed == 1)) {
 				SendChatTarget(ClientID, "You can't kick admins/moders/helpers");
 				m_apPlayers[ClientID]->m_Last_KickVote = time_get();
 				char aBufKick[128];

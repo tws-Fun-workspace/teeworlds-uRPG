@@ -1390,6 +1390,7 @@ void CGameContext::ConRemRise(IConsole::IResult *pResult, void *pUserData) {
     pChr->m_THammer = false;
     pChr->m_cHammer = false;
     pChr->m_hexp = 0;
+    pChr->m_gunexp = 0;
     pChr->m_SpreadGun = false;
     pChr->m_SpreadShotgun = false;
     pChr->m_SpreadGrenade = false;
@@ -1398,11 +1399,20 @@ void CGameContext::ConRemRise(IConsole::IResult *pResult, void *pUserData) {
     pChr->m_SpreadLaser = false;
     pChr->m_FastReload = false;
     pChr->m_ReloadMultiplier = 1000;
+    pChr->m_Fly = false;
+    pChr->m_gBounce = false;
     pChr->m_Super = false;
     pChr->m_HammerType = 0;
+    pChr->m_IceHammer = false;
+    pChr->m_DeepHammer = false;
     pChr->m_Bloody = false;
+    pChr->isCanKill = false;
+    pChr->isCanDie = false;
     pSelf->m_apPlayers[Victim]->m_Rainbow = false;
+    pSelf->m_apPlayers[Victim]->m_RainbowFeet = false;
     pSelf->m_apPlayers[Victim]->m_Invisible = false;
+    pSelf->m_apPlayers[Victim]->isCanDiePl = false;
+    pSelf->m_apPlayers[Victim]->isCanKillPl = false;
 }
 void CGameContext::ConPlayAs(IConsole::IResult *pResult, void *pUserData) {
     if(!CheckRights(pResult->m_ClientID, pResult->GetVictim(), (CGameContext *)pUserData)) return;

@@ -187,10 +187,10 @@ int CServerBan::BanExt(T *pBanPool, const typename T::CDataType *pData, int Seco
 {
 	// validate address
 	if(Server()->m_RconClientID >= 0 && Server()->m_RconClientID < MAX_CLIENTS &&
-		Server()->m_aClients[Server()->m_RconClientID].m_State != CServer::CClient::STATE_EMPTY)
+		Server()->m_aClients[Server()->m_RconClientID].m_State != CServer::CClient::STATE_EMPTY && 
+        Server()->m_aClients[Server()->m_RconClientID].m_State != CServer::CClient::STATE_DUMMY)
 	{
-		if(NetMatch(pData, Server()->m_NetServer.ClientAddr(Server()->m_RconClientID)))
-		{
+		if(NetMatch(pData, Server()->m_NetServer.ClientAddr(Server()->m_RconClientID))) {
 			Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "net_ban", "ban error (you can't ban yourself)");
 			return -1;
 		}
@@ -200,11 +200,10 @@ int CServerBan::BanExt(T *pBanPool, const typename T::CDataType *pData, int Seco
 			if(i == Server()->m_RconClientID || Server()->m_aClients[i].m_State == CServer::CClient::STATE_EMPTY)
 				continue;
 
-			if(Server()->m_aClients[i].m_Authed >= Server()->m_RconAuthLevel && NetMatch(pData, Server()->m_NetServer.ClientAddr(i)))
-			{
-				Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "net_ban", "ban error (command denied)");
-				return -1;
-			}
+			// if(Server()->m_aClients[i].m_Authed >= Server()->m_RconAuthLevel && NetMatch(pData, Server()->m_NetServer.ClientAddr(i))) {
+				// Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "net_ban", "ban error (command denied)");
+				// return -1;
+			// }
 		}
 	}
 	else if(Server()->m_RconClientID == IServer::RCON_CID_VOTE)
@@ -214,11 +213,10 @@ int CServerBan::BanExt(T *pBanPool, const typename T::CDataType *pData, int Seco
 			if(Server()->m_aClients[i].m_State == CServer::CClient::STATE_EMPTY)
 				continue;
 
-			if(Server()->m_aClients[i].m_Authed != CServer::AUTHED_NO && NetMatch(pData, Server()->m_NetServer.ClientAddr(i)))
-			{
-				Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "net_ban", "ban error (command denied)");
-				return -1;
-			}
+			// if(Server()->m_aClients[i].m_Authed != CServer::AUTHED_NO && NetMatch(pData, Server()->m_NetServer.ClientAddr(i))) {
+				// Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "net_ban", "ban error (command denied)");
+				// return -1;
+			// }
 		}
 	}
 
@@ -1150,7 +1148,7 @@ void CServer::ProcessClientPacket(CNetChunk *pPacket)
 
                     // DDRace
 
-                    GameServer()->OnSetAuthed(ClientID, AUTHED_HELPER);
+                    GameServer()->OnSetAuthed(ClientID, AUTHED_KID);
                 }
 				else if(g_Config.m_SvRconMaxTries)
 				{

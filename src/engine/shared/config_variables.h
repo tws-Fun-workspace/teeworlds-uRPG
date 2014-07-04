@@ -68,11 +68,12 @@ MACRO_CONFIG_INT(GfxFsaaSamples, gfx_fsaa_samples, 0, 0, 16, CFGFLAG_SAVE|CFGFLA
 MACRO_CONFIG_INT(GfxRefreshRate, gfx_refresh_rate, 0, 0, 0, CFGFLAG_SAVE|CFGFLAG_CLIENT, "Screen refresh rate")
 MACRO_CONFIG_INT(GfxFinish, gfx_finish, 1, 0, 1, CFGFLAG_SAVE|CFGFLAG_CLIENT, "")
 MACRO_CONFIG_INT(GfxAsyncRender, gfx_asyncrender, 0, 0, 1, CFGFLAG_SAVE|CFGFLAG_CLIENT, "Do rendering async from the the update")
-
 MACRO_CONFIG_INT(GfxThreaded, gfx_threaded, 1, 0, 1, CFGFLAG_SAVE|CFGFLAG_CLIENT, "Use the threaded graphics backend")
 
 MACRO_CONFIG_INT(InpMousesens, inp_mousesens, 100, 5, 100000, CFGFLAG_SAVE|CFGFLAG_CLIENT, "Mouse sensitivity")
 
+
+//  Server
 MACRO_CONFIG_STR(SvName, sv_name, 128, "unnamed iDDRace server", CFGFLAG_SERVER, "Server name")
 MACRO_CONFIG_STR(Bindaddr, bindaddr, 128, "", CFGFLAG_CLIENT|CFGFLAG_SERVER|CFGFLAG_MASTER, "Address to bind the client/server to")
 MACRO_CONFIG_INT(SvPort, sv_port, 8303, 0, 0, CFGFLAG_SERVER, "Port to use for the server")
@@ -180,7 +181,7 @@ MACRO_CONFIG_INT(SvAnnouncementRandom, sv_announcement_random, 1, 0, 1, CFGFLAG_
 MACRO_CONFIG_INT(SvOldLaser, sv_old_laser, 0, 0, 1, CFGFLAG_SERVER, "Whether lasers can hit you if you shot them and that they pull you towards the bounce origin (0 for DDRace Beta) or lasers can't hit you if you shot them, and they pull others towards the shooter")
 MACRO_CONFIG_INT(SvSlashMe, sv_slash_me, 0, 0, 1, CFGFLAG_SERVER, "Whether /me is active on the server or not")
 
-MACRO_CONFIG_INT(ConnTimeout, conn_timeout, 15, 5, 100, CFGFLAG_SAVE|CFGFLAG_CLIENT|CFGFLAG_SERVER, "Network timeout")
+MACRO_CONFIG_INT(ConnTimeout, conn_timeout, 15, 5, 360, CFGFLAG_SAVE|CFGFLAG_CLIENT|CFGFLAG_SERVER, "Network timeout")
 MACRO_CONFIG_INT(ClShowIDs, cl_show_ids, 0, 0, 1, CFGFLAG_SAVE|CFGFLAG_CLIENT, "Whether to show client ids in scoreboard")
 MACRO_CONFIG_INT(ClAutoRaceRecord, cl_auto_race_record, 1, 0, 1, CFGFLAG_CLIENT|CFGFLAG_SAVE, "Save the best demo of each race")
 MACRO_CONFIG_INT(ClDemoName, cl_demo_name, 1, 0, 1, CFGFLAG_CLIENT|CFGFLAG_SAVE, "Save the player name within the demo")
@@ -263,9 +264,10 @@ MACRO_CONFIG_INT(SvPlasma,                sv_plasma, 0, 0, 1, CFGFLAG_SERVER, "P
 MACRO_CONFIG_INT(SvNewRescue,             sv_new_rescue, 1, 0, 1, CFGFLAG_SERVER, "Improved /r")
 MACRO_CONFIG_INT(SvSoloPart,              sv_solo_part, 1, 0, 1, CFGFLAG_SERVER, "Enable to use /solo")
 MACRO_CONFIG_INT(SvKidSelf,               sv_kid_self, 1, 0, 1, CFGFLAG_SERVER, "Kid's command only for self")
-MACRO_CONFIG_INT(SvKidLevelWithoutFinish, sv_klwf, 1, 0, 1, CFGFLAG_SERVER, "Enable set kid level without finish")
+MACRO_CONFIG_INT(SvKidLevelWithoutFinish, sv_kid_lvl_w_finish, 1, 0, 1, CFGFLAG_SERVER, "Enable set kid level without finish")
 MACRO_CONFIG_INT(SvChatRainbow,           sv_chat_rainbow, 1, 0, 1, CFGFLAG_SERVER, "Rainbow chat")
 MACRO_CONFIG_INT(SvChatRainbowFeet,       sv_chat_rainbow_feet, 1, 0, 1, CFGFLAG_SERVER, "Rainbow-feet chat")
+MACRO_CONFIG_INT(SvKidKick,               sv_kid_kick, 1, 0, 1, CFGFLAG_SERVER, "Enable to kick kid level")
 
 
 

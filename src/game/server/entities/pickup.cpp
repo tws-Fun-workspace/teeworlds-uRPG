@@ -65,12 +65,9 @@ void CPickup::Tick()
 
 				case POWERUP_ARMOR:
 					if(pChr->Team() == TEAM_SUPER) continue;
-					for(int i = WEAPON_SHOTGUN; i < NUM_WEAPONS; i++)
-					{
-						if(pChr->GetWeaponGot(i))
-						{
-							if(!(pChr->m_FreezeTime && i == WEAPON_NINJA))
-							{
+					for(int i = WEAPON_SHOTGUN; i < NUM_WEAPONS; i++) {
+						if(pChr->GetWeaponGot(i)) {
+							if(!(pChr->m_FreezeTime && i == WEAPON_NINJA)) {
 								pChr->SetWeaponGot(i, false);
 								pChr->SetWeaponAmmo(i, 0);
 								sound = true;
@@ -80,8 +77,7 @@ void CPickup::Tick()
 					pChr->SetNinjaActivationDir(vec2(0,0));
 					pChr->SetNinjaActivationTick(-500);
 					pChr->SetNinjaCurrentMoveTime(0);
-					if (sound)
-					{
+					if (sound) {
 						pChr->SetLastWeapon(WEAPON_GUN);
 						GameServer()->CreateSound(m_Pos, SOUND_PICKUP_ARMOR, pChr->Teams()->TeamMask(pChr->Team()));
 					}

@@ -46,19 +46,16 @@ CProjectile::CProjectile
 	GameWorld()->InsertEntity(this);
 }
 
-void CProjectile::Reset()
-{
+void CProjectile::Reset() {
 	if(m_LifeSpan > -2)
 		GameServer()->m_World.DestroyEntity(this);
 }
 
-vec2 CProjectile::GetPos(float Time)
-{
+vec2 CProjectile::GetPos(float Time) {
 	float Curvature = 0;
 	float Speed = 0;
 
-	switch(m_Type)
-	{
+	switch(m_Type) {
 		case WEAPON_GRENADE:
 			Curvature = GameServer()->Tuning()->m_GrenadeCurvature;
 			Speed = GameServer()->Tuning()->m_GrenadeSpeed;
@@ -79,8 +76,7 @@ vec2 CProjectile::GetPos(float Time)
 }
 
 
-void CProjectile::Tick()
-{
+void CProjectile::Tick() {
 	float Pt = (Server()->Tick()-m_StartTick-1)/(float)Server()->TickSpeed();
 	float Ct = (Server()->Tick()-m_StartTick)/(float)Server()->TickSpeed();
 	vec2 PrevPos = GetPos(Pt);
@@ -90,13 +86,18 @@ void CProjectile::Tick()
 	int Collide = GameServer()->Collision()->IntersectLine(PrevPos, CurPos, &ColPos, &NewPos, false);
 	CCharacter *pOwnerChar = 0;
 
-
-    // CNetEvent_DamageInd *pEvent = (CNetEvent_DamageInd *)m_Events.Create(NETEVENTTYPE_DAMAGEIND, sizeof(CNetEvent_DamageInd), 1);
-    if(m_Owner >= 0)
+    if(m_Owner >= 0) {
         pOwnerChar = GameServer()->GetPlayerChar(m_Owner);
+    }
+
+    if(!pOwnerChar) {
+        GameServer()->m_World.DestroyEntity(this);
+        return;
+    }
 
     CCharacter *pTargetChr = GameServer()->m_World.IntersectCharacter(PrevPos, ColPos, m_Freeze ? 1.0f : 6.0f, ColPos, pOwnerChar);
 
+    // if(!pTargetChr) { GameServer()->m_World.DestroyEntity(this); }
     if(m_LifeSpan > -1)
         m_LifeSpan--;
 
@@ -106,29 +107,17 @@ void CProjectile::Tick()
 
 
     bool isWeaponCollide = false;
-	if
-	(
-			pOwnerChar &&
-			pTargetChr &&
-			pOwnerChar->IsAlive() &&
-			pTargetChr->IsAlive() &&
-			!pTargetChr->CanCollide(m_Owner)
-			)
-	{
-			isWeaponCollide = true;
-			//TeamMask = OwnerChar->Teams()->TeamMask( OwnerChar->Team());
+	if (pOwnerChar && pTargetChr && pOwnerChar->IsAlive() && pTargetChr->IsAlive() && !pTargetChr->CanCollide(m_Owner)) {
+        isWeaponCollide = true;
 	}
-	if (pOwnerChar && pOwnerChar->IsAlive())
-	{
-			TeamMask = pOwnerChar->Teams()->TeamMask(pOwnerChar->Team(), -1, m_Owner);
+	if (pOwnerChar && pOwnerChar->IsAlive()) {
+		TeamMask = pOwnerChar->Teams()->TeamMask(pOwnerChar->Team(), -1, m_Owner);
 	}
-    if(pTargetChr) {
+    if(pTargetChr && pTargetChr->IsAlive() && pOwnerChar && pOwnerChar->IsAlive()) {
         pTargetChr->TakeDamage(m_Direction * max(0.001f, m_Force), m_Damage, m_Owner, m_Weapon);
     }
-	if( ((pTargetChr && (pOwnerChar ? !(pOwnerChar->m_Hit&CCharacter::DISABLE_HIT_GRENADE) : g_Config.m_SvHit || m_Owner == -1 || pTargetChr == pOwnerChar)) || Collide || GameLayerClipped(CurPos)) && !isWeaponCollide)
-	{
-		if(m_Explosive/*??*/ && (!pTargetChr || (pTargetChr && !m_Freeze)))
-		{
+	if( ((pTargetChr && (pOwnerChar ? !(pOwnerChar->m_Hit&CCharacter::DISABLE_HIT_GRENADE) : g_Config.m_SvHit || m_Owner == -1 || pTargetChr == pOwnerChar)) || Collide || GameLayerClipped(CurPos)) && !isWeaponCollide) {
+		if(m_Explosive/*??*/ && (!pTargetChr || (pTargetChr && !m_Freeze))) {
 
 			GameServer()->CreateExplosion(ColPos, m_Owner, m_Weapon, true, (!pTargetChr ? -1 : pTargetChr->Team()),
 			(m_Owner != -1)? TeamMask : -1LL);
@@ -152,32 +141,24 @@ void CProjectile::Tick()
             // if(m_Bouncing != 0)
             m_Bouncing++;
 		}
-		else if (m_Weapon == WEAPON_GUN)
-		{
-            // GameServer()->CreatePlayerSpawn(CurPos, (m_Owner != -1)? TeamMask : -1LL);
-            // GameServer()->CreateDeath(CurPos, m_Owner, TeamMask);
-            // GameServer()->CreateHammerHit(CurPos, TeamMask);
+		else if (m_Weapon == WEAPON_GUN) {
 			GameServer()->CreateDamageInd(CurPos, -atan2(m_Direction.x, m_Direction.y), 10, (m_Owner != -1)? TeamMask : -1LL);
 			GameServer()->m_World.DestroyEntity(this);
 
 		}
-		else
+		else {
             if (!m_Freeze)
                 GameServer()->m_World.DestroyEntity(this);
+        }
 	}
-	if(m_LifeSpan == -1)
-	{
+	if(m_LifeSpan == -1) {
 		GameServer()->m_World.DestroyEntity(this);
 	}
 }
 
-void CProjectile::TickPaused()
-{
-	++m_StartTick;
-}
+void CProjectile::TickPaused() { ++m_StartTick; }
 
-void CProjectile::FillInfo(CNetObj_Projectile *pProj)
-{
+void CProjectile::FillInfo(CNetObj_Projectile *pProj) {
 	pProj->m_X = (int)m_Pos.x;
 	pProj->m_Y = (int)m_Pos.y;
 	pProj->m_VelX = (int)(m_Direction.x*100.0f);
@@ -186,14 +167,14 @@ void CProjectile::FillInfo(CNetObj_Projectile *pProj)
 	pProj->m_Type = m_Type;
 }
 
-void CProjectile::Snap(int SnappingClient)
-{
+void CProjectile::Snap(int SnappingClient) {
 	float Ct = (Server()->Tick()-m_StartTick)/(float)Server()->TickSpeed();
 
 	if(NetworkClipped(SnappingClient, GetPos(Ct)))
 		return;
 
 	CCharacter* pSnapChar = GameServer()->GetPlayerChar(SnappingClient);
+
 	int Tick = (Server()->Tick()%Server()->TickSpeed())%((m_Explosive)?6:20);
 	if (pSnapChar && pSnapChar->IsAlive() && (m_Layer == LAYER_SWITCH && !GameServer()->Collision()->m_pSwitchers[m_Number].m_Status[pSnapChar->Team()] && (!Tick)))
 		return;
@@ -210,7 +191,4 @@ void CProjectile::Snap(int SnappingClient)
 
 // DDRace
 
-void CProjectile::SetBouncing(int Value)
-{
-	m_Bouncing = Value;
-}
+void CProjectile::SetBouncing(int Value) { m_Bouncing = Value; }

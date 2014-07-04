@@ -624,27 +624,71 @@ void CGameContext::ConJoinTeam(IConsole::IResult *pResult, void *pUserData)
 
 void CGameContext::ConMe(IConsole::IResult *pResult, void *pUserData)
 {
+
+/* old /me
 	CGameContext *pSelf = (CGameContext *) pUserData;
 	if (!CheckClientID(pResult->m_ClientID))
 		return;
 
 	char aBuf[256 + 24];
 
-	str_format(aBuf, 256 + 24, "'%s' %s",
-			pSelf->Server()->ClientName(pResult->m_ClientID),
-			pResult->GetString(0));
+	str_format(aBuf, 256 + 24, "'%s' %s", pSelf->Server()->ClientName(pResult->m_ClientID), pResult->GetString(0));
 	if (g_Config.m_SvSlashMe)
 		pSelf->SendChat(-2, CGameContext::CHAT_ALL, aBuf, pResult->m_ClientID);
 	else
-		pSelf->Console()->Print(
-				IConsole::OUTPUT_LEVEL_STANDARD,
-				"me",
-				"/me is disabled on this server, admin can enable it by using sv_slash_me");
+		pSelf->Console()->Print( IConsole::OUTPUT_LEVEL_STANDARD, "me", "/me is disabled on this server, admin can enable it by using sv_slash_me");
+*/ 
+
+
+// new /me
+
+    CGameContext *pSelf = (CGameContext *)pUserData;
+    if(!CheckClientID(pResult->m_ClientID)) return;
+    CCharacter *pChr = pSelf->m_apPlayers[pResult->m_ClientID]->GetCharacter();
+    if (!pChr)
+        return;
+
+    char aBuf[64]; str_format(aBuf, sizeof(aBuf), "   ***   "); pSelf->SendChatTarget(pResult->m_ClientID, aBuf);
+    str_format(aBuf, sizeof(aBuf), "  "); pSelf->SendChatTarget(pResult->m_ClientID, aBuf);
+
+
+    // char aBuf[64];
+    str_format(aBuf, sizeof(aBuf), "   --- Id: %d", pChr->Core()->m_Id);
+    pSelf->SendChatTarget(pResult->m_ClientID, aBuf);
+
+    str_format(aBuf, sizeof(aBuf), "   --- Nick: %s", pSelf->Server()->ClientName(pResult->m_ClientID));
+    pSelf->SendChatTarget(pResult->m_ClientID, aBuf);
+
+    switch (pChr->GetPlayer()->m_Authed) {
+        case 0: 
+            str_format(aBuf, sizeof(aBuf), "   --- Level: User (0)");
+            pSelf->SendChatTarget(pResult->m_ClientID, aBuf);
+        break;
+        case 1: 
+            str_format(aBuf, sizeof(aBuf), "   --- Level: Kid (1)");
+            pSelf->SendChatTarget(pResult->m_ClientID, aBuf);
+        break;
+        case 2: 
+            str_format(aBuf, sizeof(aBuf), "   --- Level: Helper (2)");
+            pSelf->SendChatTarget(pResult->m_ClientID, aBuf);
+        break;
+        case 3: 
+            str_format(aBuf, sizeof(aBuf), "   --- Level: Moderator (3)");
+            pSelf->SendChatTarget(pResult->m_ClientID, aBuf);
+        break;
+        case 4: 
+            str_format(aBuf, sizeof(aBuf), "   --- Level: Admin (4)");
+            pSelf->SendChatTarget(pResult->m_ClientID, aBuf);
+        break;
+    }
+    // str_format(aBuf, sizeof(aBuf), "   --- Level: %d", pChr->GetPlayer()->m_Authed);
+    // pSelf->SendChatTarget(pResult->m_ClientID, aBuf);
+
+    str_format(aBuf, sizeof(aBuf), "  "); pSelf->SendChatTarget(pResult->m_ClientID, aBuf);
+    str_format(aBuf, sizeof(aBuf), "   ***   "); pSelf->SendChatTarget(pResult->m_ClientID, aBuf);
 }
 
-void CGameContext::ConSetEyeEmote(IConsole::IResult *pResult,
-		void *pUserData)
-{
+void CGameContext::ConSetEyeEmote(IConsole::IResult *pResult, void *pUserData) {
 	CGameContext *pSelf = (CGameContext *) pUserData;
 	if (!CheckClientID(pResult->m_ClientID))
 		return;
