@@ -25,10 +25,12 @@ CPlasma::CPlasma(CGameWorld *pGameWorld, vec2 Pos, vec2 Dir, bool Freeze,
 }
 
 bool CPlasma::HitCharacter() {
-    CCharacter *pOwnerChar = GameServer()->GetPlayerChar(m_Owner);
-    if(!pOwnerChar) {
-        GameServer()->m_World.DestroyEntity(this);
-        return false;
+    if(m_Owner != -1) {
+        CCharacter *pOwnerChar = GameServer()->GetPlayerChar(m_Owner);
+        if(!pOwnerChar) {
+            GameServer()->m_World.DestroyEntity(this);
+            return false;
+        }
     }
     vec2 To2;
     CCharacter *Hit = GameServer()->m_World.IntersectCharacter(m_Pos, m_Pos + m_Core, 0.0f, To2);
@@ -61,10 +63,12 @@ void CPlasma::Reset() {
 }
 
 void CPlasma::Tick() {
-    CCharacter *pOwnerChar = GameServer()->GetPlayerChar(m_Owner);
-    if(!pOwnerChar) {
-        GameServer()->m_World.DestroyEntity(this);
-        return;
+    if(m_Owner != -1) {
+        CCharacter *pOwnerChar = GameServer()->GetPlayerChar(m_Owner);
+        if(!pOwnerChar) {
+            GameServer()->m_World.DestroyEntity(this);
+            return;
+        }
     }
     if (m_LifeTime == 0)
     {
@@ -95,10 +99,13 @@ void CPlasma::Tick() {
 }
 
 void CPlasma::Snap(int SnappingClient) {
-    CCharacter *pOwnerChar = GameServer()->GetPlayerChar(m_Owner);
-    if(!pOwnerChar) {
-        GameServer()->m_World.DestroyEntity(this);
-        return;
+    
+    if(m_Owner != -1) {
+        CCharacter *pOwnerChar = GameServer()->GetPlayerChar(m_Owner);
+        if(!pOwnerChar) {
+            GameServer()->m_World.DestroyEntity(this);
+            return;
+        }
     }
     if (NetworkClipped(SnappingClient))
         return;
