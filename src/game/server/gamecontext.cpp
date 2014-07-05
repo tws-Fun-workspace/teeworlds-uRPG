@@ -2336,47 +2336,27 @@ void CGameContext::ResetTuning()
 	SendTuningParams(-1);
 }
 
-void CGameContext::List(int ClientID, const char* filter)
-{
+void CGameContext::List(int ClientID, const char* filter) {
 	int total = 0;
 	char buf[256];
-	int bufcnt = 0;
+	// int bufcnt = 0;
 	if (filter[0])
 		str_format(buf, sizeof(buf), "Listing players with \"%s\" in name:", filter);
 	else
 		str_format(buf, sizeof(buf), "Listing all players:", filter);
 	SendChatTarget(ClientID, buf);
-	for(int i = 0; i < MAX_CLIENTS; i++)
-	{
 
-		if(m_apPlayers[i])
-		{
-			total++;
-			const char* name = Server()->ClientName(i);
-            str_format(buf, sizeof(buf),"%s    ----    id = %d", name, i);
-            SendChatTarget(ClientID, buf);
-            bufcnt++;
-			// if (str_find_nocase(name, filter) == NULL)
-				// continue;
-			// if (bufcnt + str_length(name) + 4 > 256)
-			// {
-				// SendChatTarget(ClientID, buf);
-				// bufcnt = 0;
-			// }
-			// if (bufcnt != 0)
-			// {
-				// str_format(&buf[bufcnt], sizeof(buf) - bufcnt, ", %s id('%d')", name, i);
-				// bufcnt += 2 + str_length(name);
-			// }
-			// else
-			// {
-				// str_format(&buf[bufcnt], sizeof(buf) - bufcnt, "%s id('%d')", name, i);
-				// bufcnt += str_length(name);
-			// }
+	for(int i = 0; i < MAX_CLIENTS; i++) {
+		if(m_apPlayers[i]) {
+            if(((CServer *) Server())->m_aClients[i].m_State != CServer::CClient::STATE_DUMMY) {
+                total++;
+                const char* name = Server()->ClientName(i);
+                str_format(buf, sizeof(buf),"id = %d  name = \"%s\"", i, name);
+                SendChatTarget(ClientID, buf);
+                // bufcnt++;
+            }
 		}
 	}
-	// if (bufcnt != 0)
-		// SendChatTarget(ClientID, buf);
 	str_format(buf, sizeof(buf), "%d players online", total);
 	SendChatTarget(ClientID, buf);
 }
