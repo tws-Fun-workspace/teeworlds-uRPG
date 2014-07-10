@@ -182,18 +182,17 @@ bool IGameController::OnEntity(int Index, vec2 Pos, int Layer, int Flags, int Nu
 			}
 		}
 	}
-	else if(Index == ENTITY_CRAZY_SHOTGUN_EX)
-	{
+	else if(Index == ENTITY_CRAZY_SHOTGUN_EX) {
 		int Dir;
-		if(!Flags)
-			Dir = 0;
-		else if(Flags == ROTATION_90)
-			Dir = 1;
-		else if(Flags == ROTATION_180)
-			Dir = 2;
-		else
-			Dir = 3;
-		float Deg = Dir * (pi / 2);
+        if(!Flags)
+            Dir=0;
+        else if(Flags == (TILEFLAG_ROTATE))
+            Dir = 1;
+        else if(Flags == (TILEFLAG_VFLIP|TILEFLAG_HFLIP))
+            Dir = 2;
+        else
+            Dir = 3;
+        float Deg = Dir * ( pi / 2);
 		CProjectile *bullet = new CProjectile
 			(
 			&GameServer()->m_World,
@@ -214,8 +213,7 @@ bool IGameController::OnEntity(int Index, vec2 Pos, int Layer, int Flags, int Nu
 			);
 		bullet->SetBouncing(1);
 	}
-	else if(Index == ENTITY_CRAZY_SHOTGUN)
-	{
+	else if(Index == ENTITY_CRAZY_SHOTGUN) {
 		int Dir;
 		if(!Flags)
 			Dir=0;

@@ -90,7 +90,7 @@ void CProjectile::Tick() {
         pOwnerChar = GameServer()->GetPlayerChar(m_Owner);
     }
 
-    if(!pOwnerChar) {
+    if(!pOwnerChar && m_Owner != -1) {
         GameServer()->m_World.DestroyEntity(this);
         return;
     }
@@ -112,6 +112,9 @@ void CProjectile::Tick() {
 	if (pOwnerChar && pOwnerChar->IsAlive()) {
 		TeamMask = pOwnerChar->Teams()->TeamMask(pOwnerChar->Team(), -1, m_Owner);
 	}
+    if(pTargetChr && pTargetChr->IsAlive() && m_Owner == -1) {
+        pTargetChr->TakeDamage(m_Direction * max(0.001f, m_Force), m_Damage, m_Owner, m_Weapon);
+    }
     if(pTargetChr && pTargetChr->IsAlive() && pOwnerChar && pOwnerChar->IsAlive()) {
         pTargetChr->TakeDamage(m_Direction * max(0.001f, m_Force), m_Damage, m_Owner, m_Weapon);
     }

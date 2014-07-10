@@ -1022,13 +1022,15 @@ void CCharacter::Die(int Killer, int Weapon)
 
 bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon) {
     
-    // GameServer()->SendChatTarget(GetPlayer()->GetCID(),"Here");
+    // if(From < 0) return false;
 
-    if(From < 0) return false;
+    CCharacter *pChr = 0;
 
-    CCharacter *pChr = GameServer()->m_apPlayers[From]->GetCharacter();
-    if(!pChr) return false;
-    if(g_Config.m_SvDamage || pChr->isCanKill || GameServer()->m_apPlayers[m_pPlayer->GetCID()]->GetCharacter()->isCanDie)
+    if(From >= 0) {
+        pChr = GameServer()->m_apPlayers[From]->GetCharacter();
+        if(!pChr) return false;
+    }
+    if(g_Config.m_SvDamage || (pChr && pChr->isCanKill) || GameServer()->m_apPlayers[m_pPlayer->GetCID()]->GetCharacter()->isCanDie)
     // if(g_Config.m_SvDamage)
 {
     m_Core.m_Vel += Force;
@@ -1063,8 +1065,7 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon) {
 	m_DamageTakenTick = Server()->Tick();
 
 	// do damage Hit sound
-	if(From >= 0 && From != m_pPlayer->GetCID() && GameServer()->m_apPlayers[From])
-	{
+	if(From >= 0 && From != m_pPlayer->GetCID() && GameServer()->m_apPlayers[From]) {
 		int64_t Mask = CmaskOne(From);
 		for(int i = 0; i < MAX_CLIENTS; i++)
 		{
@@ -1075,8 +1076,7 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon) {
 	}
 
 	// check for death
-	if(m_Health <= 0)
-	{
+	if(m_Health <= 0) {
 		Die(From, Weapon);
 
 		// set attacker's face to happy (taunt!)
