@@ -50,6 +50,8 @@ public:
 	void Die(int Killer, int Weapon);
 	bool TakeDamage(vec2 Force, int Dmg, int From, int Weapon);
 
+	void Bleed(int Ticks);
+
 	bool Spawn(class CPlayer *pPlayer, vec2 Pos);
 	bool Remove();
 
@@ -130,6 +132,7 @@ private:
 	CCharacterCore m_SendCore; // core that we should send
 	CCharacterCore m_ReckoningCore; // the dead reckoning core
 
+	int m_BloodTicks;
 };
 
 #endif
