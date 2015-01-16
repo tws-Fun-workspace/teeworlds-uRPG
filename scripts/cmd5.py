@@ -29,7 +29,6 @@ for filename in sys.argv[1:]:
 	f += cstrip([l.strip() for l in open(filename, "rb")])
 
 hash = hashlib.md5(f).hexdigest().lower()[16:]
-#TODO 0.7: improve nethash creation
-if hash == "3dc531e4296de555":
-	hash = "626fce9a778df4d4"
-print('#define GAME_NETVERSION_HASH "%s"' % hash)
+vhash = "626fce9a778df4d4" #update as upstream updates it
+print('#define GAME_NETVERSION_HASH_CUST "%s"' % hash)
+print('#define GAME_NETVERSION_HASH "%s"' % vhash)
