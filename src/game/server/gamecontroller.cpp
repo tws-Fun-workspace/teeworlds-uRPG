@@ -221,6 +221,8 @@ void IGameController::StartRound()
 	char aBuf[256];
 	str_format(aBuf, sizeof(aBuf), "start round type='%s' teamplay='%d'", m_pGameType, m_GameFlags&GAMEFLAG_TEAMS);
 	GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
+
+	m_AutoVoteCaused = false;
 }
 
 void IGameController::ChangeMap(const char *pToMap)
@@ -248,6 +250,12 @@ void IGameController::CycleMap()
 	{
 		if(g_Config.m_SvRoundSwap)
 			GameServer()->SwapTeams();
+		return;
+	}
+
+	if (g_Config.m_SvExtend)
+	{
+		g_Config.m_SvExtend = 0;
 		return;
 	}
 
@@ -537,9 +545,41 @@ void IGameController::Tick()
 		}
 	}
 
+	// first condition is because player score gets reset pretty late. second is to not get two votes, if both sv_endvote_* are set.
+	// third is to only cause the vote in the last round
+	if (m_RoundStartTick != Server()->Tick() && *g_Config.m_SvMaprotation && !m_AutoVoteCaused && m_RoundCount >= g_Config.m_SvRoundsPerMap - 1)
+	{
+		if (g_Config.m_SvEndvoteTime > 0 && g_Config.m_SvTimelimit > 0 && g_Config.m_SvEndvoteTime < g_Config.m_SvTimelimit*60
+				&& Server()->Tick() - m_RoundStartTick >= (g_Config.m_SvTimelimit*60 - g_Config.m_SvEndvoteTime) * Server()->TickSpeed())
+		{
+				AutoVote(); //time
+		}
+		else if (g_Config.m_SvEndvoteScore > 0 && g_Config.m_SvScorelimit > 0 && g_Config.m_SvEndvoteScore < g_Config.m_SvScorelimit)
+		{
+			int Max = 0;
+			if (m_GameFlags & GAMEFLAG_TEAMS)
+				Max = m_aTeamscore[m_aTeamscore[TEAM_RED] > m_aTeamscore[TEAM_BLUE] ? TEAM_RED : TEAM_BLUE];
+			else
+				for(int i = 0; i < MAX_CLIENTS; ++i)
+					if(GameServer()->m_apPlayers[i] && GameServer()->m_apPlayers[i]->m_Score > Max)
+						Max = GameServer()->m_apPlayers[i]->m_Score;
+
+			if (Max + g_Config.m_SvEndvoteScore >= g_Config.m_SvScorelimit)
+				AutoVote(); //score
+		}
+	}
+
 	DoWincheck();
 }
 
+void IGameController::AutoVote()
+{
+	if (GameServer()->m_VoteCloseTime)
+		return;
+	
+	GameServer()->StartVote("Extend map for a round?", "sv_extend 1", "End is near");
+	m_AutoVoteCaused = true;
+}
 
 bool IGameController::IsTeamplay() const
 {
