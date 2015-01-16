@@ -262,6 +262,9 @@ void CCharacter::FireWeapon()
 	if(FullAuto && (m_LatestInput.m_Fire&1) && m_aWeapons[m_ActiveWeapon].m_Ammo)
 		WillFire = true;
 
+	if (!g_Config.m_SvNinja && m_ActiveWeapon == WEAPON_NINJA)
+		WillFire = false;
+
 	if(!WillFire)
 		return;
 
