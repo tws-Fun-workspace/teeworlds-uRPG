@@ -259,7 +259,7 @@ void CCharacter::FireWeapon()
 	if(FullAuto && (m_LatestInput.m_Fire&1) && m_aWeapons[m_ActiveWeapon].m_Ammo)
 		WillFire = true;
 
-	if(!WillFire)
+	if(!WillFire || m_ActiveWeapon == WEAPON_NINJA/*forcefully disallow ninja attack because it indicates being frozen*/)
 		return;
 
 	// check for ammo
@@ -539,6 +539,18 @@ void CCharacter::SetEmote(int Emote, int Tick)
 	m_EmoteStop = Tick;
 }
 
+int CCharacter::GetFreezeTicks()
+{
+	return m_Core.m_Frozen;
+}
+
+void CCharacter::Freeze(int Ticks)
+{
+	if (Ticks < 0)
+		Ticks = 0;
+	m_Core.m_Frozen = Ticks;
+}
+
 void CCharacter::OnPredictedInput(CNetObj_PlayerInput *pNewInput)
 {
 	// check for changes
@@ -607,6 +619,20 @@ void CCharacter::Tick()
 	{
 		Die(m_pPlayer->GetCID(), WEAPON_WORLD);
 	}
+
+	if (m_Core.m_Frozen)
+	{
+		if (m_ActiveWeapon != WEAPON_NINJA)
+			GiveNinja(true);
+		else if (m_Ninja.m_ActivationTick + 5 * Server()->TickSpeed() < Server()->Tick())
+			m_Ninja.m_ActivationTick = Server()->Tick(); // this should fix the end-of-ninja missprediction bug
+
+		if ((m_Core.m_Frozen+1) % Server()->TickSpeed() == 0)
+			GameServer()->CreateDamageInd(m_Pos, 0, (m_Core.m_Frozen+1) / Server()->TickSpeed());
+	}
+	else if (m_ActiveWeapon == WEAPON_NINJA)
+		TakeNinja();
+
 
 	// handle Weapons
 	HandleWeapons();
@@ -690,7 +716,8 @@ void CCharacter::TickDefered()
 		m_Core.Write(&Current);
 
 		// only allow dead reackoning for a top of 3 seconds
-		if(m_ReckoningTick+Server()->TickSpeed()*3 < Server()->Tick() || mem_comp(&Predicted, &Current, sizeof(CNetObj_Character)) != 0)
+		if(m_ReckoningTick+Server()->TickSpeed()*3 < Server()->Tick() || mem_comp(&Predicted, &Current, sizeof(CNetObj_Character)) != 0
+				|| (m_Core.m_Frozen > 0 && !(Server()->Tick()&1)))
 		{
 			m_ReckoningTick = Server()->Tick();
 			m_SendCore = m_Core;
