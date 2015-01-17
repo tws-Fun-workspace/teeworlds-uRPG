@@ -16,13 +16,14 @@ private:
 	int m_aMoltenBy[MAX_CLIENTS];
 	char m_aBroadcast[MAX_BROADCAST];
 	int m_NextBroadcast;
+	int m_BroadcastStop;
 
 	void SendFreezeKill(int Killer, int Victim, int Weapon);
 	void HandleFreeze(int Killer, int Victim);
 	void HandleMelt(int Melter, int Meltee);
 	void HandleSacr(int Killer, int Victim);
 
-	void Broadcast(const char *pMsg);
+	void Broadcast(const char *pMsg, int Ticks);
 public:
 	CGameControllerMOD(class CGameContext *pGameServer);
 	virtual ~CGameControllerMOD();

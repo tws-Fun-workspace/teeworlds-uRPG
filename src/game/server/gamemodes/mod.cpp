@@ -25,8 +25,7 @@ CGameControllerMOD::CGameControllerMOD(class CGameContext *pGameServer)
 {
 	m_pGameType = "openfng";
 	m_GameFlags = GAMEFLAG_TEAMS;
-	m_NextBroadcast = 0;
-	m_aBroadcast[0] = '\0';
+	PostReset();
 }
 
 CGameControllerMOD::~CGameControllerMOD()
@@ -68,20 +67,25 @@ void CGameControllerMOD::Tick()
 		}
 	}
 
+	if (m_BroadcastStop >= 0 && m_BroadcastStop < TICK)
+	{
+		m_aBroadcast[0] = '\0';
+		m_BroadcastStop = -1;
+	}
+
 	if (m_NextBroadcast < TICK && *m_aBroadcast && CFG(Broadcasts))
 	{
 		for(int i = 0; i < MAX_CLIENTS; i++)
-		{
 			if (CHAR(i))
 				GS->SendBroadcast(m_aBroadcast, i);
-		}
 		m_NextBroadcast = TICK + TS;
 	}
 }
 
-void CGameControllerMOD::Broadcast(const char *pText)
+void CGameControllerMOD::Broadcast(const char *pText, int Ticks)
 {
 	str_copy(m_aBroadcast, pText, sizeof m_aBroadcast);
+	m_BroadcastStop = Ticks < 0 ? -1 : (TICK + Ticks);
 }
 
 void CGameControllerMOD::HandleFreeze(int Killer, int Victim)
@@ -200,6 +204,10 @@ void CGameControllerMOD::PostReset()
 {
 	for(int i = 0; i < MAX_CLIENTS; i++)
 		m_aFrozenBy[i] = m_aMoltenBy[i] = -1;
+
+	m_NextBroadcast = 0;
+	m_BroadcastStop = 0;
+	m_aBroadcast[0] = '\0';
 }
 /* (c) Magnus Auvinen. See licence.txt in the root of the distribution for more information. */
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
