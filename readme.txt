@@ -1,3 +1,5 @@
+!! For precompiled binaries see https://github.com/fstd/teeworlds/tree/openfng-bin !!
+
 ++++++++++++++++ Teeworlds ++++++++++++++++ 
 Copyright (c) 2012 Magnus Auvinen
 
