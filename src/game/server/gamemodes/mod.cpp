@@ -308,7 +308,7 @@ void CGameControllerMOD::HandleSacr(int Killer, int Victim, int ShrineTeam)
 	int FailTeam = pVictim->GetPlayer()->GetTeam();
 	bool Wrong = ShrineTeam != -1 && FailTeam == ShrineTeam;
 
-	m_aTeamscore[1-FailTeam] += Wrong?CFG(WrongSacrTeamscore):CFG(SacrTeamscore);
+	m_aTeamscore[1-FailTeam] += Wrong?CFG(WrongSacrTeamscore):(ShrineTeam == -1 ? CFG(SacrTeamscore) : CFG(RightSacrTeamscore));
 
 	if (!Wrong)
 	{
@@ -318,10 +318,11 @@ void CGameControllerMOD::HandleSacr(int Killer, int Victim, int ShrineTeam)
 			GameServer()->CreateSound(pVictim->m_Pos, SOUND_CTF_CAPTURE);
 	}
 
-	if (((Wrong && CFG(WrongSacrTeamscore)) || (!Wrong && CFG(SacrTeamscore))) && CFG(SacrBroadcast))
+	if (((Wrong && CFG(WrongSacrTeamscore)) || (!Wrong && (ShrineTeam == -1 ? CFG(SacrTeamscore) : CFG(RightSacrTeamscore)))) && CFG(SacrBroadcast))
 	{
 		char aBuf[64];
-		str_format(aBuf, sizeof aBuf, "%s sacrificed%s (%+d)", GetTeamName(1-FailTeam), Wrong?" in wrong shrine":"", Wrong?CFG(WrongSacrTeamscore):CFG(SacrTeamscore));
+		str_format(aBuf, sizeof aBuf, "%s sacrificed%s (%+d)", GetTeamName(1-FailTeam), Wrong?" in wrong shrine":(ShrineTeam == -1 ? "" : ", pleasing their gods"),
+		                                                                           Wrong?CFG(WrongSacrTeamscore):(ShrineTeam == -1 ? CFG(SacrTeamscore):CFG(RightSacrTeamscore)));
 		m_Broadcast.Update(-1, aBuf, CFG(BroadcastTime) * TS);
 	}
 
@@ -329,7 +330,7 @@ void CGameControllerMOD::HandleSacr(int Killer, int Victim, int ShrineTeam)
 	if (!pPlKiller)
 		return;
 
-	pPlKiller->m_Score += Wrong?CFG(WrongSacrScore):CFG(SacrScore);
+	pPlKiller->m_Score += Wrong?CFG(WrongSacrScore):(ShrineTeam == -1 ? CFG(SacrScore) : CFG(RightSacrScore));
 	SendFreezeKill(Killer, Victim, WEAPON_NINJA);
 
 	if (Wrong && pPlKiller->GetCharacter() && CFG(PunishWrongSacr))
@@ -339,10 +340,13 @@ void CGameControllerMOD::HandleSacr(int Killer, int Victim, int ShrineTeam)
 		GS->SendChatTarget(pPlKiller->GetCID(), "The gods are not pleased with this sacrifice!");
 	}
 
+	if (!Wrong && pPlKiller->GetCharacter())
+		pPlKiller->GetCharacter()->SetEmote(EMOTE_HAPPY, TICK + TS * 2);
+
 	if (pPlKiller->GetCharacter() && CFG(SacrLoltext) && ((!Wrong && CFG(SacrScore)) || (Wrong && CFG(WrongSacrScore))))
 	{
 		char aBuf[64];
-		str_format(aBuf, sizeof aBuf, "%+d", Wrong?CFG(WrongSacrScore):CFG(SacrScore));
+		str_format(aBuf, sizeof aBuf, "%+d", Wrong?CFG(WrongSacrScore):(ShrineTeam == -1 ? CFG(SacrScore) : CFG(RightSacrScore)));
 		GS->CreateLolText(pPlKiller->GetCharacter(), false, vec2(0.f, -50.f), vec2(0.f, 0.f), 50, aBuf);
 	}
 }
