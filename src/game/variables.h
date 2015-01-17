@@ -133,6 +133,7 @@ MACRO_CONFIG_INT(SvFreezeLoltext, sv_freeze_loltext, 0, 0, 1, CFGFLAG_SERVER, "d
 MACRO_CONFIG_INT(SvMeltLoltext, sv_melt_loltext, 0, 0, 1, CFGFLAG_SERVER, "display a loltext when melting")
 
 MACRO_CONFIG_INT(SvLaserSkipFrozen, sv_laser_skip_frozen, 0, 0, 1, CFGFLAG_SERVER, "allow/disallow shooting through frozen tees")
+MACRO_CONFIG_INT(SvLaserSkipTeammates, sv_laser_skip_teammates, 0, 0, 1, CFGFLAG_SERVER, "allow/disallow shooting through teammates")
 
 MACRO_CONFIG_INT(SvSacrSound, sv_sacr_sound, 1, 0, 2, CFGFLAG_SERVER, "play ctf capture sound on sacrification (0 = off, 1 = global, 2 = local")
 

@@ -27,13 +27,16 @@ bool CLaser::HitCharacter(vec2 From, vec2 To)
 	if(!pHit || (g_Config.m_SvLaserSkipFrozen && pHit->GetFreezeTicks() > 0))
 		return false;
 
+	CCharacter *pOwn = GameServer()->GetPlayerChar(m_Owner);
+	if (pOwn && g_Config.m_SvLaserSkipTeammates && pOwn->GetPlayer()->GetTeam() == pHit->GetPlayer()->GetTeam())
+		return false;
+
 	m_From = From;
 	m_Pos = At;
 	m_Energy = -1;
 	//pHit->TakeDamage(vec2(0.f, 0.f), GameServer()->Tuning()->m_LaserDamage, m_Owner, WEAPON_RIFLE);
 	pHit->Freeze(GameServer()->Tuning()->m_LaserDamage * Server()->TickSpeed());
 
-	CCharacter *pOwn = GameServer()->GetPlayerChar(m_Owner);
 	if (pOwn && pOwn->GetPlayer()->GetTeam() != pHit->GetPlayer()->GetTeam())
 	{
 		if (pHit->GetFreezeTicks() <= 0 && pHit->GetMeltTick() + g_Config.m_SvMeltSafeticks < Server()->Tick())
