@@ -655,18 +655,22 @@ void CCharacter::Tick()
 		--m_BloodTicks;
 	}
 
-	bool Clipped = false;
-	// handle death-tiles and leaving gamelayer
-	if(GameServer()->Collision()->GetCollisionAt(m_Pos.x+m_ProximityRadius/3.f, m_Pos.y-m_ProximityRadius/3.f)&CCollision::COLFLAG_DEATH ||
-		GameServer()->Collision()->GetCollisionAt(m_Pos.x+m_ProximityRadius/3.f, m_Pos.y+m_ProximityRadius/3.f)&CCollision::COLFLAG_DEATH ||
-		GameServer()->Collision()->GetCollisionAt(m_Pos.x-m_ProximityRadius/3.f, m_Pos.y-m_ProximityRadius/3.f)&CCollision::COLFLAG_DEATH ||
-		GameServer()->Collision()->GetCollisionAt(m_Pos.x-m_ProximityRadius/3.f, m_Pos.y+m_ProximityRadius/3.f)&CCollision::COLFLAG_DEATH ||
-		(Clipped = GameLayerClipped(m_Pos)))
+	int Col = GameServer()->Collision()->GetCollisionAt(m_Pos.x, m_Pos.y);
+	if (Col == TILE_SHRINE_ALL || Col == TILE_SHRINE_RED || Col == TILE_SHRINE_BLUE)
 	{
-		//we just unfreeze before killing, when we leave the game layer
-		if (Clipped)
-			m_Core.m_Frozen = 0;
+		if (m_Core.m_Frozen > 0) // if not frozen, everything is boring
+		{
+			int ShrineTeam = Col == TILE_SHRINE_RED ? TEAM_RED : Col == TILE_SHRINE_BLUE ? TEAM_BLUE : -1;
+			if (ShrineTeam != -1 && ShrineTeam != m_pPlayer->GetTeam())
+				m_Core.m_Frozen = 0;
+		}
 
+		Die(m_pPlayer->GetCID(), WEAPON_WORLD);
+	}
+	else if((Col <= 7 && Col&CCollision::COLFLAG_DEATH) || GameLayerClipped(m_Pos)) //seriously.
+	{
+		// handle death-tiles and leaving gamelayer
+		m_Core.m_Frozen = 0; //we just unfreeze so it never counts as a sacrifice
 		Die(m_pPlayer->GetCID(), WEAPON_WORLD);
 	}
 

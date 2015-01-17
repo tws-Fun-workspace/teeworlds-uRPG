@@ -31,6 +31,10 @@ void CCollision::Init(class CLayers *pLayers)
 	{
 		int Index = m_pTiles[i].m_Index;
 
+		if (Index >= 208 && Index <= 210) // backwards compatibility to fng maps
+		{
+			m_pTiles[i].m_Index = TILE_SHRINE_ALL + Index - 208;
+		}
 		if(Index > 128)
 			continue;
 
@@ -45,6 +49,10 @@ void CCollision::Init(class CLayers *pLayers)
 		case TILE_NOHOOK:
 			m_pTiles[i].m_Index = COLFLAG_SOLID|COLFLAG_NOHOOK;
 			break;
+		case TILE_SHRINE_ALL:
+		case TILE_SHRINE_RED:
+		case TILE_SHRINE_BLUE:
+			break;// don't touch shrine
 		default:
 			m_pTiles[i].m_Index = 0;
 		}
@@ -61,7 +69,8 @@ int CCollision::GetTile(int x, int y)
 
 bool CCollision::IsTileSolid(int x, int y)
 {
-	return GetTile(x, y)&COLFLAG_SOLID;
+	int Tile = GetTile(x, y);
+	return (Tile&COLFLAG_SOLID) && Tile <= 5;
 }
 
 // TODO: rewrite this smarter!
