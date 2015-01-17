@@ -100,8 +100,12 @@ void CGameControllerMOD::DoHookers()
 		
 		int Hooking = pChr->GetHookedPlayer();
 
-		if (Hooking >= 0 && pChr->GetHookTick() < CFG(HookRegisterDelay))
-			Hooking = -1;
+		if (Hooking >= 0)
+		{
+			CCharacter *pVic = CHAR(Hooking);
+			if (!pVic || (pVic->GetPlayer()->GetTeam() != pChr->GetPlayer()->GetTeam() && pChr->GetHookTick() < CFG(HookRegisterDelay)))
+				Hooking = -1;
+		}
 
 		int HammeredBy = pChr->LastHammeredBy();
 		pChr->ClearLastHammeredBy();
