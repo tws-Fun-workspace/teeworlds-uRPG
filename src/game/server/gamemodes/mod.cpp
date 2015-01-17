@@ -69,9 +69,18 @@ void CGameControllerMOD::Tick()
 				pChr->SetEmote(EMOTE_SURPRISE, TICK + CFG(MeltSafeticks) + 1);
 
 			m_aMoltenBy[i] = -1;
-			int Killer = pChr->WasFrozenBy();
-			if (Killer < 0 || Killer == m_aFrozenBy[i])
+
+			if (m_aFrozenBy[i] != -1)
 				continue;
+
+			int Killer = pChr->WasFrozenBy();
+			if (Killer < 0)
+			{
+				D("wtf %d frozen but no killer?", i);
+				m_aFrozenBy[i] = -1;
+				continue;
+			}
+
 			m_aFrozenBy[i] = Killer;
 			
 			HandleFreeze(Killer, i);
@@ -79,9 +88,14 @@ void CGameControllerMOD::Tick()
 		else
 		{
 			m_aFrozenBy[i] = -1;
+
 			int Melter = pChr->WasMoltenBy();
-			if (Melter < 0 || Melter == m_aMoltenBy[i])
+			if (Melter < 0)
+				m_aMoltenBy[i] = -1;
+			
+			if (Melter == m_aMoltenBy[i])
 				continue;
+
 			m_aMoltenBy[i] = Melter;
 
 			HandleMelt(Melter, i);
