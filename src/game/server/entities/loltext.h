@@ -18,7 +18,6 @@ public:
 	virtual void Reset();
 	virtual void Tick();
 	virtual void Snap(int SnappingClient);
-	virtual void Destroy();
 
 
 private:

@@ -22,6 +22,9 @@ CLolPlasma::CLolPlasma(CGameWorld *pGameWorld, CEntity *pParent, vec2 Pos, vec2 
 void CLolPlasma::Reset()
 {
 	GameWorld()->DestroyEntity(this);
+	if (m_ltid >= 0)
+		CLoltext::PlasmaGone(m_ltid, m_plid);
+	m_ltid = -1;
 }
 
 void CLolPlasma::Tick()
@@ -34,12 +37,6 @@ void CLolPlasma::Tick()
 	m_Life--;
 
 	CEntity::m_Pos = (m_pParent?m_pParent->m_Pos:vec2(0.0f,0.0f)) + m_StartOff + (m_LocalPos += m_Vel);
-}
-
-void CLolPlasma::Destroy()
-{
-	CLoltext::PlasmaGone(m_ltid, m_plid);
-	delete this;
 }
 
 void CLolPlasma::Snap(int SnappingClient)
@@ -160,10 +157,7 @@ void CLoltext::Destroy(CGameWorld *pGameWorld, int TextID)
 	
 	for(int i = 0; i < MAX_PLASMA_PER_LOLTEXT; i++)
 		if (s_aapPlasma[TextID][i])
-		{
 			s_aapPlasma[TextID][i]->Reset();
-			s_aapPlasma[TextID][i] = 0;
-		}
 
 	s_aExpire[TextID] = 0;
 }
