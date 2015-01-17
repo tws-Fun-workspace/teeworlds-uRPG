@@ -1715,6 +1715,9 @@ int main(int argc, const char **argv) // ignore_convention
 	// execute autoexec file
 	pConsole->ExecuteFile("autoexec.cfg");
 
+	// execute default openfng config
+	pConsole->ExecuteFile("openfng.cfg");
+
 	// parse the command line arguments
 	if(argc > 1) // ignore_convention
 		pConsole->ParseArguments(argc-1, &argv[1]); // ignore_convention
