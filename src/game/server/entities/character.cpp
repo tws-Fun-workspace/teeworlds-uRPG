@@ -316,6 +316,9 @@ void CCharacter::FireWeapon()
 
 				pTarget->TakeDamage(Force, g_pData->m_Weapons.m_Hammer.m_pBase->m_Damage, m_pPlayer->GetCID(), m_ActiveWeapon);
 				Hits++;
+
+				if (pTarget->GetPlayer()->GetTeam() == GetPlayer()->GetTeam() && pTarget->GetFreezeTicks() > 0)
+					pTarget->Freeze(pTarget->GetFreezeTicks() - g_Config.m_SvHammerMelt * Server()->TickSpeed());
 			}
 
 			// if we Hit anything, we have to wait for the reload
