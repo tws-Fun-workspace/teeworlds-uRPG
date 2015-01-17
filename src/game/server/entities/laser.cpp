@@ -34,10 +34,10 @@ bool CLaser::HitCharacter(vec2 From, vec2 To)
 	pHit->Freeze(GameServer()->Tuning()->m_LaserDamage * Server()->TickSpeed());
 
 	CCharacter *pOwn = GameServer()->GetPlayerChar(m_Owner);
-	if (pOwn && pOwn->GetPlayer()->GetTeam() != Hit->GetPlayer()->GetTeam())
+	if (pOwn && pOwn->GetPlayer()->GetTeam() != pHit->GetPlayer()->GetTeam())
 	{
-		if (Hit->GetFreezeTicks() <= 0 && Hit->GetMeltTick() + g_Config.m_SvMeltSafeticks < Server()->Tick())
-			Hit->Freeze(GameServer()->Tuning()->m_LaserDamage * Server()->TickSpeed(), m_Owner);
+		if (pHit->GetFreezeTicks() <= 0 && pHit->GetMeltTick() + g_Config.m_SvMeltSafeticks < Server()->Tick())
+			pHit->Freeze(GameServer()->Tuning()->m_LaserDamage * Server()->TickSpeed(), m_Owner);
 	}
 
 	return true;
