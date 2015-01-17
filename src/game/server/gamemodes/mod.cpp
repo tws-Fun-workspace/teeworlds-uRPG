@@ -62,6 +62,9 @@ void CGameControllerMOD::Tick()
 			if ((FrzTicks+1) % TS == 0)
 				GS->CreateDamageInd(pChr->m_Pos, 0, (FrzTicks+1) / TS, m_aCltMask[pChr->GetPlayer()->GetTeam()&1]);
 
+			if (FrzTicks == 1 && CFG(MeltSafeticks))
+				pChr->SetEmote(EMOTE_SURPRISE, TICK + CFG(MeltSafeticks) + 1);
+
 			m_aMoltenBy[i] = -1;
 			int Killer = pChr->WasFrozenBy();
 			if (Killer < 0 || Killer == m_aFrozenBy[i])
