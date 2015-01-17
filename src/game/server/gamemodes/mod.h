@@ -11,38 +11,76 @@
 
 #define MAX_SCOREDISPLAYS 3 // per team
 
+// takes care of loltext teamscore displays
+class CScoreDisplay
+{
+private:
+	vec2 m_aScoreDisplays[2][MAX_SCOREDISPLAYS];
+	int m_aScoreDisplayTextIDs[2][MAX_SCOREDISPLAYS];
+	int m_aScoreDisplayCount[2];
+	int m_aScoreDisplayValue[2];
+	int m_Changed;
+	class CGameContext *m_pGS;
+
+	void FindMarkers();
+
+public:
+	CScoreDisplay(class CGameContext *pGameServer);
+	virtual ~CScoreDisplay();
+
+	void Reset(bool Destruct = false);
+	void Add(int Team, vec2 Pos);
+	void Update(int Team, int Score);
+	void Operate();
+};
+
+// handles broadcasts
+class CBroadcaster
+{
+private:
+	char m_aBroadcast[MAX_CLIENTS][MAX_BROADCAST];
+	int m_aNextBroadcast[MAX_CLIENTS];
+	int m_aBroadcastStop[MAX_CLIENTS];
+
+	int m_Changed;
+
+	class CGameContext *m_pGS;
+public:
+	CBroadcaster(class CGameContext *pGameServer);
+	virtual ~CBroadcaster();
+
+	void Update(int Cid, const char *pText, int Lifespan);
+	void Reset();
+	void Operate();
+};
+
 class CGameControllerMOD : public IGameController
 {
 private:
 	int m_aFrozenBy[MAX_CLIENTS];
 	int m_aMoltenBy[MAX_CLIENTS];
-	char m_aBroadcast[MAX_BROADCAST];
-	int m_NextBroadcast;
-	int m_BroadcastStop;
+	int m_aLastInteraction[MAX_CLIENTS]; //keep track of the last hostile interaction (hook/hammer), maps clientids to clientids [4] = 7 ^= cid 4 was last hooked/hammered by cid 7
 
-	int m_aCltMask[2]; //for sending damageindicators only to teammates
-	int m_aLastInteraction[MAX_CLIENTS]; //keep track of the last hostile interaction (hook/hammer), maps clientids to clientids [4] = 7 ^= cid 4 was last hooked/hammered by cid 8
-
-	vec2 m_aScoreDisplays[2][MAX_SCOREDISPLAYS];
-	int m_aScoreDisplayTextIDs[2][MAX_SCOREDISPLAYS];
-	int m_aScoreDisplayCount[2];
-	int m_aScoreDisplayValue[2];
+	class CScoreDisplay m_ScoreDisplay;
+	class CBroadcaster m_Broadcast;
 
 	char m_aRagequitAddr[128];
+
+	int m_aCltMask[2]; //for sending damageindicators only to teammates
 
 	void SendFreezeKill(int Killer, int Victim, int Weapon);
 	void HandleFreeze(int Killer, int Victim);
 	void HandleMelt(int Melter, int Meltee);
 	void HandleSacr(int Killer, int Victim, int ShrineTeam);
 
-	void Broadcast(const char *pMsg, int Ticks);
+	void Reset(bool Destruct = false);
 
+	bool DoEmpty();
 	void DoHookers(); //:P
+	void DoInteractions();
 	void DoBroadcasts(bool ForceSend = false);
 	void DoScoreDisplays();
-	void DoAYB();
 	void DoRagequit();
-	void InitScoreMarkers();
 public:
 	CGameControllerMOD(class CGameContext *pGameServer);
 	virtual ~CGameControllerMOD();
@@ -62,7 +100,6 @@ public:
 	virtual void PostReset();
 };
 #endif
-
 /* (c) Magnus Auvinen. See licence.txt in the root of the distribution for more information. */
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
 #ifndef GAME_SERVER_GAMEMODES_MOD_H

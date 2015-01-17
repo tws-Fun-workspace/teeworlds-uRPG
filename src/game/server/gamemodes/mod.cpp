@@ -13,12 +13,13 @@
 
 #define TS Server()->TickSpeed()
 #define TICK Server()->Tick()
-
 #define GS GameServer()
 #define CHAR(C) (((C) < 0 || (C) >= MAX_CLIENTS) ? 0 : GS->GetPlayerChar(C))
 #define PLAYER(C) (((C) < 0 || (C) >= MAX_CLIENTS) ? 0 : GS->m_apPlayers[C])
 #define TPLAYER(C) (((C) < 0 || (C) >= MAX_CLIENTS) ? 0 : (GS->IsClientReady(C) && GS->IsClientPlayer(C)) ? GS->m_apPlayers[C] : 0)
 #define CFG(A) g_Config.m_Sv ## A
+#define FORTEAMS(T) for(int T = TEAM_RED; T != -1; T = (T==TEAM_RED?TEAM_BLUE:-1))
+
 #if defined(CONF_FAMILY_WINDOWS)
  #define D(F, ...) dbg_msg("MOD", "%s:%i:%s(): " F, __FILE__, __LINE__, \
                                                             __FUNCTION__, __VA_ARGS__)
@@ -29,42 +30,110 @@
 
 
 CGameControllerMOD::CGameControllerMOD(class CGameContext *pGameServer)
-: IGameController(pGameServer)
+: IGameController(pGameServer), m_ScoreDisplay(pGameServer), m_Broadcast(pGameServer)
 {
 	m_pGameType = "openfng";
 	m_GameFlags = GAMEFLAG_TEAMS;
 	m_aCltMask[0] = m_aCltMask[1] = 0;
 
-	for(int i = 0; i < MAX_SCOREDISPLAYS; i++) //becoz PostReset will destroy existing loltexts
-		m_aScoreDisplayTextIDs[0][i] = m_aScoreDisplayTextIDs[1][i] = -1; 
-
-	PostReset();
+	Reset();
 }
 
 CGameControllerMOD::~CGameControllerMOD()
 {
+	Reset(true);
+}
+
+void CGameControllerMOD::Reset(bool Destruct)
+{
+	for(int i = 0; i < MAX_CLIENTS; i++)
+		m_aFrozenBy[i] = m_aMoltenBy[i] = m_aLastInteraction[i] = -1;
+
+	m_Broadcast.Reset();
+
+	*m_aRagequitAddr = '\0';
+
+	m_ScoreDisplay.Reset(Destruct);
+	m_aCltMask[0] = m_aCltMask[1] = 0;
 }
 
 void CGameControllerMOD::Tick()
 {
 	IGameController::Tick();
 
-	DoHookers();
+	if (m_GameOverTick != -1 || m_Warmup)
+		return;
+
+	if (DoEmpty())
+		return;
+
+	DoInteractions();
+
+	DoScoreDisplays();
+
+	DoBroadcasts();
 
 	DoRagequit();
+}
 
+bool CGameControllerMOD::DoEmpty()
+{
 	bool Empty = true;
 
-	for(int i = 0; i < MAX_CLIENTS; i++)
-	{
-		if (Empty && TPLAYER(i))
+	for(int i = 0; Empty && i < MAX_CLIENTS; i++)
+		if (TPLAYER(i))
 			Empty = false;
 
+	if (Empty)
+		m_aTeamscore[0] = m_aTeamscore[1] = 0;
+	
+	return Empty;
+}
+
+void CGameControllerMOD::DoHookers()
+{
+	for(int i = 0; i < MAX_CLIENTS; i++)
+	{
 		CCharacter *pChr = CHAR(i);
 		if (!pChr)
 			continue;
+		
+		int Hooking = pChr->GetHookedPlayer();
 
-		Empty = false;
+		if (Hooking >= 0 && pChr->GetHookTick() < CFG(HookRegisterDelay))
+			Hooking = -1;
+
+		int HammeredBy = pChr->LastHammeredBy();
+		pChr->ClearLastHammeredBy();
+
+		if (Hooking >= 0)
+		{
+			CCharacter *pVic = CHAR(Hooking);
+			if (pVic)
+			{
+				bool SameTeam = pChr->GetPlayer()->GetTeam() == pVic->GetPlayer()->GetTeam();
+				m_aLastInteraction[Hooking] = SameTeam ? -1 : i;
+			}
+		}
+
+		if (HammeredBy >= 0)
+		{	
+			CCharacter *pHam = CHAR(HammeredBy);
+			bool SameTeam = pChr->GetPlayer()->GetTeam() == pHam->GetPlayer()->GetTeam();
+			m_aLastInteraction[i] = SameTeam ? -1 : HammeredBy;
+		}
+	}
+}
+
+void CGameControllerMOD::DoInteractions()
+{
+	DoHookers();
+
+	for(int i = 0; i < MAX_CLIENTS; i++)
+	{
+		CCharacter *pChr = CHAR(i);
+		if (!pChr)
+			continue;
 
 		int FrzTicks = pChr->GetFreezeTicks();
 		int Col = GameServer()->Collision()->GetCollisionAt(pChr->m_Pos.x, pChr->m_Pos.y);
@@ -125,15 +194,27 @@ void CGameControllerMOD::Tick()
 			HandleMelt(Melter, i);
 		}
 	}
-
-	if (Empty)
-		m_aTeamscore[0] = m_aTeamscore[1] = 0;
-	else
-		DoScoreDisplays();
-
-	DoBroadcasts();
-	DoAYB();
 }
+
+void CGameControllerMOD::DoScoreDisplays()
+{
+	FORTEAMS(i)
+		m_ScoreDisplay.Update(i, m_aTeamscore[i]);
+
+	m_ScoreDisplay.Operate();
+}
+
+void CGameControllerMOD::DoBroadcasts(bool ForceSend)
+{
+	if (m_GameOverTick != -1 || !CFG(AllYourBase))
+		return;
+
+	if (max(m_aTeamscore[0], m_aTeamscore[1]) + CFG(AllYourBase) >= CFG(Scorelimit))
+		m_Broadcast.Update(-1, "ALL YOUR BASE ARE BELONG TO US.", -1);
+ 
+	m_Broadcast.Operate();
+}
+
 
 void CGameControllerMOD::DoRagequit()
 {
@@ -143,100 +224,10 @@ void CGameControllerMOD::DoRagequit()
 		if (net_addr_from_str(&Addr, m_aRagequitAddr) == 0)
 		{
 			Addr.port = 0;
-			//FIXME ((CServer*)Server())->BanAdd(Addr, CFG(PunishRagequit), "Forcefully left the server while being frozen.");
-		}
+			//XXX FIXME ((CServer*)Server())->BanAdd(Addr, CFG(PunishRagequit), "Forcefully left the server while being frozen.");
+ 		}
 		*m_aRagequitAddr = '\0';
 	}
-}
-
-void CGameControllerMOD::DoAYB()
-{
-	if (m_GameOverTick != -1 || !CFG(AllYourBase))
-		return;
-
-	if (max(m_aTeamscore[0], m_aTeamscore[1]) + CFG(AllYourBase) >= CFG(Scorelimit))
-		Broadcast("ALL YOUR BASE ARE BELONG TO US.", TS);
-
-}
-
-void CGameControllerMOD::DoBroadcasts(bool ForceSend)
-{
-	if (m_BroadcastStop >= 0 && m_BroadcastStop < TICK)
-	{
-		m_aBroadcast[0] = ' '; m_aBroadcast[1] = '\0';
-		m_BroadcastStop = -1;
-	}
-
-	if ((ForceSend || m_NextBroadcast < TICK) && *m_aBroadcast && CFG(Broadcasts))
-	{
-		for(int i = 0; i < MAX_CLIENTS; i++)
-			if (TPLAYER(i))
-				GS->SendBroadcast(m_aBroadcast, i);
-		m_NextBroadcast = TICK + TS;
-	}
-}
-
-void CGameControllerMOD::DoScoreDisplays()
-{
-	if (!m_aScoreDisplayCount[0] && !m_aScoreDisplayCount[1])
-		return;
-
-	for(int i = 0; i < 2; i++)
-	{
-		if (m_aScoreDisplayValue[i] != m_aTeamscore[i])
-		{
-			char aBuf[16];
-			str_format(aBuf, sizeof aBuf, "%d", m_aTeamscore[i]);
-			m_aScoreDisplayValue[i] = m_aTeamscore[i];
-			for(int j = 0; j < m_aScoreDisplayCount[i]; j++)
-			{
-				if (m_aScoreDisplayTextIDs[i][j] >= 0)
-					GS->DestroyLolText(m_aScoreDisplayTextIDs[i][j]);
-				m_aScoreDisplayTextIDs[i][j] = GS->CreateLolText(0, false, m_aScoreDisplays[i][j], vec2(0.f, 0.f), 3600 * TS, aBuf);
-			}
-		}
-	}
-}
-
-void CGameControllerMOD::DoHookers()
-{
-	for(int i = 0; i < MAX_CLIENTS; i++)
-	{
-		CCharacter *pChr = CHAR(i);
-		if (!pChr)
-			continue;
-		
-		int Hooking = pChr->GetHookedPlayer();
-
-		if (Hooking >= 0 && pChr->GetHookTick() < CFG(HookRegisterDelay))
-			Hooking = -1;
-
-		int HammeredBy = pChr->LastHammeredBy();
-		pChr->ClearLastHammeredBy();
-
-		if (Hooking >= 0)
-		{
-			CCharacter *pVic = CHAR(Hooking);
-			if (pVic)
-			{
-				bool SameTeam = pChr->GetPlayer()->GetTeam() == pVic->GetPlayer()->GetTeam();
-				m_aLastInteraction[Hooking] = SameTeam ? -1 : i;
-			}
-		}
-
-		if (HammeredBy >= 0)
-		{	
-			CCharacter *pHam = CHAR(HammeredBy);
-			bool SameTeam = pChr->GetPlayer()->GetTeam() == pHam->GetPlayer()->GetTeam();
-			m_aLastInteraction[i] = SameTeam ? -1 : HammeredBy;
-		}
-	}
-}
-
-void CGameControllerMOD::Broadcast(const char *pText, int Ticks)
-{
-	str_copy(m_aBroadcast, pText, sizeof m_aBroadcast);
-	m_BroadcastStop = Ticks < 0 ? -1 : (TICK + Ticks);
 }
 
 void CGameControllerMOD::HandleFreeze(int Killer, int Victim)
@@ -255,7 +246,7 @@ void CGameControllerMOD::HandleFreeze(int Killer, int Victim)
 	{
 		char aBuf[64];
 		str_format(aBuf, sizeof aBuf, "%s froze (%+d)", GetTeamName(1-FailTeam), CFG(FreezeTeamscore));
-		Broadcast(aBuf, CFG(BroadcastTime) * TS);
+		m_Broadcast.Update(-1, aBuf, CFG(BroadcastTime) * TS);
 	}
 
 	CPlayer *pPlKiller = TPLAYER(Killer);
@@ -291,7 +282,7 @@ void CGameControllerMOD::HandleMelt(int Melter, int Meltee)
 	{
 		char aBuf[64];
 		str_format(aBuf, sizeof aBuf, "%s melted (%+d)", GetTeamName(MeltTeam), CFG(MeltTeamscore));
-		Broadcast(aBuf, CFG(BroadcastTime) * TS);
+		m_Broadcast.Update(-1, aBuf, CFG(BroadcastTime) * TS);
 	}
 
 	CPlayer *pPlMelter = TPLAYER(Melter);
@@ -331,7 +322,7 @@ void CGameControllerMOD::HandleSacr(int Killer, int Victim, int ShrineTeam)
 	{
 		char aBuf[64];
 		str_format(aBuf, sizeof aBuf, "%s sacrificed%s (%+d)", GetTeamName(1-FailTeam), Wrong?" in wrong shrine":"", Wrong?CFG(WrongSacrTeamscore):CFG(SacrTeamscore));
-		Broadcast(aBuf, CFG(BroadcastTime) * TS);
+		m_Broadcast.Update(-1, aBuf, CFG(BroadcastTime) * TS);
 	}
 
 	CPlayer *pPlKiller = TPLAYER(Killer);
@@ -374,6 +365,44 @@ void CGameControllerMOD::SendFreezeKill(int Killer, int Victim, int Weapon)
 	Server()->SendPackMsg(&Msg, MSGFLAG_VITAL, -1);
 }
 
+int CGameControllerMOD::OnCharacterDeath(class CCharacter *pVictim, class CPlayer *pUnusedKiller, int Weapon)
+{
+	m_aCltMask[pVictim->GetPlayer()->GetTeam()&1] &= ~(1<<pVictim->GetPlayer()->GetCID());
+
+	//IGameController::OnCharacterDeath(pVictim, pKiller, Weapon);
+
+	int Cid = pVictim->GetPlayer()->GetCID();
+	if (pVictim->GetFreezeTicks() > 0 && m_aLastInteraction[Cid] != -1  && Weapon == WEAPON_GAME && CFG(PunishRagequit)) //ragequit
+		Server()->GetClientAddr(Cid, m_aRagequitAddr, sizeof m_aRagequitAddr); //directly adding the ban here causes deadly trouble
+
+	return 0;
+}
+
+
+void CGameControllerMOD::OnCharacterSpawn(class CCharacter *pChr)
+{
+	m_aCltMask[pChr->GetPlayer()->GetTeam()&1] |= (1<<pChr->GetPlayer()->GetCID());
+	
+	IGameController::OnCharacterSpawn(pChr);
+
+	pChr->TakeWeapon(WEAPON_GUN);
+	pChr->GiveWeapon(WEAPON_RIFLE, 10);
+	pChr->SetWeapon(WEAPON_RIFLE);
+
+	int Cid = pChr->GetPlayer()->GetCID();
+	for(int i = 0; i < MAX_CLIENTS; ++i)
+		if (m_aLastInteraction[i] == Cid)
+			m_aLastInteraction[i] = -1;
+
+	m_aLastInteraction[pChr->GetPlayer()->GetCID()] = -1;
+}
+
+void CGameControllerMOD::PostReset()
+{
+	IGameController::PostReset();
+	Reset();
+}
+
 void CGameControllerMOD::Snap(int SnappingClient)
 {
 	IGameController::Snap(SnappingClient);
@@ -389,24 +418,6 @@ void CGameControllerMOD::Snap(int SnappingClient)
 
 	pGameDataObj->m_FlagCarrierRed = 0;
 	pGameDataObj->m_FlagCarrierBlue = 0;
-}
-
-void CGameControllerMOD::OnCharacterSpawn(class CCharacter *pVictim)
-{
-	m_aCltMask[pVictim->GetPlayer()->GetTeam()&1] |= (1<<pVictim->GetPlayer()->GetCID());
-	
-	IGameController::OnCharacterSpawn(pVictim);
-
-	pVictim->TakeWeapon(WEAPON_GUN);
-	pVictim->GiveWeapon(WEAPON_RIFLE, -1);
-	pVictim->SetWeapon(WEAPON_RIFLE);
-
-	int Cid = pVictim->GetPlayer()->GetCID();
-	for(int i = 0; i < MAX_CLIENTS; ++i)
-		if (m_aLastInteraction[i] == Cid)
-			m_aLastInteraction[i] = -1;
-
-	m_aLastInteraction[pVictim->GetPlayer()->GetCID()] = -1;
 }
 
 bool CGameControllerMOD::OnEntity(int Index, vec2 Pos)
@@ -426,70 +437,6 @@ bool CGameControllerMOD::OnEntity(int Index, vec2 Pos)
 	return false;
 }
 
-int CGameControllerMOD::OnCharacterDeath(class CCharacter *pVictim,
-                                   class CPlayer *pUnusedKiller, int Weapon)
-{
-	m_aCltMask[pVictim->GetPlayer()->GetTeam()&1] &= ~(1<<pVictim->GetPlayer()->GetCID());
-
-	//IGameController::OnCharacterDeath(pVictim, pKiller, Weapon);
-
-	int Cid = pVictim->GetPlayer()->GetCID();
-	if (pVictim->GetFreezeTicks() > 0 && m_aLastInteraction[Cid] != -1  && Weapon == WEAPON_GAME && CFG(PunishRagequit)) //ragequit
-		Server()->GetClientAddr(Cid, m_aRagequitAddr, sizeof m_aRagequitAddr); //directly adding the ban here causes deadly trouble
-
-	return 0;
-}
-
-void CGameControllerMOD::PostReset()
-{
-	IGameController::PostReset();
-
-	for(int i = 0; i < MAX_CLIENTS; i++)
-		m_aFrozenBy[i] = m_aMoltenBy[i] = m_aLastInteraction[i] = -1;
-
-	m_NextBroadcast = 0;
-	m_BroadcastStop = 0;
-	m_aBroadcast[0] = '\0';
-
-	m_aScoreDisplayCount[0] = m_aScoreDisplayCount[1] = 0;
-	m_aScoreDisplayValue[0] = m_aScoreDisplayValue[1] = -1;
-	
-	*m_aRagequitAddr = '\0';
-
-	for(int i = 0; i < MAX_SCOREDISPLAYS; i++)
-	{
-		if (m_aScoreDisplayTextIDs[0][i] != -1)
-			GS->DestroyLolText(m_aScoreDisplayTextIDs[0][i]);
-		if (m_aScoreDisplayTextIDs[1][i] != -1)
-			GS->DestroyLolText(m_aScoreDisplayTextIDs[1][i]);
-
-		m_aScoreDisplayTextIDs[0][i] = m_aScoreDisplayTextIDs[1][i] = -1;
-	}
-
-	InitScoreMarkers();
-}
-
-void CGameControllerMOD::InitScoreMarkers()
-{
-	m_aScoreDisplayCount[0] = m_aScoreDisplayCount[1] = 0;
-	CMapItemLayerTilemap *pTMap = GS->Collision()->Layers()->GameLayer();
-	CTile *pTiles = (CTile *)GS->Collision()->Layers()->Map()->GetData(pTMap->m_Data);
-	for(int y = 0; y < pTMap->m_Height; y++)
-		for(int x = 0; x < pTMap->m_Width; x++)
-		{
-			int Index = pTiles[y * pTMap->m_Width + x].m_Index;
-			if (Index == TILE_REDSCORE || Index == TILE_BLUESCORE)
-			{
-				int Team = Index - TILE_REDSCORE;
-				if (m_aScoreDisplayCount[Team] < MAX_SCOREDISPLAYS)
-					m_aScoreDisplays[Team][m_aScoreDisplayCount[Team]++] = vec2(x*32.f, y*32.f);
-				else
-					dbg_msg("mod", "warning, too many score displays on map, ignoring this one.");
-			}
-				
-		}
-}
-
 bool CGameControllerMOD::CanJoinTeam(int Team, int NotThisID)
 {
 	int Can = IGameController::CanJoinTeam(Team, NotThisID);
@@ -497,6 +444,166 @@ bool CGameControllerMOD::CanJoinTeam(int Team, int NotThisID)
 		return false;
 
 	CCharacter *pChr = CHAR(NotThisID);
-
 	return !pChr || pChr->GetFreezeTicks() <= 0;
 }
+
+#undef TS
+#undef TICK
+#undef GS
+
+#define TS m_pGS->Server()->TickSpeed()
+#define TICK m_pGS->Server()->Tick()
+#define GS m_pGS
+
+CScoreDisplay::CScoreDisplay(class CGameContext *pGameServer)
+: m_pGS(pGameServer)
+{
+	FORTEAMS(i)
+		for(int j = 0; j < MAX_SCOREDISPLAYS; ++j)
+			m_aScoreDisplayTextIDs[i][j] = -1;
+	Reset();
+}
+
+CScoreDisplay::~CScoreDisplay()
+{
+	Reset(true);
+}
+
+void CScoreDisplay::Reset(bool Destruct)
+{
+	FORTEAMS(i)
+	{
+		for(int j = 0; j < MAX_SCOREDISPLAYS; ++j)
+		{
+			if (m_aScoreDisplayTextIDs[i][j] != -1)
+				GS->DestroyLolText(m_aScoreDisplayTextIDs[i][j]);
+			m_aScoreDisplayTextIDs[i][j] = -1;
+		}
+		m_aScoreDisplayCount[i] = 0;
+		m_aScoreDisplayValue[i] = -1;
+	}
+	m_Changed = 0;
+	if (!Destruct)
+		FindMarkers();
+}
+
+void CScoreDisplay::FindMarkers()
+{
+	CMapItemLayerTilemap *pTMap = GS->Collision()->Layers()->GameLayer();
+	CTile *pTiles = (CTile *)GS->Collision()->Layers()->Map()->GetData(pTMap->m_Data);
+	for(int y = 0; y < pTMap->m_Height; y++)
+	{
+		for(int x = 0; x < pTMap->m_Width; x++)
+		{
+			int Index = pTiles[y * pTMap->m_Width + x].m_Index;
+			if (Index == TILE_REDSCORE || Index == TILE_BLUESCORE)
+			{
+				int Team = Index - TILE_REDSCORE;
+				Add(Team, vec2(x*32.f, y*32.f));
+			}
+				
+		}
+	}
+}
+
+void CScoreDisplay::Add(int Team, vec2 Pos)
+{
+	if (m_aScoreDisplayCount[Team&1] >= MAX_SCOREDISPLAYS)
+		return;
+	m_aScoreDisplays[Team&1][m_aScoreDisplayCount[Team&1]++] = Pos;
+}
+
+void CScoreDisplay::Update(int Team, int Score)
+{
+	if (m_aScoreDisplayValue[Team&1] == Score)
+		return;
+
+	m_aScoreDisplayValue[Team&1] = Score;
+	m_Changed |= (1<<(Team&1));
+}
+
+void CScoreDisplay::Operate()
+{
+	FORTEAMS(Team)
+	{
+		if (m_Changed & (1<<Team))
+		{
+			char aBuf[16];
+			str_format(aBuf, sizeof aBuf, "%d", m_aScoreDisplayValue[Team]);
+			for(int i = 0; i < m_aScoreDisplayCount[Team]; i++)
+			{
+				if (m_aScoreDisplayTextIDs[Team][i] != -1)
+					GS->DestroyLolText(m_aScoreDisplayTextIDs[Team][i]);
+				m_aScoreDisplayTextIDs[Team][i] = GS->CreateLolText(0, false, m_aScoreDisplays[Team][i], vec2(0.f, 0.f), 3600 * TS, aBuf);
+			}
+		}
+	}
+	
+	m_Changed = 0;
+}
+
+
+
+CBroadcaster::CBroadcaster(class CGameContext *pGameServer)
+: m_pGS(pGameServer)
+{
+	Reset();
+}
+
+CBroadcaster::~CBroadcaster()
+{
+	Reset();
+}
+
+void CBroadcaster::Update(int Cid, const char *pText, int Lifespan)
+{
+	if (Cid < 0) // all
+	{
+		for(int i = 0; i < MAX_CLIENTS; ++i)
+			Update(i, pText, Lifespan);
+		return;
+	}
+
+	m_aBroadcastStop[Cid] = Lifespan < 0 ? -1 : (TICK + Lifespan);
+	bool Changed = str_comp(m_aBroadcast[Cid], pText) != 0;
+	if (Changed)
+	{
+		str_copy(m_aBroadcast[Cid], pText, sizeof m_aBroadcast[Cid]);
+		m_Changed |= (1<<Cid);
+	}
+}
+
+void CBroadcaster::Reset()
+{
+	for(int i = 0; i < MAX_CLIENTS; ++i)
+	{
+		m_aBroadcast[i][0] = '\0';
+		m_aNextBroadcast[i] = m_aBroadcastStop[i] = -1;
+		m_Changed = ~0;
+	}
+}
+
+void CBroadcaster::Operate()
+{
+	for(int i = 0; i < MAX_CLIENTS; ++i)
+	{
+		if (!GS->IsClientReady(i))
+			continue;
+		
+		if (m_aBroadcastStop[i] >= 0 && m_aBroadcastStop[i] < TICK)
+		{
+			GS->SendBroadcast(" ", i);
+			m_aBroadcast[i][0] = '\0';
+			m_aBroadcastStop[i] = -1;
+			m_Changed &= ~(1<<i);
+		}
+
+		if (((m_Changed & (1<<i)) || m_aNextBroadcast[i] < TICK) && *m_aBroadcast[i])
+		{
+			GS->SendBroadcast(m_aBroadcast[i], i);
+			m_aNextBroadcast[i] = TICK + TS * 3;
+		}
+	}
+	m_Changed = 0;
+}
+
