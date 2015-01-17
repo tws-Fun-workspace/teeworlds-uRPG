@@ -51,6 +51,8 @@ void CGameControllerMOD::Tick()
 
 	DoHookers();
 
+	DoRagequit();
+
 	bool Empty = true;
 
 	for(int i = 0; i < MAX_CLIENTS; i++)
@@ -115,6 +117,20 @@ void CGameControllerMOD::Tick()
 
 	DoBroadcasts();
 	DoAYB();
+}
+
+void CGameControllerMOD::DoRagequit()
+{
+	if (*m_aRagequitAddr)
+	{
+		NETADDR Addr;
+		if (net_addr_from_str(&Addr, m_aRagequitAddr) == 0)
+		{
+			Addr.port = 0;
+			//FIXME ((CServer*)Server())->BanAdd(Addr, CFG(PunishRagequit), "Forcefully left the server while being frozen.");
+		}
+		*m_aRagequitAddr = '\0';
+	}
 }
 
 void CGameControllerMOD::DoAYB()
@@ -390,8 +406,16 @@ int CGameControllerMOD::OnCharacterDeath(class CCharacter *pVictim,
 	//IGameController::OnCharacterDeath(pVictim, pKiller, Weapon);
 
 	int Cid = pVictim->GetPlayer()->GetCID();
-	if (Weapon == WEAPON_WORLD && pVictim->GetFreezeTicks() > 0 && m_aLastInteraction[Cid] != -1)
-		HandleSacr(m_aLastInteraction[Cid], Cid);
+	if (pVictim->GetFreezeTicks() > 0 && m_aLastInteraction[Cid] != -1)
+	{
+		if (Weapon == WEAPON_WORLD)
+			HandleSacr(m_aLastInteraction[Cid], Cid);
+		else if (Weapon == WEAPON_GAME && CFG(PunishRagequit)) //ragequit
+		{
+			//directly adding the ban here causes deadly trouble
+			Server()->GetClientAddr(Cid, m_aRagequitAddr, sizeof m_aRagequitAddr);
+		}
+	}
 
 	return 0;
 }
@@ -410,6 +434,8 @@ void CGameControllerMOD::PostReset()
 	m_aScoreDisplayCount[0] = m_aScoreDisplayCount[1] = 0;
 	m_aScoreDisplayValue[0] = m_aScoreDisplayValue[1] = -1;
 	
+	*m_aRagequitAddr = '\0';
+
 	for(int i = 0; i < MAX_SCOREDISPLAYS; i++)
 	{
 		if (m_aScoreDisplayTextIDs[0][i] != -1)

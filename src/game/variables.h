@@ -136,6 +136,8 @@ MACRO_CONFIG_INT(SvAllYourBase, sv_all_your_base, 50, 0, 200, CFGFLAG_SERVER, "d
 
 MACRO_CONFIG_INT(SvHookRegisterDelay, sv_hook_register_delay, 10, 0, 100, CFGFLAG_SERVER, "require this many ticks to keep a player hooked until it counts as an interaction (sacr)")
 
+MACRO_CONFIG_INT(SvPunishRagequit, sv_punish_ragequit, 30, 0, 120, CFGFLAG_SERVER, "number of seconds to ban for forcefully leaving the game while frozen. 0 = off.")
+
 // debug
 #ifdef CONF_DEBUG // this one can crash the server if not used correctly
 	MACRO_CONFIG_INT(DbgDummies, dbg_dummies, 0, 0, 15, CFGFLAG_SERVER, "")

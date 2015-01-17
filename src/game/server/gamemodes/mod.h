@@ -28,6 +28,8 @@ private:
 	int m_aScoreDisplayCount[2];
 	int m_aScoreDisplayValue[2];
 
+	char m_aRagequitAddr[128];
+
 	void SendFreezeKill(int Killer, int Victim, int Weapon);
 	void HandleFreeze(int Killer, int Victim);
 	void HandleMelt(int Melter, int Meltee);
@@ -39,6 +41,7 @@ private:
 	void DoBroadcasts(bool ForceSend = false);
 	void DoScoreDisplays();
 	void DoAYB();
+	void DoRagequit();
 	void InitScoreMarkers();
 public:
 	CGameControllerMOD(class CGameContext *pGameServer);
