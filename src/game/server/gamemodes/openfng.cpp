@@ -239,7 +239,9 @@ void CGameControllerOpenFNG::DoRagequit()
 		if (net_addr_from_str(&Addr, m_aRagequitAddr) == 0)
 		{
 			Addr.port = 0;
-			//XXX FIXME ((CServer*)Server())->BanAdd(Addr, CFG(PunishRagequit), "Forcefully left the server while being frozen.");
+			char aBan[128];
+			str_format(aBan, sizeof aBan, "ban %s 1 Forcefully left the server while being frozen.", m_aRagequitAddr);
+			GS->Console()->ExecuteLine(aBan);
 		}
 		*m_aRagequitAddr = '\0';
 	}
