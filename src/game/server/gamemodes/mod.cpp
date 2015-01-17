@@ -196,6 +196,13 @@ void CGameControllerMOD::HandleFreeze(int Killer, int Victim)
 	int FailTeam = pVictim->GetPlayer()->GetTeam() & 1;
 	m_aTeamscore[1 - FailTeam] += CFG(FreezeTeamscore);
 
+	if (CFG(FreezeTeamscore) && CFG(FreezeBroadcast)) //probably of no real use but for completeness...
+	{
+		char aBuf[64];
+		str_format(aBuf, sizeof aBuf, "%s froze (%+d)", GetTeamName(1-FailTeam), CFG(FreezeTeamscore));
+		Broadcast(aBuf, CFG(BroadcastTime) * TS);
+	}
+
 	CPlayer *pPlKiller = TPLAYER(Killer);
 
 	if (!pPlKiller)
@@ -225,6 +232,13 @@ void CGameControllerMOD::HandleMelt(int Melter, int Meltee)
 	int MeltTeam = pMeltee->GetPlayer()->GetTeam()&1;
 	m_aTeamscore[MeltTeam] += CFG(MeltTeamscore);
 
+	if (CFG(MeltTeamscore) && CFG(MeltBroadcast))
+	{
+		char aBuf[64];
+		str_format(aBuf, sizeof aBuf, "%s melted (%+d)", GetTeamName(MeltTeam), CFG(MeltTeamscore));
+		Broadcast(aBuf, CFG(BroadcastTime) * TS);
+	}
+
 	CPlayer *pPlMelter = TPLAYER(Melter);
 
 	if (!pPlMelter)
@@ -253,10 +267,10 @@ void CGameControllerMOD::HandleSacr(int Killer, int Victim)
 	else if (CFG(SacrSound) == 2)
 		GameServer()->CreateSound(pVictim->m_Pos, SOUND_CTF_CAPTURE);
 
-	if (CFG(SacrTeamscore))
+	if (CFG(SacrTeamscore) && CFG(SacrBroadcast))
 	{
 		char aBuf[64];
-		str_format(aBuf, sizeof aBuf, "%s scored (%+d)", GetTeamName(1-FailTeam), CFG(SacrTeamscore));
+		str_format(aBuf, sizeof aBuf, "%s sacrificed (%+d)", GetTeamName(1-FailTeam), CFG(SacrTeamscore));
 		Broadcast(aBuf, CFG(BroadcastTime) * TS);
 	}
 
