@@ -40,11 +40,18 @@ void CGameControllerMOD::Tick()
 
 	DoHookers();
 
+	bool Empty = true;
+
 	for(int i = 0; i < MAX_CLIENTS; i++)
 	{
+		if (Empty && GS->IsClientReady(i) && GS->IsClientPlayer(i))
+			Empty = false;
+
 		CCharacter *pChr = CHAR(i);
 		if (!pChr)
 			continue;
+
+		Empty = false;
 
 		int FrzTicks = pChr->GetFreezeTicks();
 
@@ -72,6 +79,9 @@ void CGameControllerMOD::Tick()
 			HandleMelt(Melter, i);
 		}
 	}
+
+	if (Empty)
+		m_aTeamscore[0] = m_aTeamscore[1] = 0;
 
 	if (m_BroadcastStop >= 0 && m_BroadcastStop < TICK)
 	{
