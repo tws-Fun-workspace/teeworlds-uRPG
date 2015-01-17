@@ -656,18 +656,7 @@ void CCharacter::Tick()
 	}
 
 	int Col = GameServer()->Collision()->GetCollisionAt(m_Pos.x, m_Pos.y);
-	if (Col == TILE_SHRINE_ALL || Col == TILE_SHRINE_RED || Col == TILE_SHRINE_BLUE)
-	{
-		if (m_Core.m_Frozen > 0) // if not frozen, everything is boring
-		{
-			int ShrineTeam = Col == TILE_SHRINE_RED ? TEAM_BLUE : Col == TILE_SHRINE_BLUE ? TEAM_RED : -1;
-			if (ShrineTeam != -1 && ShrineTeam != m_pPlayer->GetTeam())
-				m_Core.m_Frozen = 0;
-		}
-
-		Die(m_pPlayer->GetCID(), WEAPON_WORLD);
-	}
-	else if((Col <= 7 && Col&CCollision::COLFLAG_DEATH) || GameLayerClipped(m_Pos)) //seriously.
+	if((Col <= 7 && Col&CCollision::COLFLAG_DEATH) || GameLayerClipped(m_Pos)) //seriously.
 	{
 		// handle death-tiles and leaving gamelayer
 		m_Core.m_Frozen = 0; //we just unfreeze so it never counts as a sacrifice
@@ -820,7 +809,7 @@ bool CCharacter::IncreaseArmor(int Amount)
 	return true;
 }
 
-void CCharacter::Die(int Killer, int Weapon)
+void CCharacter::Die(int Killer, int Weapon, bool NoKillMsg)
 {
 	// we got to wait 0.5 secs before respawning
 	m_pPlayer->m_RespawnTick = Server()->Tick()+Server()->TickSpeed()/2;
@@ -834,15 +823,18 @@ void CCharacter::Die(int Killer, int Weapon)
 
 	// send the kill message, except for when are sacrificed (openfng)
 	// because mod gamectrl will create it in that case
-	CNetMsg_Sv_KillMsg Msg;
-	Msg.m_Killer = Killer;
-	Msg.m_Victim = m_pPlayer->GetCID();
-	Msg.m_Weapon = Weapon;
-	Msg.m_ModeSpecial = ModeSpecial;
+	if (!NoKillMsg)
+	{
+		CNetMsg_Sv_KillMsg Msg;
+		Msg.m_Killer = Killer;
+		Msg.m_Victim = m_pPlayer->GetCID();
+		Msg.m_Weapon = Weapon;
+		Msg.m_ModeSpecial = ModeSpecial;
 
-	if (GetFreezeTicks() <= 0 || WasFrozenBy() < 0 || 
-	                        !(GameServer()->IsClientReady(WasFrozenBy()) && GameServer()->IsClientPlayer(WasFrozenBy())))
+	//if (GetFreezeTicks() <= 0 || WasFrozenBy() < 0 || 
+	  //                      !(GameServer()->IsClientReady(WasFrozenBy()) && GameServer()->IsClientPlayer(WasFrozenBy())))
 		Server()->SendPackMsg(&Msg, MSGFLAG_VITAL, -1);
+	}
 
 	// a nice sound
 	GameServer()->CreateSound(m_Pos, SOUND_PLAYER_DIE);

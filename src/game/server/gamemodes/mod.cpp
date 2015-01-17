@@ -67,6 +67,23 @@ void CGameControllerMOD::Tick()
 		Empty = false;
 
 		int FrzTicks = pChr->GetFreezeTicks();
+		int Col = GameServer()->Collision()->GetCollisionAt(pChr->m_Pos.x, pChr->m_Pos.y);
+		if (Col == TILE_SHRINE_ALL || Col == TILE_SHRINE_RED || Col == TILE_SHRINE_BLUE)
+		{
+			if (FrzTicks > 0 && m_aLastInteraction[i] < 0)
+				pChr->Freeze(FrzTicks = 0);
+
+			bool WasSacrificed = false;
+			if (FrzTicks > 0)
+			{
+				int ShrineTeam = Col == TILE_SHRINE_RED ? TEAM_RED : Col == TILE_SHRINE_BLUE ? TEAM_BLUE : -1;
+				HandleSacr(m_aLastInteraction[i], i, ShrineTeam);
+				WasSacrificed = true;
+			}
+
+			pChr->Die(pChr->GetPlayer()->GetCID(), WEAPON_WORLD, WasSacrificed);
+		}
+
 
 		if (FrzTicks > 0)
 		{
@@ -82,9 +99,8 @@ void CGameControllerMOD::Tick()
 				continue;
 
 			int Killer = pChr->WasFrozenBy();
-			if (Killer < 0)
+			if (Killer < 0) //may happen then the gods are not pleased
 			{
-				D("wtf %d frozen but no killer?", i);
 				m_aFrozenBy[i] = -1;
 				continue;
 			}
@@ -294,22 +310,27 @@ void CGameControllerMOD::HandleMelt(int Melter, int Meltee)
 	}
 }
 
-void CGameControllerMOD::HandleSacr(int Killer, int Victim)
-{
+void CGameControllerMOD::HandleSacr(int Killer, int Victim, int ShrineTeam)
+{//assertion: Killer >= 0, victim anyways
 	CCharacter *pVictim = CHAR(Victim);
 
-	int FailTeam = pVictim->GetPlayer()->GetTeam()&1;
-	m_aTeamscore[1-FailTeam] += CFG(SacrTeamscore);
+	int FailTeam = pVictim->GetPlayer()->GetTeam();
+	bool Wrong = ShrineTeam != -1 && FailTeam == ShrineTeam;
 
-	if (CFG(SacrSound) == 1)
-		GameServer()->CreateSoundGlobal(SOUND_CTF_CAPTURE);
-	else if (CFG(SacrSound) == 2)
-		GameServer()->CreateSound(pVictim->m_Pos, SOUND_CTF_CAPTURE);
+	m_aTeamscore[1-FailTeam] += Wrong?CFG(WrongSacrTeamscore):CFG(SacrTeamscore);
 
-	if (CFG(SacrTeamscore) && CFG(SacrBroadcast))
+	if (!Wrong)
+	{
+		if (CFG(SacrSound) == 1)
+			GameServer()->CreateSoundGlobal(SOUND_CTF_CAPTURE);
+		else if (CFG(SacrSound) == 2)
+			GameServer()->CreateSound(pVictim->m_Pos, SOUND_CTF_CAPTURE);
+	}
+
+	if (((Wrong && CFG(WrongSacrTeamscore)) || (!Wrong && CFG(SacrTeamscore))) && CFG(SacrBroadcast))
 	{
 		char aBuf[64];
-		str_format(aBuf, sizeof aBuf, "%s sacrificed (%+d)", GetTeamName(1-FailTeam), CFG(SacrTeamscore));
+		str_format(aBuf, sizeof aBuf, "%s sacrificed%s (%+d)", GetTeamName(1-FailTeam), Wrong?" in wrong shrine":"", Wrong?CFG(WrongSacrTeamscore):CFG(SacrTeamscore));
 		Broadcast(aBuf, CFG(BroadcastTime) * TS);
 	}
 
@@ -317,13 +338,20 @@ void CGameControllerMOD::HandleSacr(int Killer, int Victim)
 	if (!pPlKiller)
 		return;
 
-	pPlKiller->m_Score += CFG(SacrScore);
+	pPlKiller->m_Score += Wrong?CFG(WrongSacrScore):CFG(SacrScore);
 	SendFreezeKill(Killer, Victim, WEAPON_NINJA);
 
-	if (pPlKiller->GetCharacter() && CFG(SacrLoltext) && CFG(SacrScore))
+	if (Wrong && pPlKiller->GetCharacter() && CFG(PunishWrongSacr))
+	{
+		pPlKiller->GetCharacter()->Freeze(CFG(PunishWrongSacr) * TS);
+		GS->CreateSound(pPlKiller->GetCharacter()->m_Pos, SOUND_PLAYER_PAIN_LONG);
+		GS->SendChatTarget(pPlKiller->GetCID(), "The gods are not pleased with this sacrifice!");
+	}
+
+	if (pPlKiller->GetCharacter() && CFG(SacrLoltext) && ((!Wrong && CFG(SacrScore)) || (Wrong && CFG(WrongSacrScore))))
 	{
 		char aBuf[64];
-		str_format(aBuf, sizeof aBuf, "%+d", CFG(SacrScore));
+		str_format(aBuf, sizeof aBuf, "%+d", Wrong?CFG(WrongSacrScore):CFG(SacrScore));
 		GS->CreateLolText(pPlKiller->GetCharacter(), false, vec2(0.f, -50.f), vec2(0.f, 0.f), 50, aBuf);
 	}
 }
@@ -406,16 +434,8 @@ int CGameControllerMOD::OnCharacterDeath(class CCharacter *pVictim,
 	//IGameController::OnCharacterDeath(pVictim, pKiller, Weapon);
 
 	int Cid = pVictim->GetPlayer()->GetCID();
-	if (pVictim->GetFreezeTicks() > 0 && m_aLastInteraction[Cid] != -1)
-	{
-		if (Weapon == WEAPON_WORLD)
-			HandleSacr(m_aLastInteraction[Cid], Cid);
-		else if (Weapon == WEAPON_GAME && CFG(PunishRagequit)) //ragequit
-		{
-			//directly adding the ban here causes deadly trouble
-			Server()->GetClientAddr(Cid, m_aRagequitAddr, sizeof m_aRagequitAddr);
-		}
-	}
+	if (pVictim->GetFreezeTicks() > 0 && m_aLastInteraction[Cid] != -1  && Weapon == WEAPON_GAME && CFG(PunishRagequit)) //ragequit
+		Server()->GetClientAddr(Cid, m_aRagequitAddr, sizeof m_aRagequitAddr); //directly adding the ban here causes deadly trouble
 
 	return 0;
 }
