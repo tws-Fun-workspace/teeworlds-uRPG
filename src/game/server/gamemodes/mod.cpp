@@ -138,6 +138,13 @@ void CGameControllerMOD::HandleSacr(int Killer, int Victim)
 
 	pKiller->GetPlayer()->m_Score += CFG(SacrScore);
 	SendFreezeKill(Killer, Victim, WEAPON_NINJA);
+
+	if (CFG(SacrLoltext) && CFG(SacrTeamscore))
+	{
+		char aBuf[64];
+		str_format(aBuf, sizeof aBuf, "%+d", CFG(SacrTeamscore));
+		GS->CreateLolText(pKiller, false, vec2(0.f, -50.f), vec2(0.f, -0.5f), 75, aBuf);
+	}
 }
 
 void CGameControllerMOD::SendFreezeKill(int Killer, int Victim, int Weapon)
