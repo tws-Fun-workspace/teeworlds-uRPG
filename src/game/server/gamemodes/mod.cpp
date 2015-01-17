@@ -184,7 +184,7 @@ void CGameControllerMOD::HandleFreeze(int Killer, int Victim)
 	{
 		char aBuf[64];
 		str_format(aBuf, sizeof aBuf, "%+d", CFG(FreezeScore));
-		GS->CreateLolText(pKiller, false, vec2(0.f, -50.f), vec2(0.f, -0.5f), 50, aBuf);
+		GS->CreateLolText(pKiller, false, vec2(0.f, -50.f), vec2(0.f, 0.f), 50, aBuf);
 	}
 }
 
@@ -204,7 +204,7 @@ void CGameControllerMOD::HandleMelt(int Melter, int Meltee)
 	{
 		char aBuf[64];
 		str_format(aBuf, sizeof aBuf, "%+d", CFG(MeltScore));
-		GS->CreateLolText(pMelter, false, vec2(0.f, -50.f), vec2(0.f, -0.5f), 50, aBuf);
+		GS->CreateLolText(pMelter, false, vec2(0.f, -50.f), vec2(0.f, 0.f), 50, aBuf);
 	}
 }
 
@@ -235,7 +235,7 @@ void CGameControllerMOD::HandleSacr(int Killer, int Victim)
 	{
 		char aBuf[64];
 		str_format(aBuf, sizeof aBuf, "%+d", CFG(SacrScore));
-		GS->CreateLolText(pKiller, false, vec2(0.f, -50.f), vec2(0.f, -0.5f), 50, aBuf);
+		GS->CreateLolText(pKiller, false, vec2(0.f, -50.f), vec2(0.f, 0.f), 50, aBuf);
 	}
 }
 
