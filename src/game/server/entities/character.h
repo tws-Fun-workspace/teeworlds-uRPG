@@ -74,6 +74,7 @@ public:
 	int WasMoltenBy() { return m_MoltenBy; };
 	int GetMeltTick() { return m_MoltenAt; }
 	int GetHookedPlayer() { return m_Core.m_HookedPlayer; }
+	int GetHookTick() { return m_Core.m_HookTick; }//starts from 0 on every new hooking
 	int LastHammeredBy() { return m_HammeredBy; }
 	void ClearLastHammeredBy() { m_HammeredBy = -1; } 
 private:
