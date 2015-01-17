@@ -314,14 +314,24 @@ void CCharacter::FireWeapon()
 				else
 					Dir = vec2(0.f, -1.f);
 
+				bool MeltHit = pTarget->GetPlayer()->GetTeam() == GetPlayer()->GetTeam() && pTarget->GetFreezeTicks() > 0;
+
 				vec2 Force = (vec2(0.f, -1.f) + normalize(Dir + vec2(0.f, -1.1f)) * 10.0f);
-				Force.x *= g_Config.m_SvHammerScaleX*0.01f;
-				Force.y *= g_Config.m_SvHammerScaleY*0.01f;
+				if (!MeltHit)
+				{
+					Force.x *= g_Config.m_SvHammerScaleX*0.01f;
+					Force.y *= g_Config.m_SvHammerScaleY*0.01f;
+				}
+				else
+				{
+					Force.x *= g_Config.m_SvMeltHammerScaleX*0.01f;
+					Force.y *= g_Config.m_SvMeltHammerScaleY*0.01f;
+				}
 
 				pTarget->TakeDamage(Force, g_pData->m_Weapons.m_Hammer.m_pBase->m_Damage, m_pPlayer->GetCID(), m_ActiveWeapon);
 				Hits++;
 
-				if (pTarget->GetPlayer()->GetTeam() == GetPlayer()->GetTeam() && pTarget->GetFreezeTicks() > 0)
+				if (MeltHit)
 				{
 					pTarget->Freeze(pTarget->GetFreezeTicks() - g_Config.m_SvHammerMelt * Server()->TickSpeed());
 					if (pTarget->GetFreezeTicks() <= 0)
