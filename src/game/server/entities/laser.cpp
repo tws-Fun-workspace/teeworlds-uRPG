@@ -23,12 +23,30 @@ bool CLaser::HitCharacter(vec2 From, vec2 To)
 {
 	vec2 At;
 	CCharacter *pOwnerChar = GameServer()->GetPlayerChar(m_Owner);
-	CCharacter *pHit = GameServer()->m_World.IntersectCharacter(m_Pos, To, 0.f, At, pOwnerChar);
-	if(!pHit || (g_Config.m_SvLaserSkipFrozen && pHit->GetFreezeTicks() > 0))
-		return false;
+	CCharacter *pHit = 0;
+	CCharacter *pSkipChar = pOwnerChar;
+	vec2 Pos = m_Pos;
+	while (length(From-Pos) + length(Pos-To) < length(From-To) + 1e-5)
+	{
+		pSkipChar = GameServer()->m_World.IntersectCharacter(Pos, To, 0.f, At, pSkipChar);
+		if (!pSkipChar)
+			break;
+		Pos = At + normalize(To-From)*(pSkipChar->m_ProximityRadius+1e-5);
 
-	CCharacter *pOwn = GameServer()->GetPlayerChar(m_Owner);
-	if (pOwn && g_Config.m_SvLaserSkipTeammates && pOwn->GetPlayer()->GetTeam() == pHit->GetPlayer()->GetTeam())
+		if(g_Config.m_SvLaserSkipFrozen && pSkipChar->GetFreezeTicks() > 0)
+			continue;
+
+		if (pSkipChar == pOwnerChar) //can actually happen on bounce
+			continue;
+
+		if (pOwnerChar && g_Config.m_SvLaserSkipTeammates && pOwnerChar->GetPlayer()->GetTeam() == pSkipChar->GetPlayer()->GetTeam())
+			continue;
+
+		pHit = pSkipChar;
+		break;
+	}
+
+	if (!pHit)
 		return false;
 
 	m_From = From;
@@ -37,7 +55,7 @@ bool CLaser::HitCharacter(vec2 From, vec2 To)
 	//pHit->TakeDamage(vec2(0.f, 0.f), GameServer()->Tuning()->m_LaserDamage, m_Owner, WEAPON_RIFLE);
 	pHit->Freeze(GameServer()->Tuning()->m_LaserDamage * Server()->TickSpeed());
 
-	if (pOwn && pOwn->GetPlayer()->GetTeam() != pHit->GetPlayer()->GetTeam())
+	if (pOwnerChar && pOwnerChar->GetPlayer()->GetTeam() != pHit->GetPlayer()->GetTeam())
 	{
 		if (pHit->GetFreezeTicks() <= 0 && pHit->GetMeltTick() + g_Config.m_SvMeltSafeticks < Server()->Tick())
 			pHit->Freeze(GameServer()->Tuning()->m_LaserDamage * Server()->TickSpeed(), m_Owner);
