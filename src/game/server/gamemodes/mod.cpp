@@ -90,6 +90,19 @@ void CGameControllerMOD::HandleMelt(int Melter, int Meltee)
 	pMelter->GetPlayer()->m_Score += CFG(MeltScore);
 }
 
+void CGameControllerMOD::HandleSacr(int Killer, int Victim)
+{
+	CCharacter *pVictim = CHAR(Victim);
+	int FailTeam = pVictim->GetPlayer()->GetTeam()&1;
+	m_aTeamscore[1-FailTeam] += CFG(SacrTeamscore);
+
+	CCharacter* pKiller = CHAR(Killer);
+	if (!pKiller)
+		return;
+
+	pKiller->GetPlayer()->m_Score += CFG(SacrScore);
+}
+
 void CGameControllerMOD::SendFreezeKill(int Killer, int Victim)
 {
 	char aBuf[256];
@@ -157,14 +170,7 @@ int CGameControllerMOD::OnCharacterDeath(class CCharacter *pVictim,
 	if (Weapon != WEAPON_WORLD || pVictim->GetFreezeTicks() <= 0)
 		return 0;
 	
-	int Killer = pVictim->WasFrozenBy();
-	int FailTeam = pVictim->GetPlayer()->GetTeam()&1;
-	m_aTeamscore[1-FailTeam] += CFG(SacrTeamscore);
-
-	CCharacter* pKiller = CHAR(Killer);
-	if (pKiller)
-		pKiller->GetPlayer()->m_Score += CFG(SacrScore);
-
+	HandleSacr(pVictim->WasFrozenBy(), pVictim->GetPlayer()->GetCID());
 	return 0;
 }
 

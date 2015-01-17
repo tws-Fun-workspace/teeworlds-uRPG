@@ -15,6 +15,7 @@ private:
 	void SendFreezeKill(int Killer, int Victim);
 	void HandleFreeze(int Killer, int Victim);
 	void HandleMelt(int Melter, int Meltee);
+	void HandleSacr(int Killer, int Victim);
 public:
 	CGameControllerMOD(class CGameContext *pGameServer);
 	virtual ~CGameControllerMOD();
