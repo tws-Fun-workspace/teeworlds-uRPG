@@ -841,7 +841,7 @@ void CCharacter::Die(int Killer, int Weapon)
 	Msg.m_ModeSpecial = ModeSpecial;
 
 	if (GetFreezeTicks() <= 0 || WasFrozenBy() < 0 || 
-	                        !GameServer()->GetPlayerChar(WasFrozenBy()))
+	                        !(GameServer()->IsClientReady(WasFrozenBy()) && GameServer()->IsClientPlayer(WasFrozenBy())))
 		Server()->SendPackMsg(&Msg, MSGFLAG_VITAL, -1);
 
 	// a nice sound
