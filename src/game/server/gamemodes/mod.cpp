@@ -19,8 +19,14 @@
 #define PLAYER(C) (((C) < 0 || (C) >= MAX_CLIENTS) ? 0 : GS->m_apPlayers[C])
 #define TPLAYER(C) (((C) < 0 || (C) >= MAX_CLIENTS) ? 0 : (GS->IsClientReady(C) && GS->IsClientPlayer(C)) ? GS->m_apPlayers[C] : 0)
 #define CFG(A) g_Config.m_Sv ## A
-#define D(F, ARGS...) dbg_msg("mod", "%s:%i:%s(): " F, __FILE__, __LINE__, \
+#if defined(CONF_FAMILY_WINDOWS)
+ #define D(F, ...) dbg_msg("MOD", "%s:%i:%s(): " F, __FILE__, __LINE__, \
+                                                            __FUNCTION__, __VA_ARGS__)
+#elif defined(CONF_FAMILY_UNIX)
+ #define D(F, ARGS...) dbg_msg("MOD", "%s:%i:%s(): " F, __FILE__, __LINE__, \
                                                             __func__,##ARGS)
+#endif
+
 
 CGameControllerMOD::CGameControllerMOD(class CGameContext *pGameServer)
 : IGameController(pGameServer)
