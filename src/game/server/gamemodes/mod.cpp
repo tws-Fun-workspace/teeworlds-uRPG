@@ -69,7 +69,7 @@ void CGameControllerMOD::Tick()
 
 	if (m_BroadcastStop >= 0 && m_BroadcastStop < TICK)
 	{
-		m_aBroadcast[0] = '\0';
+		m_aBroadcast[0] = ' '; m_aBroadcast[1] = '\0';
 		m_BroadcastStop = -1;
 	}
 
@@ -120,6 +120,13 @@ void CGameControllerMOD::HandleSacr(int Killer, int Victim)
 	CCharacter *pVictim = CHAR(Victim);
 	int FailTeam = pVictim->GetPlayer()->GetTeam()&1;
 	m_aTeamscore[1-FailTeam] += CFG(SacrTeamscore);
+
+	if (CFG(SacrTeamscore))
+	{
+		char aBuf[64];
+		str_format(aBuf, sizeof aBuf, "%s scored (%+d)", GetTeamName(1-FailTeam), CFG(SacrTeamscore));
+		Broadcast(aBuf, CFG(BroadcastTime) * TS);
+	}
 
 	CCharacter* pKiller = CHAR(Killer);
 	if (!pKiller)
