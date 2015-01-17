@@ -57,13 +57,13 @@ MACRO_CONFIG_INT(GfxNoclip, gfx_noclip, 0, 0, 1, CFGFLAG_CLIENT|CFGFLAG_SAVE, "D
 
 // server
 MACRO_CONFIG_INT(SvWarmup, sv_warmup, 0, 0, 0, CFGFLAG_SERVER, "Number of seconds to do warmup before round starts")
-MACRO_CONFIG_STR(SvMotd, sv_motd, 900, "", CFGFLAG_SERVER, "Message of the day to display for the clients")
+MACRO_CONFIG_STR(SvMotd, sv_motd, 900, "This is OpenFNG by fstd\nhttp://github.com/fstd/teeworlds/tree/openfng\n#OpenFNG on QuakeNet (irc.quakenet.org)", CFGFLAG_SERVER, "Message of the day to display for the clients")
 MACRO_CONFIG_INT(SvTeamdamage, sv_teamdamage, 0, 0, 1, CFGFLAG_SERVER, "Team damage")
 MACRO_CONFIG_STR(SvMaprotation, sv_maprotation, 768, "", CFGFLAG_SERVER, "Maps to rotate between")
 MACRO_CONFIG_INT(SvRoundsPerMap, sv_rounds_per_map, 1, 1, 100, CFGFLAG_SERVER, "Number of rounds on each map before rotating")
 MACRO_CONFIG_INT(SvRoundSwap, sv_round_swap, 1, 0, 1, CFGFLAG_SERVER, "Swap teams between rounds")
 MACRO_CONFIG_INT(SvPowerups, sv_powerups, 1, 0, 1, CFGFLAG_SERVER, "Allow powerups like ninja")
-MACRO_CONFIG_INT(SvScorelimit, sv_scorelimit, 20, 0, 1000, CFGFLAG_SERVER, "Score limit (0 disables)")
+MACRO_CONFIG_INT(SvScorelimit, sv_scorelimit, 1000, 0, 1000, CFGFLAG_SERVER, "Score limit (0 disables)")
 MACRO_CONFIG_INT(SvTimelimit, sv_timelimit, 0, 0, 1000, CFGFLAG_SERVER, "Time limit in minutes (0 disables)")
 MACRO_CONFIG_STR(SvGametype, sv_gametype, 32, "dm", CFGFLAG_SERVER, "Game type (dm, tdm, ctf)")
 MACRO_CONFIG_INT(SvTournamentMode, sv_tournament_mode, 0, 0, 1, CFGFLAG_SERVER, "Tournament mode. When enabled, players joins the server as spectator")
@@ -103,18 +103,18 @@ MACRO_CONFIG_INT(SvBloodInterval, sv_blood_interval, 5, 1, 300, CFGFLAG_SERVER, 
 
 MACRO_CONFIG_INT(SvHammerMelt, sv_hammer_melt, 3, 0, 60, CFGFLAG_SERVER, "how many seconds to subtract from freezetime, when hammering frozen teammates")
 
-MACRO_CONFIG_INT(SvFreezeScore, sv_freeze_score, 1, 0, 10, CFGFLAG_SERVER, "")
-MACRO_CONFIG_INT(SvFreezeTeamscore, sv_freeze_teamscore, 1, 0, 10, CFGFLAG_SERVER, "")
-MACRO_CONFIG_INT(SvSacrScore, sv_sacr_score, 3, 0, 10, CFGFLAG_SERVER, "")
-MACRO_CONFIG_INT(SvSacrTeamscore, sv_sacr_teamscore, 10, 0, 10, CFGFLAG_SERVER, "")
-MACRO_CONFIG_INT(SvMeltScore, sv_melt_score, 1, 0, 10, CFGFLAG_SERVER, "")
-MACRO_CONFIG_INT(SvMeltTeamscore, sv_melt_teamscore, 0, 0, 10, CFGFLAG_SERVER, "")
+MACRO_CONFIG_INT(SvFreezeScore, sv_freeze_score, 1, 0, 10, CFGFLAG_SERVER, "player score for freezing")
+MACRO_CONFIG_INT(SvFreezeTeamscore, sv_freeze_teamscore, 1, 0, 10, CFGFLAG_SERVER, "team score for freezing")
+MACRO_CONFIG_INT(SvSacrScore, sv_sacr_score, 3, 0, 10, CFGFLAG_SERVER, "player score for sacrificing")
+MACRO_CONFIG_INT(SvSacrTeamscore, sv_sacr_teamscore, 10, 0, 10, CFGFLAG_SERVER, "team score for sacrificing")
+MACRO_CONFIG_INT(SvMeltScore, sv_melt_score, 1, 0, 10, CFGFLAG_SERVER, "player score for melting")
+MACRO_CONFIG_INT(SvMeltTeamscore, sv_melt_teamscore, 0, 0, 10, CFGFLAG_SERVER, "team score for melting")
 
 MACRO_CONFIG_INT(SvSuppressEntities, sv_suppress_entities, 1, 0, 1, CFGFLAG_SERVER, "for non fng maps, disables spawning of pickups")
 MACRO_CONFIG_INT(SvBroadcasts, sv_broadcasts, 1, 0, 1, CFGFLAG_SERVER, "allow broadcasts")
 MACRO_CONFIG_INT(SvBroadcastTime, sv_broadcast_time, 3, 1, 10, CFGFLAG_SERVER, "default time for broadcasts to appear")
 
-MACRO_CONFIG_INT(SvSacrLoltext, sv_sacr_loltext, 1, 0, 1, CFGFLAG_SERVER, "")
+MACRO_CONFIG_INT(SvSacrLoltext, sv_sacr_loltext, 1, 0, 1, CFGFLAG_SERVER, "display a loltext when sacrificing")
 
 // debug
 #ifdef CONF_DEBUG // this one can crash the server if not used correctly
