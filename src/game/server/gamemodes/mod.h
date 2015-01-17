@@ -22,7 +22,7 @@ public:
 	//virtual bool CanBeMovedOnBalance(int ClientID);
 	virtual void Tick();
 	virtual void Snap(int SnappingClient);
-	//virtual bool OnEntity(int Index, vec2 Pos);
+	virtual bool OnEntity(int Index, vec2 Pos);
 	virtual void OnCharacterSpawn(class CCharacter *pChr);
 	virtual int OnCharacterDeath(class CCharacter *pVictim,
 	                          class CPlayer *pUnusedKiller, int Weapon);

@@ -133,6 +133,23 @@ void CGameControllerMOD::OnCharacterSpawn(class CCharacter *pVictim)
 	pVictim->SetWeapon(WEAPON_RIFLE);
 }
 
+bool CGameControllerMOD::OnEntity(int Index, vec2 Pos)
+{
+	switch(Index)
+	{
+	case ENTITY_SPAWN:
+	case ENTITY_SPAWN_RED:
+	case ENTITY_SPAWN_BLUE:
+		return IGameController::OnEntity(Index, Pos);
+
+	default:
+		if (!CFG(SuppressEntities))
+			return IGameController::OnEntity(Index, Pos);
+	}
+
+	return false;
+}
+
 int CGameControllerMOD::OnCharacterDeath(class CCharacter *pVictim,
                                    class CPlayer *pUnusedKiller, int Weapon)
 {
