@@ -139,6 +139,7 @@ MACRO_CONFIG_INT(SvLaserSkipTeammates, sv_laser_skip_teammates, 0, 0, 1, CFGFLAG
 MACRO_CONFIG_INT(SvSacrSound, sv_sacr_sound, 1, 0, 2, CFGFLAG_SERVER, "play ctf capture sound on sacrification (0 = off, 1 = global, 2 = local")
 
 MACRO_CONFIG_INT(SvAllYourBase, sv_all_your_base, 50, 0, 200, CFGFLAG_SERVER, "display AYB if one team does only need this many score in order to win")
+MACRO_CONFIG_STR(SvAllYourBaseMsg, sv_all_your_base_msg, 128, "ALL YOUR BASE ARE BELONG TO US", CFGFLAG_SERVER, "AYB message to display")
 
 MACRO_CONFIG_INT(SvHookRegisterDelay, sv_hook_register_delay, 10, 0, 100, CFGFLAG_SERVER, "require this many ticks to keep a player hooked until it counts as an interaction (sacr)")
 

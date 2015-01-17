@@ -224,7 +224,7 @@ void CGameControllerOpenFNG::DoBroadcasts(bool ForceSend)
 		return;
 
 	if (max(m_aTeamscore[0], m_aTeamscore[1]) + CFG(AllYourBase) >= CFG(Scorelimit))
-		m_Broadcast.Update(-1, "ALL YOUR BASE ARE BELONG TO US.", -1);
+		m_Broadcast.Update(-1, CFG(AllYourBaseMsg), -1);
 
 	m_Broadcast.SetDef(CFG(DefBroadcast));
 
