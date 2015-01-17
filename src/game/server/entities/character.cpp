@@ -83,6 +83,8 @@ bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
 	m_MoltenBy = -1;
 	m_MoltenAt = -1;
 
+	m_HammeredBy = -1;
+
 	return true;
 }
 
@@ -330,6 +332,8 @@ void CCharacter::FireWeapon()
 
 				pTarget->TakeDamage(Force, g_pData->m_Weapons.m_Hammer.m_pBase->m_Damage, m_pPlayer->GetCID(), m_ActiveWeapon);
 				Hits++;
+
+				pTarget->m_HammeredBy = GetPlayer()->GetCID();
 
 				if (MeltHit)
 				{

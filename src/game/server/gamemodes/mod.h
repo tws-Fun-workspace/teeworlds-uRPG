@@ -19,6 +19,7 @@ private:
 	int m_BroadcastStop;
 
 	int m_aCltMask[2]; //for sending damageindicators only to teammates
+	int m_aLastInteraction[MAX_CLIENTS]; //keep track of the last hostile interaction (hook/hammer), maps clientids to clientids [4] = 7 ^= cid 4 was last hooked/hammered by cid 8
 
 	void SendFreezeKill(int Killer, int Victim, int Weapon);
 	void HandleFreeze(int Killer, int Victim);
@@ -26,6 +27,8 @@ private:
 	void HandleSacr(int Killer, int Victim);
 
 	void Broadcast(const char *pMsg, int Ticks);
+
+	void DoHookers(); //:P
 public:
 	CGameControllerMOD(class CGameContext *pGameServer);
 	virtual ~CGameControllerMOD();

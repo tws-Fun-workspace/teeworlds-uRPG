@@ -38,6 +38,8 @@ void CGameControllerMOD::Tick()
 	DoTeamScoreWincheck();
 	IGameController::Tick();
 
+	DoHookers();
+
 	for(int i = 0; i < MAX_CLIENTS; i++)
 	{
 		CCharacter *pChr = CHAR(i);
@@ -86,6 +88,37 @@ void CGameControllerMOD::Tick()
 	}
 }
 
+void CGameControllerMOD::DoHookers()
+{
+	for(int i = 0; i < MAX_CLIENTS; i++)
+	{
+		CCharacter *pChr = CHAR(i);
+		if (!pChr)
+			continue;
+		
+		int Hooking = pChr->GetHookedPlayer();
+		int HammeredBy = pChr->LastHammeredBy();
+		pChr->ClearLastHammeredBy();
+
+		if (Hooking >= 0)
+		{
+			CCharacter *pVic = CHAR(Hooking);
+			bool SameTeam = pChr->GetPlayer()->GetTeam() == pVic->GetPlayer()->GetTeam();
+			m_aLastInteraction[Hooking] = SameTeam ? -1 : i;
+		}
+
+		if (HammeredBy >= 0)
+		{	
+			D("%d was hammered by %d", i, HammeredBy);
+			CCharacter *pHam = CHAR(HammeredBy);
+			bool SameTeam = pChr->GetPlayer()->GetTeam() == pHam->GetPlayer()->GetTeam();
+			if (SameTeam)
+				D("same team, bitch");
+			m_aLastInteraction[i] = SameTeam ? -1 : HammeredBy;
+		}
+	}
+}
+
 void CGameControllerMOD::Broadcast(const char *pText, int Ticks)
 {
 	str_copy(m_aBroadcast, pText, sizeof m_aBroadcast);
@@ -99,6 +132,10 @@ void CGameControllerMOD::HandleFreeze(int Killer, int Victim)
 	m_aTeamscore[1 - FailTeam] += CFG(FreezeTeamscore);
 
 	CCharacter *pKiller = CHAR(Killer);
+
+	//freezing counts as a hostile interaction
+	m_aLastInteraction[pVictim->GetPlayer()->GetCID()] = pKiller ? pKiller->GetPlayer()->GetCID() : -1;
+
 	if (!pKiller)
 		return;
 
@@ -122,11 +159,10 @@ void CGameControllerMOD::HandleMelt(int Melter, int Meltee)
 void CGameControllerMOD::HandleSacr(int Killer, int Victim)
 {
 	CCharacter *pVictim = CHAR(Victim);
-	int FailTeam = pVictim->GetPlayer()->GetTeam()&1;
-	m_aTeamscore[1-FailTeam] += CFG(SacrTeamscore);
-
-	if (CFG(SacrTeamscore))
+	if (CFG(SacrTeamscore) &&  Killer >= 0)
 	{
+		int FailTeam = pVictim->GetPlayer()->GetTeam()&1;
+		m_aTeamscore[1-FailTeam] += CFG(SacrTeamscore);
 		char aBuf[64];
 		str_format(aBuf, sizeof aBuf, "%s scored (%+d)", GetTeamName(1-FailTeam), CFG(SacrTeamscore));
 		Broadcast(aBuf, CFG(BroadcastTime) * TS);
@@ -192,6 +228,7 @@ void CGameControllerMOD::OnCharacterSpawn(class CCharacter *pVictim)
 	pVictim->GiveWeapon(WEAPON_RIFLE, -1);
 	pVictim->SetWeapon(WEAPON_RIFLE);
 
+	m_aLastInteraction[pVictim->GetPlayer()->GetCID()] = -1;
 }
 
 bool CGameControllerMOD::OnEntity(int Index, vec2 Pos)
@@ -218,10 +255,14 @@ int CGameControllerMOD::OnCharacterDeath(class CCharacter *pVictim,
 
 	//IGameController::OnCharacterDeath(pVictim, pKiller, Weapon);
 
-	if (Weapon != WEAPON_WORLD || pVictim->GetFreezeTicks() <= 0)
-		return 0;
-	
-	HandleSacr(pVictim->WasFrozenBy(), pVictim->GetPlayer()->GetCID());
+	int Cid = pVictim->GetPlayer()->GetCID();
+	if (Weapon == WEAPON_WORLD && pVictim->GetFreezeTicks() > 0)
+		HandleSacr(m_aLastInteraction[Cid], Cid);
+
+	for(int i = 0; i < MAX_CLIENTS; ++i)
+		if (m_aLastInteraction[i] == Cid)
+			m_aLastInteraction[i] = -1;
+
 	return 0;
 }
 
@@ -230,7 +271,7 @@ void CGameControllerMOD::PostReset()
 	IGameController::PostReset();
 
 	for(int i = 0; i < MAX_CLIENTS; i++)
-		m_aFrozenBy[i] = m_aMoltenBy[i] = -1;
+		m_aFrozenBy[i] = m_aMoltenBy[i] = m_aLastInteraction[i] = -1;
 
 	m_NextBroadcast = 0;
 	m_BroadcastStop = 0;
