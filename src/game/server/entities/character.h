@@ -71,6 +71,7 @@ public:
 	void Freeze(int Ticks, int By = -1);
 	int GetFreezeTicks();
 	int WasFrozenBy() { return m_FrozenBy; };
+	int WasMoltenBy() { return m_MoltenBy; };
 private:
 	// player controlling this character
 	class CPlayer *m_pPlayer;
@@ -139,6 +140,7 @@ private:
 
 	int m_BloodTicks;
 	int m_FrozenBy;
+	int m_MoltenBy;
 };
 
 #endif
