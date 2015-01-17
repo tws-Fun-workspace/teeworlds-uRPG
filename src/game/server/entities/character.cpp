@@ -660,7 +660,7 @@ void CCharacter::Tick()
 	{
 		if (m_Core.m_Frozen > 0) // if not frozen, everything is boring
 		{
-			int ShrineTeam = Col == TILE_SHRINE_RED ? TEAM_RED : Col == TILE_SHRINE_BLUE ? TEAM_BLUE : -1;
+			int ShrineTeam = Col == TILE_SHRINE_RED ? TEAM_BLUE : Col == TILE_SHRINE_BLUE ? TEAM_RED : -1;
 			if (ShrineTeam != -1 && ShrineTeam != m_pPlayer->GetTeam())
 				m_Core.m_Frozen = 0;
 		}
