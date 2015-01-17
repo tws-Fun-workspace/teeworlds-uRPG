@@ -235,7 +235,7 @@ Messages = [
 	NetMessage("Sv_Chat", [
 		NetIntRange("m_Team", 'TEAM_SPECTATORS', 'TEAM_BLUE'),
 		NetIntRange("m_ClientID", -1, 'MAX_CLIENTS-1'),
-		NetString("m_pMessage"),
+		NetStringStrict("m_pMessage"),
 	]),
 
 	NetMessage("Sv_KillMsg", [
@@ -298,7 +298,7 @@ Messages = [
 	### Client messages
 	NetMessage("Cl_Say", [
 		NetBool("m_Team"),
-		NetString("m_pMessage"),
+		NetStringStrict("m_pMessage"),
 	]),
 
 	NetMessage("Cl_SetTeam", [
