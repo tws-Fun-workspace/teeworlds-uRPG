@@ -74,7 +74,7 @@ void CGameControllerMOD::HandleFreeze(int Killer, int Victim)
 		return;
 
 	pKiller->GetPlayer()->m_Score += CFG(FreezeScore);
-	SendFreezeKill(Killer, Victim);
+	SendFreezeKill(Killer, Victim, WEAPON_RIFLE);
 }
 
 void CGameControllerMOD::HandleMelt(int Melter, int Meltee)
@@ -101,14 +101,15 @@ void CGameControllerMOD::HandleSacr(int Killer, int Victim)
 		return;
 
 	pKiller->GetPlayer()->m_Score += CFG(SacrScore);
+	SendFreezeKill(Killer, Victim, WEAPON_NINJA);
 }
 
-void CGameControllerMOD::SendFreezeKill(int Killer, int Victim)
+void CGameControllerMOD::SendFreezeKill(int Killer, int Victim, int Weapon)
 {
 	char aBuf[256];
-	str_format(aBuf, sizeof(aBuf), "freez0r='%d:%s' victim='%d:%s'",
-	                              Killer, Server()->ClientName(Killer),
-	                              Victim, Server()->ClientName(Victim));
+	str_format(aBuf, sizeof(aBuf), "frzkill k:%d:'%s' v:%d:'%s' w:%d",
+	                      Killer, Server()->ClientName(Killer),
+	                      Victim, Server()->ClientName(Victim), Weapon);
 
 	GS->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
 
@@ -116,7 +117,7 @@ void CGameControllerMOD::SendFreezeKill(int Killer, int Victim)
 	CNetMsg_Sv_KillMsg Msg;
 	Msg.m_Killer = Killer;
 	Msg.m_Victim = Victim;
-	Msg.m_Weapon = WEAPON_RIFLE;
+	Msg.m_Weapon = Weapon;
 	Msg.m_ModeSpecial = 0;
 	Server()->SendPackMsg(&Msg, MSGFLAG_VITAL, -1);
 }
