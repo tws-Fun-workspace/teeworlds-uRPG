@@ -207,11 +207,15 @@ void CGameControllerMOD::HandleFreeze(int Killer, int Victim)
 	pPlKiller->m_Score += CFG(FreezeScore);
 	SendFreezeKill(Killer, Victim, WEAPON_RIFLE);
 
-	if (pPlKiller->GetCharacter() && CFG(FreezeLoltext) && CFG(FreezeScore))
+	if (pPlKiller->GetCharacter())
 	{
-		char aBuf[64];
-		str_format(aBuf, sizeof aBuf, "%+d", CFG(FreezeScore));
-		GS->CreateLolText(pPlKiller->GetCharacter(), false, vec2(0.f, -50.f), vec2(0.f, 0.f), 50, aBuf);
+		GS->CreateSound(pPlKiller->GetCharacter()->m_Pos, SOUND_HIT, (1<<pPlKiller->GetCID()));
+		if (CFG(FreezeLoltext) && CFG(FreezeScore))
+		{
+			char aBuf[64];
+			str_format(aBuf, sizeof aBuf, "%+d", CFG(FreezeScore));
+			GS->CreateLolText(pPlKiller->GetCharacter(), false, vec2(0.f, -50.f), vec2(0.f, 0.f), 50, aBuf);
+		}
 	}
 }
 
