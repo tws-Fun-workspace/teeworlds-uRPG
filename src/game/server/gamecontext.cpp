@@ -875,11 +875,12 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 			else
 				SendBroadcast("Teams must be balanced, please join other team", ClientID);
 		}
-		else
+		else //well in mods there are other reasons for not being able to join a team so this is a bad catch-all
 		{
 			char aBuf[128];
-			str_format(aBuf, sizeof(aBuf), "Only %d active players are allowed", Server()->MaxClients()-g_Config.m_SvSpectatorSlots);
-			SendBroadcast(aBuf, ClientID);
+			str_format(aBuf, sizeof(aBuf), "You cannot change your team/spectate right now");
+			//SendBroadcast(aBuf, ClientID);
+			SendChatTarget(ClientID, aBuf);
 		}
 	}
 	else if (MsgID == NETMSGTYPE_CL_SETSPECTATORMODE && !m_World.m_Paused)

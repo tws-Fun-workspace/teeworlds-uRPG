@@ -236,6 +236,17 @@ void CGameControllerMOD::PostReset()
 	m_BroadcastStop = 0;
 	m_aBroadcast[0] = '\0';
 }
+
+bool CGameControllerMOD::CanJoinTeam(int Team, int NotThisID)
+{
+	int Can = IGameController::CanJoinTeam(Team, NotThisID);
+	if (!Can)
+		return false;
+
+	CCharacter *pChr = CHAR(NotThisID);
+
+	return !pChr || pChr->GetFreezeTicks() <= 0;
+}
 /* (c) Magnus Auvinen. See licence.txt in the root of the distribution for more information. */
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
 #include "mod.h"
