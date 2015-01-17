@@ -661,7 +661,17 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 			pMessage++;
 		}
 
-		SendChat(ClientID, Team, pMsg->m_pMessage);
+		if (pMsg->m_pMessage[0] == '/')
+		{
+			if (str_comp_num(pMsg->m_pMessage, "/info", 5) == 0)
+				SendChatTarget(ClientID, "This is OpenFNG, written by fstd"
+						     " - get it at http://github.com/fstd/teeworlds/tree/openfng"
+						     " - IRC: #OpenFNG on irc.quakenet.org");
+			else if (str_comp(pMsg->m_pMessage, "/cmdlist") == 0)
+				SendChatTarget(ClientID, "What cmdlist?!");
+		}
+		else
+			SendChat(ClientID, Team, pMsg->m_pMessage);
 	}
 	else if(MsgID == NETMSGTYPE_CL_CALLVOTE)
 	{
