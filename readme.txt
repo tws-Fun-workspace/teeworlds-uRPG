@@ -12,7 +12,7 @@ the game, including new versions, custom maps and much more.
 
 
 ++++++++++++++++ OpenFNG ++++++++++++++++
-Copyright (c) 2011 Timo Buhrmester
+Copyright (c) 2011-2014 Timo Buhrmester
 
 OpenFNG is more or less a free clone of FNG, a modification of teeworlds,
 apparently written by some "TOM".
