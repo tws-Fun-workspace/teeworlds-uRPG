@@ -52,7 +52,9 @@ void CCollision::Init(class CLayers *pLayers)
 		case TILE_SHRINE_ALL:
 		case TILE_SHRINE_RED:
 		case TILE_SHRINE_BLUE:
-			break;// don't touch shrine
+		case TILE_REDSCORE:
+		case TILE_BLUESCORE:
+			break;// don't touch custom stuff as their indices are fine
 		default:
 			m_pTiles[i].m_Index = 0;
 		}

@@ -9,6 +9,8 @@
 
 #define MAX_BROADCAST 256
 
+#define MAX_SCOREDISPLAYS 3 // per team
+
 class CGameControllerMOD : public IGameController
 {
 private:
@@ -21,6 +23,11 @@ private:
 	int m_aCltMask[2]; //for sending damageindicators only to teammates
 	int m_aLastInteraction[MAX_CLIENTS]; //keep track of the last hostile interaction (hook/hammer), maps clientids to clientids [4] = 7 ^= cid 4 was last hooked/hammered by cid 8
 
+	vec2 m_aScoreDisplays[2][MAX_SCOREDISPLAYS];
+	int m_aScoreDisplayTextIDs[2][MAX_SCOREDISPLAYS];
+	int m_aScoreDisplayCount[2];
+	int m_aScoreDisplayValue[2];
+
 	void SendFreezeKill(int Killer, int Victim, int Weapon);
 	void HandleFreeze(int Killer, int Victim);
 	void HandleMelt(int Melter, int Meltee);
@@ -29,6 +36,8 @@ private:
 	void Broadcast(const char *pMsg, int Ticks);
 
 	void DoHookers(); //:P
+	void DoScoreDisplays();
+	void InitScoreMarkers();
 public:
 	CGameControllerMOD(class CGameContext *pGameServer);
 	virtual ~CGameControllerMOD();
