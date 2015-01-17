@@ -1,5 +1,6 @@
 /* (c) Magnus Auvinen. See licence.txt in the root of the distribution for more information. */
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
+#include <engine/shared/config.h>
 #include <game/generated/protocol.h>
 #include <game/server/gamecontext.h>
 #include "laser.h"
@@ -35,7 +36,7 @@ bool CLaser::HitCharacter(vec2 From, vec2 To)
 	CCharacter *pOwn = GameServer()->GetPlayerChar(m_Owner);
 	if (pOwn && pOwn->GetPlayer()->GetTeam() != Hit->GetPlayer()->GetTeam())
 	{
-		if (Hit->GetFreezeTicks() <= 0)
+		if (Hit->GetFreezeTicks() <= 0 && Hit->GetMeltTick() + g_Config.m_SvMeltSafeticks < Server()->Tick())
 			Hit->Freeze(GameServer()->Tuning()->m_LaserDamage * Server()->TickSpeed(), m_Owner);
 	}
 

@@ -81,6 +81,7 @@ bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
 
 	m_FrozenBy = -1;
 	m_MoltenBy = -1;
+	m_MoltenAt = -1;
 
 	return true;
 }
@@ -324,7 +325,10 @@ void CCharacter::FireWeapon()
 				{
 					pTarget->Freeze(pTarget->GetFreezeTicks() - g_Config.m_SvHammerMelt * Server()->TickSpeed());
 					if (pTarget->GetFreezeTicks() <= 0)
+					{
 						pTarget->m_MoltenBy = m_pPlayer->GetCID();
+						pTarget->m_MoltenAt = -1; // we don't want the unfreezability to take effect when being molten by hammer
+					}
 				}
 			}
 
@@ -659,11 +663,15 @@ void CCharacter::Tick()
 		//	GameServer()->CreateDamageInd(m_Pos, 0, (m_Core.m_Frozen+1) / Server()->TickSpeed());
 
 		m_MoltenBy = -1;
+		m_MoltenAt = -1;
 	}
 	else
 	{
 		if (m_ActiveWeapon == WEAPON_NINJA)
+		{
 			TakeNinja();
+			m_MoltenAt = Server()->Tick();
+		}
 		m_FrozenBy = -1;
 	}
 
