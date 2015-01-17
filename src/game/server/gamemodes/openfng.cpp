@@ -5,7 +5,6 @@
 #include <base/system.h>
 
 #include <engine/shared/config.h>
-#include <engine/server/server.h>
 
 #include <game/server/gamecontext.h>
 #include <game/server/entities/character.h>
@@ -60,7 +59,6 @@ void CGameControllerOpenFNG::Reset(bool Destruct)
 
 void CGameControllerOpenFNG::Tick()
 {
-	DoTeamScoreWincheck();
 	IGameController::Tick();
 
 	if (m_GameOverTick != -1 || m_Warmup)
@@ -241,7 +239,7 @@ void CGameControllerOpenFNG::DoRagequit()
 		if (net_addr_from_str(&Addr, m_aRagequitAddr) == 0)
 		{
 			Addr.port = 0;
-			((CServer*)Server())->BanAdd(Addr, CFG(PunishRagequit), "Forcefully left the server while being frozen.");
+			//XXX FIXME ((CServer*)Server())->BanAdd(Addr, CFG(PunishRagequit), "Forcefully left the server while being frozen.");
 		}
 		*m_aRagequitAddr = '\0';
 	}
