@@ -2,9 +2,13 @@
 /* for more information. If you are missing that file, acquire a complete */
 /* release at teeworlds.com.                                              */
 
+#include <base/system.h>
+
 #include <engine/shared/config.h>
+
 #include <game/server/gamecontext.h>
 #include <game/server/entities/character.h>
+
 #include "mod.h"
 
 #define TS Server()->TickSpeed()
@@ -21,6 +25,8 @@ CGameControllerMOD::CGameControllerMOD(class CGameContext *pGameServer)
 {
 	m_pGameType = "openfng";
 	m_GameFlags = GAMEFLAG_TEAMS;
+	m_NextBroadcast = 0;
+	m_aBroadcast[0] = '\0';
 }
 
 CGameControllerMOD::~CGameControllerMOD()
@@ -61,6 +67,21 @@ void CGameControllerMOD::Tick()
 			HandleMelt(Melter, i);
 		}
 	}
+
+	if (m_NextBroadcast < TICK && *m_aBroadcast && CFG(Broadcasts))
+	{
+		for(int i = 0; i < MAX_CLIENTS; i++)
+		{
+			if (CHAR(i))
+				GS->SendBroadcast(m_aBroadcast, i);
+		}
+		m_NextBroadcast = TICK + TS;
+	}
+}
+
+void CGameControllerMOD::Broadcast(const char *pText)
+{
+	str_copy(m_aBroadcast, pText, sizeof m_aBroadcast);
 }
 
 void CGameControllerMOD::HandleFreeze(int Killer, int Victim)
