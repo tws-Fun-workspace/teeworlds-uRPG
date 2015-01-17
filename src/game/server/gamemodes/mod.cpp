@@ -176,6 +176,10 @@ void CGameControllerMOD::HandleSacr(int Killer, int Victim)
 		char aBuf[64];
 		str_format(aBuf, sizeof aBuf, "%s scored (%+d)", GetTeamName(1-FailTeam), CFG(SacrTeamscore));
 		Broadcast(aBuf, CFG(BroadcastTime) * TS);
+		if (CFG(SacrSound) == 1)
+			GameServer()->CreateSoundGlobal(SOUND_CTF_CAPTURE);
+		else if (CFG(SacrSound) == 2)
+			GameServer()->CreateSound(pVictim->m_Pos, SOUND_CTF_CAPTURE);
 	}
 
 	CCharacter* pKiller = CHAR(Killer);
