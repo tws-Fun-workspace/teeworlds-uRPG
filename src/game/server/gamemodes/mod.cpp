@@ -113,8 +113,11 @@ void CGameControllerMOD::DoHookers()
 		if (Hooking >= 0)
 		{
 			CCharacter *pVic = CHAR(Hooking);
-			bool SameTeam = pChr->GetPlayer()->GetTeam() == pVic->GetPlayer()->GetTeam();
-			m_aLastInteraction[Hooking] = SameTeam ? -1 : i;
+			if (pVic)
+			{
+				bool SameTeam = pChr->GetPlayer()->GetTeam() == pVic->GetPlayer()->GetTeam();
+				m_aLastInteraction[Hooking] = SameTeam ? -1 : i;
+			}
 		}
 
 		if (HammeredBy >= 0)
