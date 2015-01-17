@@ -18,6 +18,8 @@ private:
 	int m_NextBroadcast;
 	int m_BroadcastStop;
 
+	int m_aCltMask[2]; //for sending damageindicators only to teammates
+
 	void SendFreezeKill(int Killer, int Victim, int Weapon);
 	void HandleFreeze(int Killer, int Victim);
 	void HandleMelt(int Melter, int Meltee);

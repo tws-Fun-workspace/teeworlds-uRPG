@@ -25,6 +25,7 @@ CGameControllerMOD::CGameControllerMOD(class CGameContext *pGameServer)
 {
 	m_pGameType = "openfng";
 	m_GameFlags = GAMEFLAG_TEAMS;
+	m_aCltMask[0] = m_aCltMask[1] = 0;
 	PostReset();
 }
 
@@ -47,6 +48,9 @@ void CGameControllerMOD::Tick()
 
 		if (FrzTicks > 0)
 		{
+			if ((FrzTicks+1) % TS == 0)
+				GS->CreateDamageInd(pChr->m_Pos, 0, (FrzTicks+1) / TS, m_aCltMask[pChr->GetPlayer()->GetTeam()&1]);
+
 			m_aMoltenBy[i] = -1;
 			int Killer = pChr->WasFrozenBy();
 			if (Killer < 0 || Killer == m_aFrozenBy[i])
@@ -173,10 +177,14 @@ void CGameControllerMOD::Snap(int SnappingClient)
 
 void CGameControllerMOD::OnCharacterSpawn(class CCharacter *pVictim)
 {
+	m_aCltMask[pVictim->GetPlayer()->GetTeam()&1] |= (1<<pVictim->GetPlayer()->GetCID());
+	
 	IGameController::OnCharacterSpawn(pVictim);
+
 	pVictim->TakeWeapon(WEAPON_GUN);
 	pVictim->GiveWeapon(WEAPON_RIFLE, -1);
 	pVictim->SetWeapon(WEAPON_RIFLE);
+
 }
 
 bool CGameControllerMOD::OnEntity(int Index, vec2 Pos)
@@ -199,7 +207,10 @@ bool CGameControllerMOD::OnEntity(int Index, vec2 Pos)
 int CGameControllerMOD::OnCharacterDeath(class CCharacter *pVictim,
                                    class CPlayer *pUnusedKiller, int Weapon)
 {
+	m_aCltMask[pVictim->GetPlayer()->GetTeam()&1] &= ~(1<<pVictim->GetPlayer()->GetCID());
+
 	//IGameController::OnCharacterDeath(pVictim, pKiller, Weapon);
+
 	if (Weapon != WEAPON_WORLD || pVictim->GetFreezeTicks() <= 0)
 		return 0;
 	
