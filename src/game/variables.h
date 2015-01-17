@@ -103,7 +103,8 @@ MACRO_CONFIG_INT(SvEndvoteScore, sv_endvote_score, 3, 0, 10, CFGFLAG_SERVER, "ca
 MACRO_CONFIG_INT(SvExtend, sv_extend, 0, 0, 0, CFGFLAG_SERVER, "when set to 1 before round ends, another round on the same map is enforced and this is reset to 0")
 MACRO_CONFIG_INT(SvLoltextHspace, sv_loltext_hspace, 14, 10, 25, CFGFLAG_SERVER, "horizontal offset between loltext 'pixels'")
 MACRO_CONFIG_INT(SvLoltextVspace, sv_loltext_vspace, 14, 10, 25, CFGFLAG_SERVER, "vertical offset between loltext 'pixels'")
-MACRO_CONFIG_INT(SvBloodInterval, sv_blood_interval, 5, 1, 300, CFGFLAG_SERVER, "")
+MACRO_CONFIG_INT(SvBloodInterval, sv_blood_interval, 1, 1, 300, CFGFLAG_SERVER, "should stay at 1 for openfng (as we bleed for only 1 tick)")
+MACRO_CONFIG_INT(SvBleedOnFreeze, sv_bleed_on_freeze, 1, 0, 1, CFGFLAG_SERVER, "'blood' splash + sound on freezing someone")
 
 MACRO_CONFIG_INT(SvHammerMelt, sv_hammer_melt, 3, 0, 60, CFGFLAG_SERVER, "how many ticks to subtract from freezetime, when hammering frozen teammates")
 MACRO_CONFIG_INT(SvMeltSafeticks, sv_melt_safeticks, 20, 0, 300, CFGFLAG_SERVER, "how many seconds to be unfreezable after melting (not when being molten per hammer)")

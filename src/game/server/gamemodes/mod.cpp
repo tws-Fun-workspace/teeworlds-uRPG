@@ -188,6 +188,12 @@ void CGameControllerMOD::Broadcast(const char *pText, int Ticks)
 void CGameControllerMOD::HandleFreeze(int Killer, int Victim)
 {
 	CCharacter *pVictim = CHAR(Victim);
+	if (CFG(BleedOnFreeze))
+	{
+		pVictim->Bleed(1);
+		GS->CreateSound(pVictim->m_Pos, SOUND_CTF_RETURN);
+	}
+
 	int FailTeam = pVictim->GetPlayer()->GetTeam() & 1;
 	m_aTeamscore[1 - FailTeam] += CFG(FreezeTeamscore);
 
