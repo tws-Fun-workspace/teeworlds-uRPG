@@ -211,11 +211,13 @@ void CGameControllerMOD::DoScoreDisplays()
 
 void CGameControllerMOD::DoBroadcasts(bool ForceSend)
 {
-	if (m_GameOverTick != -1 || !CFG(AllYourBase))
+	if (m_GameOverTick != -1)
 		return;
 
 	if (max(m_aTeamscore[0], m_aTeamscore[1]) + CFG(AllYourBase) >= CFG(Scorelimit))
 		m_Broadcast.Update(-1, "ALL YOUR BASE ARE BELONG TO US.", -1);
+
+	m_Broadcast.SetDef(CFG(DefBroadcast));
  
 	m_Broadcast.Operate();
 }
@@ -564,6 +566,18 @@ CBroadcaster::~CBroadcaster()
 	Reset();
 }
 
+void CBroadcaster::SetDef(const char *pText)
+{
+	if (str_comp(m_aDefBroadcast, pText) != 0)
+	{
+		str_copy(m_aDefBroadcast, pText, sizeof m_aDefBroadcast);
+		for(int i = 0; i < MAX_CLIENTS; ++i)
+			if (m_aBroadcastStop[i] < 0)
+				str_copy(m_aBroadcast[i], pText, sizeof m_aBroadcast[i]); //this is unfortunately required
+		m_Changed = ~0;
+	}
+}
+
 void CBroadcaster::Update(int Cid, const char *pText, int Lifespan)
 {
 	if (Cid < 0) // all
@@ -590,6 +604,7 @@ void CBroadcaster::Reset()
 		m_aNextBroadcast[i] = m_aBroadcastStop[i] = -1;
 		m_Changed = ~0;
 	}
+	m_aDefBroadcast[0] = '\0';
 }
 
 void CBroadcaster::Operate()
@@ -601,10 +616,17 @@ void CBroadcaster::Operate()
 		
 		if (m_aBroadcastStop[i] >= 0 && m_aBroadcastStop[i] < TICK)
 		{
-			GS->SendBroadcast(" ", i);
-			m_aBroadcast[i][0] = '\0';
+			str_copy(m_aBroadcast[i], m_aDefBroadcast, sizeof m_aBroadcast[i]);
+			if (!*m_aBroadcast[i])
+			{
+				GS->SendBroadcast(" ", i);
+				m_Changed &= ~(1<<i);
+			}
+			else
+			{
+				m_Changed |= (1<<i);
+			}
 			m_aBroadcastStop[i] = -1;
-			m_Changed &= ~(1<<i);
 		}
 
 		if (((m_Changed & (1<<i)) || m_aNextBroadcast[i] < TICK) && *m_aBroadcast[i])

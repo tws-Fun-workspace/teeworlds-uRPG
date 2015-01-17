@@ -41,6 +41,7 @@ private:
 	char m_aBroadcast[MAX_CLIENTS][MAX_BROADCAST];
 	int m_aNextBroadcast[MAX_CLIENTS];
 	int m_aBroadcastStop[MAX_CLIENTS];
+	char m_aDefBroadcast[MAX_BROADCAST];
 
 	int m_Changed;
 
@@ -49,6 +50,7 @@ public:
 	CBroadcaster(class CGameContext *pGameServer);
 	virtual ~CBroadcaster();
 
+	void SetDef(const char *pText);
 	void Update(int Cid, const char *pText, int Lifespan);
 	void Reset();
 	void Operate();
