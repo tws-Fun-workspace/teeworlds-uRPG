@@ -1002,6 +1002,11 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 				}
 				pChr->SetEmote(Emote, Server()->Tick() + 2 * Server()->TickSpeed());
 			}
+		}
+		else if (MsgID == NETMSGTYPE_CL_KILL && !m_World.m_Paused)
+		{
+			if(pPlayer->m_LastKill && pPlayer->m_LastKill+Server()->TickSpeed()*3 > Server()->Tick())
+				return;
 
 			pPlayer->m_LastKill = Server()->Tick();
 
@@ -1010,14 +1015,6 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 				SendChatTarget(pPlayer->GetCID(), "You cannot commit suicide while being frozen!");
 			else
 				pPlayer->KillCharacter(WEAPON_SELF);
-		}
-		else if (MsgID == NETMSGTYPE_CL_KILL && !m_World.m_Paused)
-		{
-			if(pPlayer->m_LastKill && pPlayer->m_LastKill+Server()->TickSpeed()*3 > Server()->Tick())
-				return;
-
-			pPlayer->m_LastKill = Server()->Tick();
-			pPlayer->KillCharacter(WEAPON_SELF);
 		}
 	}
 	else
