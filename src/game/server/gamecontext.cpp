@@ -13,7 +13,8 @@
 #include "gamemodes/dm.h"
 #include "gamemodes/tdm.h"
 #include "gamemodes/ctf.h"
-#include "gamemodes/mod.h"
+//#include "gamemodes/mod.h"
+#include "gamemodes/openfng.h"
 
 struct CMute CGameContext::m_aMutes[MAX_MUTES];
 
@@ -1630,8 +1631,10 @@ void CGameContext::OnInit(/*class IKernel *pKernel*/)
 	//players = new CPlayer[MAX_CLIENTS];
 
 	// select gametype
-	if(str_comp(g_Config.m_SvGametype, "mod") == 0)
+	/*if(str_comp(g_Config.m_SvGametype, "mod") == 0)
 		m_pController = new CGameControllerMOD(this);
+	else */if(str_comp(g_Config.m_SvGametype, "openfng") == 0)
+		m_pController = new CGameControllerOpenFNG(this);
 	else if(str_comp(g_Config.m_SvGametype, "ctf") == 0)
 		m_pController = new CGameControllerCTF(this);
 	else if(str_comp(g_Config.m_SvGametype, "tdm") == 0)

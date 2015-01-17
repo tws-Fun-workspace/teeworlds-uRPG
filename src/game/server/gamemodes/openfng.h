@@ -2,8 +2,8 @@
 /* for more information. If you are missing that file, acquire a complete */
 /* release at teeworlds.com.                                              */
 
-#ifndef GAME_SERVER_GAMEMODES_MOD_H
-#define GAME_SERVER_GAMEMODES_MOD_H
+#ifndef GAME_SERVER_GAMEMODES_OPENFNG_H
+#define GAME_SERVER_GAMEMODES_OPENFNG_H
 
 #include <game/server/gamecontroller.h>
 
@@ -56,7 +56,7 @@ public:
 	void Operate();
 };
 
-class CGameControllerMOD : public IGameController
+class CGameControllerOpenFNG : public IGameController
 {
 private:
 	int m_aFrozenBy[MAX_CLIENTS];
@@ -84,8 +84,8 @@ private:
 	void DoScoreDisplays();
 	void DoRagequit();
 public:
-	CGameControllerMOD(class CGameContext *pGameServer);
-	virtual ~CGameControllerMOD();
+	CGameControllerOpenFNG(class CGameContext *pGameServer);
+	virtual ~CGameControllerOpenFNG();
 
 	//virtual bool CanBeMovedOnBalance(int ClientID);
 	virtual void Tick();
@@ -100,21 +100,5 @@ public:
 	//virtual int GetAutoTeam(int NotThisID);
 	virtual bool CanJoinTeam(int Team, int NotThisID);
 	virtual void PostReset();
-};
-#endif
-/* (c) Magnus Auvinen. See licence.txt in the root of the distribution for more information. */
-/* If you are missing that file, acquire a complete release at teeworlds.com.                */
-#ifndef GAME_SERVER_GAMEMODES_MOD_H
-#define GAME_SERVER_GAMEMODES_MOD_H
-#include <game/server/gamecontroller.h>
-
-// you can subclass GAMECONTROLLER_CTF, GAMECONTROLLER_TDM etc if you want
-// todo a modification with their base as well.
-class CGameControllerMOD : public IGameController
-{
-public:
-	CGameControllerMOD(class CGameContext *pGameServer);
-	virtual void Tick();
-	// add more virtual functions here if you wish
 };
 #endif
