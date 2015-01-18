@@ -251,7 +251,8 @@ void CCharacter::FireWeapon()
 	vec2 Direction = normalize(vec2(m_LatestInput.m_TargetX, m_LatestInput.m_TargetY));
 
 	bool FullAuto = false;
-	if(m_ActiveWeapon == WEAPON_GRENADE || m_ActiveWeapon == WEAPON_SHOTGUN || m_ActiveWeapon == WEAPON_RIFLE)
+	if(m_ActiveWeapon == WEAPON_GRENADE || m_ActiveWeapon == WEAPON_SHOTGUN || m_ActiveWeapon == WEAPON_RIFLE
+	    || (g_Config.m_SvAutoHammer && m_ActiveWeapon == WEAPON_HAMMER))
 		FullAuto = true;
 
 
