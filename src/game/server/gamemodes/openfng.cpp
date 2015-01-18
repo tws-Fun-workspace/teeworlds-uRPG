@@ -170,8 +170,13 @@ void CGameControllerOpenFNG::DoInteractions()
 
 		if (FrzTicks > 0)
 		{
-			if ((FrzTicks+1) % TS == 0)
-				GS->CreateDamageInd(pChr->m_Pos, 0, (FrzTicks+1) / TS, ~m_aCltMask[1-(pChr->GetPlayer()->GetTeam()&1)]);
+			if ((FrzTicks+1) % TS == 0) {
+				int mask = -1;
+				if (!CFG(MeltShowAll))
+					mask = (int)~m_aCltMask[1-(pChr->GetPlayer()->GetTeam()&1)];
+
+				GS->CreateDamageInd(pChr->m_Pos, 0, (FrzTicks+1) / TS, mask);
+			}
 
 			if (FrzTicks == 1 && CFG(MeltSafeticks))
 				pChr->SetEmote(EMOTE_SURPRISE, TICK + CFG(MeltSafeticks) + 1);

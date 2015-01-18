@@ -149,6 +149,8 @@ MACRO_CONFIG_INT(SvPunishWrongSacr, sv_punish_wrong_sacr, 6, 0, 30, CFGFLAG_SERV
 MACRO_CONFIG_INT(SvHammerFreeze, sv_hammer_freeze, 0, 0, 10, CFGFLAG_SERVER, "number of seconds to freeze when hit with a hammer")
 MACRO_CONFIG_INT(SvAutoHammer, sv_auto_hammer, 0, 0, 1, CFGFLAG_SERVER, "Fully automatic hammer")
 
+MACRO_CONFIG_INT(SvMeltShowAll, sv_melt_show_all, 1, 0, 1, CFGFLAG_SERVER, "Dispatch melt indicators to everyone (rather than just teammates and spectators)")
+
 // debug
 #ifdef CONF_DEBUG // this one can crash the server if not used correctly
 	MACRO_CONFIG_INT(DbgDummies, dbg_dummies, 0, 0, 15, CFGFLAG_SERVER, "")
