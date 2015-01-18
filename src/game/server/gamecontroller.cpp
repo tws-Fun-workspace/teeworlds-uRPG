@@ -483,13 +483,16 @@ void IGameController::Tick()
 					}
 				}
 
-				// move the player to the other team
-				int Temp = pP->m_LastActionTick;
-				pP->SetTeam(M^1);
-				pP->m_LastActionTick = Temp;
+				if (pP)
+				{
+					// move the player to the other team
+					int Temp = pP->m_LastActionTick;
+					pP->SetTeam(M^1);
+					pP->m_LastActionTick = Temp;
 
-				pP->Respawn();
-				pP->m_ForceBalanced = true;
+					pP->Respawn();
+					pP->m_ForceBalanced = true;
+				}
 			} while (--NumBalance);
 
 			m_ForceBalanced = true;
