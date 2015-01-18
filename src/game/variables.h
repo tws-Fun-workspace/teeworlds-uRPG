@@ -83,6 +83,7 @@ MACRO_CONFIG_INT(SvVoteKick, sv_vote_kick, 1, 0, 1, CFGFLAG_SERVER, "Allow votin
 MACRO_CONFIG_INT(SvVoteKickMin, sv_vote_kick_min, 0, 0, MAX_CLIENTS, CFGFLAG_SERVER, "Minimum number of players required to start a kick vote")
 MACRO_CONFIG_INT(SvVoteKickBantime, sv_vote_kick_bantime, 5, 0, 1440, CFGFLAG_SERVER, "The time to ban a player if kicked by vote. 0 makes it just use kick")
 
+<<<<<<< HEAD
 MACRO_CONFIG_INT(SvSacrBroadcast, sv_sacr_broadcast, 1, 0, 1, CFGFLAG_SERVER, "display a broadcast when sacrificing")
 MACRO_CONFIG_INT(SvFreezeBroadcast, sv_freeze_broadcast, 0, 0, 1, CFGFLAG_SERVER, "display a broadcast when freezing")
 MACRO_CONFIG_INT(SvMeltBroadcast, sv_melt_broadcast, 0, 0, 1, CFGFLAG_SERVER, "display a broadcast when melting by hammer")
@@ -147,6 +148,7 @@ MACRO_CONFIG_INT(SvPunishRagequit, sv_punish_ragequit, 30, 0, 120, CFGFLAG_SERVE
 MACRO_CONFIG_INT(SvPunishWrongSacr, sv_punish_wrong_sacr, 6, 0, 30, CFGFLAG_SERVER, "number of seconds to freeze who is sacrificing in a wrong-colored shrine.")
 
 MACRO_CONFIG_INT(SvHammerFreeze, sv_hammer_freeze, 0, 0, 10, CFGFLAG_SERVER, "number of seconds to freeze when hit with a hammer")
+MACRO_CONFIG_INT(SvAutoHammer, sv_auto_hammer, 0, 0, 1, CFGFLAG_SERVER, "Fully automatic hammer")
 
 // debug
 #ifdef CONF_DEBUG // this one can crash the server if not used correctly
