@@ -68,7 +68,7 @@ private:
 
 	char m_aRagequitAddr[128];
 
-	int m_aCltMask[2]; //for sending damageindicators only to teammates
+	unsigned m_aCltMask[2]; //for sending damageindicators only to teammates
 
 	void SendFreezeKill(int Killer, int Victim, int Weapon);
 	void HandleFreeze(int Killer, int Victim);
