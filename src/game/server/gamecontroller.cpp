@@ -516,6 +516,10 @@ void IGameController::Tick()
 			{
 				if(Server()->Tick() > GameServer()->m_apPlayers[i]->m_LastActionTick+g_Config.m_SvInactiveKickTime*Server()->TickSpeed()*60)
 				{
+					CCharacter *pChr = GameServer()->m_apPlayers[i]->GetCharacter();
+					if (pChr && pChr->GetFreezeTicks() > 0)
+						pChr->Freeze(0); //unfreeze to avoid autoban
+
 					switch(g_Config.m_SvInactiveKick)
 					{
 					case 0:
