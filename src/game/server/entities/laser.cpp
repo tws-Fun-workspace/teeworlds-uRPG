@@ -56,7 +56,7 @@ bool CLaser::HitCharacter(vec2 From, vec2 To)
 
 	if (pOwnerChar && pOwnerChar->GetPlayer()->GetTeam() != pHit->GetPlayer()->GetTeam())
 	{
-		if (pHit->GetFreezeTicks() <= 0 && pHit->GetMeltTick() + g_Config.m_SvMeltSafeticks < Server()->Tick())
+		if (pHit->GetFreezeTicks() <= 0 && (pHit->MoltenByHammer() || pHit->GetMeltTick() + g_Config.m_SvMeltSafeticks < Server()->Tick()))
 			pHit->Freeze(GameServer()->Tuning()->m_LaserDamage * Server()->TickSpeed(), m_Owner);
 	}
 

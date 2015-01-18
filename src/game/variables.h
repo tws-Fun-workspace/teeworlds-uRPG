@@ -150,6 +150,8 @@ MACRO_CONFIG_INT(SvHammerFreeze, sv_hammer_freeze, 0, 0, 10, CFGFLAG_SERVER, "nu
 MACRO_CONFIG_INT(SvAutoHammer, sv_auto_hammer, 0, 0, 1, CFGFLAG_SERVER, "Fully automatic hammer")
 
 MACRO_CONFIG_INT(SvMeltShowAll, sv_melt_show_all, 1, 0, 1, CFGFLAG_SERVER, "Dispatch melt indicators to everyone (rather than just teammates and spectators)")
+MACRO_CONFIG_INT(SvMeltNoSuicideTicks, sv_melt_no_suicide_ticks, 250, 0, 60*50, CFGFLAG_SERVER, "Disallow suicide this many ticks after melting (0=off)")
+MACRO_CONFIG_INT(SvNoSuicide, sv_no_suicide, 0, 0, 1, CFGFLAG_SERVER, "Disallow suicide completely")
 
 // debug
 #ifdef CONF_DEBUG // this one can crash the server if not used correctly

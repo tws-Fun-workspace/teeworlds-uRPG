@@ -72,6 +72,7 @@ public:
 	int GetFreezeTicks();
 	int WasFrozenBy() { return m_FrozenBy; };
 	int WasMoltenBy() { return m_MoltenBy; };
+	int MoltenByHammer() { return m_MoltenByHammer; };
 	int GetMeltTick() { return m_MoltenAt; }
 	int GetHookedPlayer() { return m_Core.m_HookedPlayer; }
 	int GetHookTick() { return m_Core.m_HookTick; }//starts from 0 on every new hooking
@@ -148,6 +149,7 @@ private:
 	int m_FrozenBy;
 	int m_MoltenBy;
 	int m_MoltenAt;
+	bool m_MoltenByHammer;
 
 	int m_HammeredBy;
 };
