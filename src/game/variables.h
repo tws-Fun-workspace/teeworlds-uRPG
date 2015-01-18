@@ -153,6 +153,8 @@ MACRO_CONFIG_INT(SvMeltShowAll, sv_melt_show_all, 1, 0, 1, CFGFLAG_SERVER, "Disp
 MACRO_CONFIG_INT(SvMeltNoSuicideTicks, sv_melt_no_suicide_ticks, 250, 0, 60*50, CFGFLAG_SERVER, "Disallow suicide this many ticks after melting (0=off)")
 MACRO_CONFIG_INT(SvNoSuicide, sv_no_suicide, 0, 0, 1, CFGFLAG_SERVER, "Disallow suicide completely")
 
+MACRO_CONFIG_INT(SvClickyMelt, sv_clicky_melt, 1, 0, 2, CFGFLAG_SERVER, "Click sound while melting (0: off, 1: only for melting enemies, 2: for everyone)")
+
 // debug
 #ifdef CONF_DEBUG // this one can crash the server if not used correctly
 	MACRO_CONFIG_INT(DbgDummies, dbg_dummies, 0, 0, 15, CFGFLAG_SERVER, "")

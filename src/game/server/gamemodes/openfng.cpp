@@ -176,6 +176,15 @@ void CGameControllerOpenFNG::DoInteractions()
 					mask = (int)~m_aCltMask[1-(pChr->GetPlayer()->GetTeam()&1)];
 
 				GS->CreateDamageInd(pChr->m_Pos, 0, (FrzTicks+1) / TS, mask);
+
+				if (CFG(ClickyMelt))
+				{
+					mask = -1;
+					if (CFG(ClickyMelt) == 1)
+						mask = (int)m_aCltMask[1-(pChr->GetPlayer()->GetTeam()&1)];
+
+					GS->CreateSound(pChr->m_Pos, SOUND_WEAPON_NOAMMO, mask);
+				}
 			}
 
 			if (FrzTicks == 1 && CFG(MeltSafeticks))
