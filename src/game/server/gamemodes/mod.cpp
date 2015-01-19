@@ -13,7 +13,7 @@ CGameControllerMOD::CGameControllerMOD(class CGameContext *pGameServer)
 : IGameController(pGameServer)
 {
 	m_pGameType = "FLAGDRAG";
-	m_GameFlags = GAMEFLAG_TEAMS;
+	m_GameFlags = GAMEFLAG_TEAMS|GAMEFLAG_FLAGS;
 	m_apFlags[0] = m_apFlags[1] = 0;
 	m_aFlagRegLvl[0] = m_aFlagRegLvl[1] = -1;
 	m_LastBroadcast = 0;
@@ -47,7 +47,7 @@ void CGameControllerMOD::Tick()
 	CFlag *Flag;
 	CCharacter *Chr;
 
-	DoTeamScoreWincheck();
+	DoWincheck();
 	
 	CCharacterCore::SetFlagHooking(g_Config.m_SvFlagHook);
 	IGameController::Tick();
