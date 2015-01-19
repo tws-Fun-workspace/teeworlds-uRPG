@@ -16,10 +16,10 @@
 #define TEAMSELECT_INVALID -1
 #define TEAMSELECT_SOLO -2
 
-#define D(F,...) fprintf(stderr,"%s:%i:%s() - " F "\n",__FILE__,__LINE__,__func__,__VA_ARGS__)
-#define S(F) fprintf(stderr,"%s:%i:%s() - " F "\n",__FILE__,__LINE__,__func__)
-#define DV(F,...) do{if (VERBOSE) fprintf(stderr,"%s:%i:%s() - " F "\n",__FILE__,__LINE__,__func__,__VA_ARGS__); } while(0)
-#define SV(F) do{if (VERBOSE) fprintf(stderr,"%s:%i:%s() - " F "\n",__FILE__,__LINE__,__func__); } while(0)
+#define D(F,...) fprintf(stderr,"%s:%i:%s() - " F "\n",__FILE__,__LINE__,__FUNCTION__,__VA_ARGS__)
+#define S(F) fprintf(stderr,"%s:%i:%s() - " F "\n",__FILE__,__LINE__,__FUNCTION__)
+#define DV(F,...) do{if (VERBOSE) fprintf(stderr,"%s:%i:%s() - " F "\n",__FILE__,__LINE__,__FUNCTION__,__VA_ARGS__); } while(0)
+#define SV(F) do{if (VERBOSE) fprintf(stderr,"%s:%i:%s() - " F "\n",__FILE__,__LINE__,__FUNCTION__); } while(0)
 
 
 #endif /* COMMON_H_ */
