@@ -8,6 +8,7 @@
 #include "character.h"
 #include "laser.h"
 #include "projectile.h"
+#include "flag.h"
 
 //input count
 struct CInputCount
@@ -262,7 +263,7 @@ void CCharacter::FireWeapon()
 	if(FullAuto && (m_LatestInput.m_Fire&1) && m_aWeapons[m_ActiveWeapon].m_Ammo)
 		WillFire = true;
 
-	if(!WillFire)
+	if(!WillFire || m_ActiveWeapon == WEAPON_NINJA)
 		return;
 
 	// check for ammo
@@ -293,7 +294,8 @@ void CCharacter::FireWeapon()
 			{
 				CCharacter *pTarget = apEnts[i];
 
-				if ((pTarget == this) || GameServer()->Collision()->IntersectLine(ProjStartPos, pTarget->m_Pos, NULL, NULL))
+				//for race mod or any other mod, which needs hammer hits through the wall remove second condition
+				if ((pTarget == this) /* || GameServer()->Collision()->IntersectLine(ProjStartPos, pTarget->m_Pos, NULL, NULL) */)
 					continue;
 
 				// set his velocity to fast upward (for now)
@@ -308,11 +310,40 @@ void CCharacter::FireWeapon()
 				else
 					Dir = vec2(0.f, -1.f);
 
-				pTarget->TakeDamage(vec2(0.f, -1.f) + normalize(Dir + vec2(0.f, -1.1f)) * 10.0f, g_pData->m_Weapons.m_Hammer.m_pBase->m_Damage,
-					m_pPlayer->GetCID(), m_ActiveWeapon);
+				pTarget->TakeDamage(vec2(0.f, -1.f) + normalize(Dir + vec2(0.f, -1.1f)) * 10.0f, 0, m_pPlayer->GetCID(), m_ActiveWeapon);
+				pTarget->Unfreeze();
 				Hits++;
 			}
 
+			if (g_Config.m_SvFlagHammer)
+			{
+				CFlag *apFlags[2];
+				Num = GameServer()->m_World.FindEntities(ProjStartPos, m_ProximityRadius*0.8f, (CEntity**)apFlags,
+				sizeof apFlags, CGameWorld::ENTTYPE_FLAG);
+
+				for (int i = 0; i < Num; ++i)
+				{
+					CFlag *pTarget = apFlags[i];
+
+					if (pTarget->m_pCarryingCharacter == this || GameServer()->Collision()->IntersectLine(ProjStartPos, pTarget->m_Pos, NULL, NULL) )
+						continue;
+
+					if(length(pTarget->m_Pos-ProjStartPos) > 0.0f)
+						GameServer()->CreateHammerHit(pTarget->m_Pos-normalize(pTarget->m_Pos-ProjStartPos)*m_ProximityRadius*0.5f);
+					else
+						GameServer()->CreateHammerHit(ProjStartPos);
+
+					vec2 Dir;
+					if (length(pTarget->m_Pos - m_Pos) > 0.0f)
+						Dir = normalize(pTarget->m_Pos - m_Pos);
+					else
+						Dir = vec2(0.f, -1.f);
+
+					pTarget->m_Vel += normalize(Dir + vec2(0.f, -1.1f)) * 10.0f;
+					Hits++;
+				}
+			}
+			
 			// if we Hit anything, we have to wait for the reload
 			if(Hits)
 				m_ReloadTimer = Server()->TickSpeed()/3;
@@ -326,7 +357,7 @@ void CCharacter::FireWeapon()
 				ProjStartPos,
 				Direction,
 				(int)(Server()->TickSpeed()*GameServer()->Tuning()->m_GunLifetime),
-				1, 0, 0, -1, WEAPON_GUN);
+				0, 0, 0, -1, WEAPON_GUN);
 
 			// pack the Projectile and send it to the client Directly
 			CNetObj_Projectile p;
@@ -361,7 +392,7 @@ void CCharacter::FireWeapon()
 					ProjStartPos,
 					vec2(cosf(a), sinf(a))*Speed,
 					(int)(Server()->TickSpeed()*GameServer()->Tuning()->m_ShotgunLifetime),
-					1, 0, 0, -1, WEAPON_SHOTGUN);
+					0, 0, 0, -1, WEAPON_SHOTGUN);
 
 				// pack the Projectile and send it to the client Directly
 				CNetObj_Projectile p;
@@ -383,7 +414,7 @@ void CCharacter::FireWeapon()
 				ProjStartPos,
 				Direction,
 				(int)(Server()->TickSpeed()*GameServer()->Tuning()->m_GrenadeLifetime),
-				1, true, 0, SOUND_GRENADE_EXPLODE, WEAPON_GRENADE);
+				0, true, 0, SOUND_GRENADE_EXPLODE, WEAPON_GRENADE);
 
 			// pack the Projectile and send it to the client Directly
 			CNetObj_Projectile p;
@@ -420,8 +451,8 @@ void CCharacter::FireWeapon()
 
 	m_AttackTick = Server()->Tick();
 
-	if(m_aWeapons[m_ActiveWeapon].m_Ammo > 0) // -1 == unlimited
-		m_aWeapons[m_ActiveWeapon].m_Ammo--;
+//	if(m_aWeapons[m_ActiveWeapon].m_Ammo > 0) // -1 == unlimited
+//		m_aWeapons[m_ActiveWeapon].m_Ammo--;
 
 	if(!m_ReloadTimer)
 		m_ReloadTimer = g_pData->m_Weapons.m_aId[m_ActiveWeapon].m_Firedelay * Server()->TickSpeed() / 1000;
@@ -553,14 +584,40 @@ void CCharacter::Tick()
 		m_pPlayer->m_ForceBalanced = false;
 	}
 
+	if (m_RemainFrzTicks > 0)
+	{
+		if (m_RemainFrzTicks % (REFREEZE_INTERVAL_TICKS) == 0)
+			GameServer()->CreateDamageInd(m_Pos, 0, m_RemainFrzTicks / REFREEZE_INTERVAL_TICKS);
+
+		m_RemainFrzTicks--;
+		m_Input.m_Direction = 0;
+		m_Input.m_Jump = 0;
+		m_Input.m_Hook = 0;
+		m_Input.m_Fire = 0;
+		if (m_RemainFrzTicks - 1 == 0)
+			Unfreeze();
+	}
+
 	m_Core.m_Input = m_Input;
 	m_Core.Tick(true);
 
+	if (m_Core.m_HookedPlayer >= MAX_CLIENTS && (Server()->Tick() % 5) == 0)
+		m_Core.m_ForceSendCore = true;
+
+	int col = GameServer()->Collision()->GetTile(m_Pos.x, m_Pos.y);
+
+ 	if (col == TILE_FREEZE)
+		Freeze(g_Config.m_SvFreezeTime * Server()->TickSpeed());
+ 	else if (col == TILE_UNFREEZE)
+		Unfreeze();
+
 	// handle death-tiles and leaving gamelayer
-	if(GameServer()->Collision()->GetCollisionAt(m_Pos.x+m_ProximityRadius/3.f, m_Pos.y-m_ProximityRadius/3.f)&CCollision::COLFLAG_DEATH ||
-		GameServer()->Collision()->GetCollisionAt(m_Pos.x+m_ProximityRadius/3.f, m_Pos.y+m_ProximityRadius/3.f)&CCollision::COLFLAG_DEATH ||
-		GameServer()->Collision()->GetCollisionAt(m_Pos.x-m_ProximityRadius/3.f, m_Pos.y-m_ProximityRadius/3.f)&CCollision::COLFLAG_DEATH ||
-		GameServer()->Collision()->GetCollisionAt(m_Pos.x-m_ProximityRadius/3.f, m_Pos.y+m_ProximityRadius/3.f)&CCollision::COLFLAG_DEATH ||
+ 	int a;
+
+ 	if(((a=GameServer()->Collision()->GetCollisionAt(m_Pos.x+m_ProximityRadius/3.f, m_Pos.y-m_ProximityRadius/3.f)) <= 5 && (a&CCollision::COLFLAG_DEATH)) ||
+ 		((a=GameServer()->Collision()->GetCollisionAt(m_Pos.x+m_ProximityRadius/3.f, m_Pos.y+m_ProximityRadius/3.f)) <= 5 && (a&CCollision::COLFLAG_DEATH)) ||
+ 		((a=GameServer()->Collision()->GetCollisionAt(m_Pos.x-m_ProximityRadius/3.f, m_Pos.y-m_ProximityRadius/3.f)) <= 5 && (a&CCollision::COLFLAG_DEATH)) ||
+ 		((a=GameServer()->Collision()->GetCollisionAt(m_Pos.x-m_ProximityRadius/3.f, m_Pos.y+m_ProximityRadius/3.f)) <= 5 && (a&CCollision::COLFLAG_DEATH)) ||
 		GameLayerClipped(m_Pos))
 	{
 		Die(m_pPlayer->GetCID(), WEAPON_WORLD);
@@ -580,7 +637,7 @@ void CCharacter::TickDefered()
 	{
 		CWorldCore TempWorld;
 		m_ReckoningCore.Init(&TempWorld, GameServer()->Collision());
-		m_ReckoningCore.Tick(false);
+		m_ReckoningCore.VanillaTick(false);
 		m_ReckoningCore.Move();
 		m_ReckoningCore.Quantize();
 	}
@@ -648,8 +705,9 @@ void CCharacter::TickDefered()
 		m_Core.Write(&Current);
 
 		// only allow dead reackoning for a top of 3 seconds
-		if(m_ReckoningTick+Server()->TickSpeed()*3 < Server()->Tick() || mem_comp(&Predicted, &Current, sizeof(CNetObj_Character)) != 0)
+		if(m_Core.m_ForceSendCore || m_ReckoningTick+Server()->TickSpeed()*3 < Server()->Tick() || mem_comp(&Predicted, &Current, sizeof(CNetObj_Character)) != 0)
 		{
+			m_Core.m_ForceSendCore = false;
 			m_ReckoningTick = Server()->Tick();
 			m_SendCore = m_Core;
 			m_ReckoningCore = m_Core;
@@ -717,6 +775,8 @@ void CCharacter::Die(int Killer, int Weapon)
 	GameServer()->m_World.RemoveEntity(this);
 	GameServer()->m_World.m_Core.m_apCharacters[m_pPlayer->GetCID()] = 0;
 	GameServer()->CreateDeath(m_Pos, m_pPlayer->GetCID());
+
+	m_WorldKill = Weapon == WEAPON_WORLD;
 }
 
 bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon)
@@ -728,7 +788,7 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon)
 
 	// m_pPlayer only inflicts half damage on self
 	if(From == m_pPlayer->GetCID())
-		Dmg = max(1, Dmg/2);
+		Dmg = max(0, Dmg/2);
 
 	m_DamageTaken++;
 
@@ -847,6 +907,52 @@ void CCharacter::Snap(int SnappingClient)
 
 	pCharacter->m_AmmoCount = 0;
 	pCharacter->m_Health = 0;
+
+bool CCharacter::Freeze(int NumTicks)
+{
+	if (NumTicks <= 1)
+		return false;
+
+	if (m_LastFrozenAt + REFREEZE_INTERVAL_TICKS > Server()->Tick())
+		return true;
+
+	m_LastFrozenAt=Server()->Tick();
+	m_RemainFrzTicks=NumTicks;
+
+	m_Ninja.m_ActivationTick = Server()->Tick();
+	m_aWeapons[WEAPON_NINJA].m_Got = true;
+	m_aWeapons[WEAPON_NINJA].m_Ammo = -1;
+	if (m_ActiveWeapon != WEAPON_NINJA)
+		SetWeapon(WEAPON_NINJA);
+
+	return true;
+}
+
+bool CCharacter::Unfreeze()
+{
+	if (m_RemainFrzTicks <= 0)
+		return false;
+
+	m_LastFrozenAt = m_RemainFrzTicks = 0;
+
+	m_aWeapons[WEAPON_NINJA].m_Got = false;
+	if (m_LastWeapon < 0 || m_LastWeapon >= NUM_WEAPONS || m_LastWeapon  == WEAPON_NINJA ||
+			!m_aWeapons[m_LastWeapon].m_Got)
+		m_LastWeapon = WEAPON_HAMMER;
+	SetWeapon(m_LastWeapon);
+
+	return true;
+}
+
+vec2 CCharacter::GetInputDir()
+{
+	return normalize(vec2(m_LatestInput.m_TargetX, m_LatestInput.m_TargetY));
+}
+
+bool CCharacter::KilledByWorld()
+{
+	return m_WorldKill;
+}
 	pCharacter->m_Armor = 0;
 
 	pCharacter->m_Weapon = m_ActiveWeapon;

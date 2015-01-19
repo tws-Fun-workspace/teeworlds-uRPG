@@ -5,6 +5,8 @@
 
 #include <game/server/entity.h>
 
+#define FMID_YOFF 36.0f
+
 class CFlag : public CEntity
 {
 public:
@@ -23,6 +25,7 @@ public:
 	virtual void Reset();
 	virtual void TickPaused();
 	virtual void Snap(int SnappingClient);
+	virtual void Tick();
 };
 
 #endif

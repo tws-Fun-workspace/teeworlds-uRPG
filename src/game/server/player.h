@@ -96,6 +96,8 @@ public:
 		int m_Max;
 	} m_Latency;
 
+	bool m_FlagDrop;
+
 private:
 	CCharacter *m_pCharacter;
 	CGameContext *m_pGameServer;
