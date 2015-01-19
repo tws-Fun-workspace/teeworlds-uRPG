@@ -56,9 +56,9 @@ void CGameControllerMOD::Tick()
 
 	for(int z = 0; z < 2; ++z)
 	{
-		if (m_apFlags[z]->m_pCarryingCharacter)
+		Chr = m_apFlags[z]->m_pCarryingCharacter;
+		if (Chr)
 		{
-			Chr = m_apFlags[z]->m_pCarryingCharacter;
 			if (!Chr->IsAlive())
 			{
 				if (Chr->KilledByWorld()) // let it bounce up for others to have a chance to rescue it
@@ -79,28 +79,26 @@ void CGameControllerMOD::Tick()
 				UpdateBroadcast(Chr->GetPlayer()->GetCID(), "");
 				m_apFlags[z]->m_pCarryingCharacter = 0;
 			}
-			else if (GameServer()->Collision()->GetCollisionAt(m_apFlags[z]->m_Pos.x, m_apFlags[z]->m_Pos.y) == TILE_FINISH)
-			{
-				m_aTeamscore[z]++;
-				char aBuf[128];
-				str_format(aBuf, sizeof aBuf, "%s flag delivered, %s team scores! (Red: %d, Blue :%d)",
-						z?"Blue":"Red", z?"Blue":"Red", m_aTeamscore[0], m_aTeamscore[1]);
-				GameServer()->SendChat(-1, -2, aBuf);
-				m_apFlags[z]->Reset();
-				UpdateBroadcast(Chr->GetPlayer()->GetCID(), "");
-			}
 		}
-		else
+
+		int a;
+		if ((a=GameServer()->Collision()->GetCollisionAt(m_apFlags[z]->m_Pos.x, m_apFlags[z]->m_Pos.y)) == TILE_FINISH)
 		{
-			int a;
- 			if((((a=GameServer()->Collision()->GetCollisionAt(m_apFlags[z]->m_Pos.x, m_apFlags[z]->m_Pos.y))
-				<= 5 && (a&CCollision::COLFLAG_DEATH))) || m_apFlags[z]->GameLayerClipped(m_apFlags[z]->m_Pos))
-			{
-				m_apFlags[z]->Reset();
-				char aBuf[32];
-				str_format(aBuf, sizeof aBuf, "%s flag returned to base!", z?"Blue":"Red");
-				GameServer()->SendChat(-1, -2, aBuf);
-			}
+			m_aTeamscore[z]++;
+			char aBuf[128];
+			str_format(aBuf, sizeof aBuf, "%s flag delivered, %s team scores! (Red: %d, Blue :%d)",
+					z?"Blue":"Red", z?"Blue":"Red", m_aTeamscore[0], m_aTeamscore[1]);
+			GameServer()->SendChat(-1, -2, aBuf);
+			m_apFlags[z]->Reset();
+			if (Chr)
+				UpdateBroadcast(Chr->GetPlayer()->GetCID(), "");
+		}
+		else if(((a <= 5 && (a&CCollision::COLFLAG_DEATH))) || m_apFlags[z]->GameLayerClipped(m_apFlags[z]->m_Pos))
+		{
+			m_apFlags[z]->Reset();
+			char aBuf[32];
+			str_format(aBuf, sizeof aBuf, "%s flag returned to base!", z?"Blue":"Red");
+			GameServer()->SendChat(-1, -2, aBuf);
 		}
 	}
 	bool NoPlayer = true;
