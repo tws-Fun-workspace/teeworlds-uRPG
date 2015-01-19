@@ -10,6 +10,7 @@
                                                             __FUNCTION__, __VA_ARGS__)
 #elif defined(CONF_FAMILY_UNIX)
  #define D(F, ARGS...) dbg_msg("Flagdrag", "%s:%i:%s(): " F, __FILE__, __LINE__, \
+                                                                      __func__,##ARGS)
 #endif
 
 #define DVF "(%f, %f)"
