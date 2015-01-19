@@ -77,6 +77,13 @@ public:
 	int m_Score;
 	int m_ScoreStartTick;
 	bool m_ForceBalanced;
+	
+	int forcecolor;
+
+	int origusecustcolor;
+	int origbodycolor;
+	int origfeetcolor;
+	
 	int m_LastActionTick;
 	int m_TeamChangeTick;
 	struct

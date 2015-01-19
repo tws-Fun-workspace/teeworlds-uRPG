@@ -3,6 +3,9 @@
 #ifndef GAME_COLLISION_H
 #define GAME_COLLISION_H
 
+#include <map>
+#include <vector>
+
 #include <base/vmath.h>
 
 class CCollision
@@ -12,8 +15,12 @@ class CCollision
 	int m_Height;
 	class CLayers *m_pLayers;
 
+	std::map<int,std::vector<vec2>* > *portmap;
+
 	bool IsTileSolid(int x, int y);
 	int GetTile(int x, int y);
+
+	vec2 index_to_vec(int i);
 
 public:
 	enum
@@ -34,6 +41,7 @@ public:
 	void MovePoint(vec2 *pInoutPos, vec2 *pInoutVel, float Elasticity, int *pBounces);
 	void MoveBox(vec2 *pInoutPos, vec2 *pInoutVel, vec2 Size, float Elasticity);
 	bool TestBox(vec2 Pos, vec2 Size);
+	std::map<int,std::vector<vec2>* > *GetPortMap() const { return portmap; }
 };
 
 #endif

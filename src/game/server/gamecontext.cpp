@@ -4,6 +4,7 @@
 #include <base/math.h>
 #include <engine/shared/config.h>
 #include <engine/map.h>
+#include <cstring>
 #include <engine/console.h>
 #include "gamecontext.h"
 #include <game/version.h>
@@ -13,6 +14,7 @@
 #include "gamemodes/tdm.h"
 #include "gamemodes/ctf.h"
 #include "gamemodes/mod.h"
+#include "gamemodes/tour/Util.h"
 
 enum
 {
@@ -542,7 +544,11 @@ void CGameContext::OnClientEnter(int ClientID)
 	str_format(aBuf, sizeof(aBuf), "team_join player='%d:%s' team=%d", ClientID, Server()->ClientName(ClientID), m_apPlayers[ClientID]->GetTeam());
 	Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
 
+	((CGameControllerMOD*)m_pController)->onEnter(ClientID);
+
 	m_VoteUpdate = true;
+
+	((CGameControllerMOD*)m_pController)->onLeave(ClientID);
 }
 
 void CGameContext::OnClientConnected(int ClientID)
@@ -628,7 +634,11 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 			pMessage++;
 		}
 
-		SendChat(ClientID, Team, pMsg->m_pMessage);
+		if (strncmp(pMsg->m_pMessage,"/dump",5) == 0) {
+			((CGameControllerMOD*)m_pController)->dump();
+		} else {
+			SendChat(ClientID, Team, pMsg->m_pMessage);
+		}
 	}
 	else if(MsgID == NETMSGTYPE_CL_CALLVOTE)
 	{
@@ -827,6 +837,11 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 					m_VoteUpdate = true;
 				pPlayer->SetTeam(pMsg->m_Team);
 				(void)m_pController->CheckTeamBalance();
+				if (pPlayer->GetTeam() == -1) {
+					((CGameControllerMOD*)m_pController)->onLeave(ClientID);
+				} else {
+					((CGameControllerMOD*)m_pController)->onEnter(ClientID);
+				}
 				pPlayer->m_TeamChangeTick = Server()->Tick();
 			}
 			else
@@ -972,16 +987,22 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 		Server()->SetClientClan(ClientID, pMsg->m_pClan);
 		Server()->SetClientCountry(ClientID, pMsg->m_Country);
 		str_copy(pPlayer->m_TeeInfos.m_SkinName, pMsg->m_pSkin, sizeof(pPlayer->m_TeeInfos.m_SkinName));
-		pPlayer->m_TeeInfos.m_UseCustomColor = pMsg->m_UseCustomColor;
-		pPlayer->m_TeeInfos.m_ColorBody = pMsg->m_ColorBody;
-		pPlayer->m_TeeInfos.m_ColorFeet = pMsg->m_ColorFeet;
+		if (!pPlayer->forcecolor) {
+			pPlayer->origusecustcolor=pMsg->m_UseCustomColor;
+			pPlayer->origbodycolor=pMsg->m_ColorBody;
+			pPlayer->origfeetcolor=pMsg->m_ColorFeet;
+		}
+
+		pPlayer->m_TeeInfos.m_UseCustomColor  = (pPlayer->forcecolor)?1:pMsg->m_UseCustomColor;
+		pPlayer->m_TeeInfos.m_ColorBody = (pPlayer->forcecolor)?pPlayer->forcecolor:pMsg->m_ColorBody;
+		pPlayer->m_TeeInfos.m_ColorFeet = (pPlayer->forcecolor)?pPlayer->forcecolor:pMsg->m_ColorFeet;
 		m_pController->OnPlayerInfoChange(pPlayer);
 	}
 	else if (MsgID == NETMSGTYPE_CL_EMOTICON && !m_World.m_Paused)
 	{
 		CNetMsg_Cl_Emoticon *pMsg = (CNetMsg_Cl_Emoticon *)pRawMsg;
 
-		if(g_Config.m_SvSpamprotection && pPlayer->m_LastEmote && pPlayer->m_LastEmote+Server()->TickSpeed()*3 > Server()->Tick())
+		if(g_Config.m_SvSpamprotection && pPlayer->m_LastEmote && pPlayer->m_LastEmote+(Server()->TickSpeed()/2) > Server()->Tick())
 			return;
 
 		pPlayer->m_LastEmote = Server()->Tick();
@@ -993,8 +1014,8 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 		if(pPlayer->m_LastKill && pPlayer->m_LastKill+Server()->TickSpeed()*3 > Server()->Tick())
 			return;
 
-		pPlayer->m_LastKill = Server()->Tick();
-		pPlayer->KillCharacter(WEAPON_SELF);
+		//pPlayer->m_LastKill = Server()->Tick();
+		//pPlayer->KillCharacter(WEAPON_SELF);
 	}
 }
 
@@ -1460,7 +1481,7 @@ void CGameContext::OnInit(/*class IKernel *pKernel*/)
 
 	m_Layers.Init(Kernel());
 	m_Collision.Init(&m_Layers);
-
+	portmap = m_Collision.GetPortMap();
 	// reset everything here
 	//world = new GAMEWORLD;
 	//players = new CPlayer[MAX_CLIENTS];
@@ -1517,6 +1538,7 @@ void CGameContext::OnInit(/*class IKernel *pKernel*/)
 		}
 	}
 #endif
+	tour::Util::setGameCtx(this);
 }
 
 void CGameContext::OnShutdown()
@@ -1570,3 +1592,12 @@ const char *CGameContext::Version() { return GAME_VERSION; }
 const char *CGameContext::NetVersion() { return GAME_NETVERSION; }
 
 IGameServer *CreateGameServer() { return new CGameContext; }
+
+vec2 CGameContext::TeleportDestination(int num) const {
+	if (portmap && portmap->count(num)) {
+		int n = (*portmap)[num]->size();
+		int chosen = rand() % n;
+		return (*(*portmap)[num])[chosen];
+	}
+	return vec2(0,0);
+}

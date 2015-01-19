@@ -86,6 +86,7 @@ void CCharacterCore::Tick(bool UseInput)
 	if(m_pCollision->CheckPoint(m_Pos.x-PhysSize/2, m_Pos.y+PhysSize/2+5))
 		Grounded = true;
 
+	m_Grounded=Grounded;
 	vec2 TargetDirection = normalize(vec2(m_Input.m_TargetX, m_Input.m_TargetY));
 
 	m_Vel.y += m_pWorld->m_Tuning.m_Gravity;

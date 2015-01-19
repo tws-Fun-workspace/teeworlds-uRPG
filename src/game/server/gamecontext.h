@@ -3,6 +3,9 @@
 #ifndef GAME_SERVER_GAMECONTEXT_H
 #define GAME_SERVER_GAMECONTEXT_H
 
+#include <map>
+#include <vector>
+
 #include <engine/server.h>
 #include <engine/console.h>
 #include <engine/shared/memheap.h>
@@ -44,6 +47,7 @@ class CGameContext : public IGameServer
 	CCollision m_Collision;
 	CNetObjHandler m_NetObjHandler;
 	CTuningParams m_Tuning;
+	std::map<int,std::vector<vec2>*> *portmap;
 
 	static void ConTuneParam(IConsole::IResult *pResult, void *pUserData);
 	static void ConTuneReset(IConsole::IResult *pResult, void *pUserData);
@@ -74,6 +78,7 @@ public:
 	class IConsole *Console() { return m_pConsole; }
 	CCollision *Collision() { return &m_Collision; }
 	CTuningParams *Tuning() { return &m_Tuning; }
+	vec2 TeleportDestination(int num) const;
 
 	CGameContext();
 	~CGameContext();

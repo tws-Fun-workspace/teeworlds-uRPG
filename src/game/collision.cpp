@@ -4,6 +4,9 @@
 #include <base/math.h>
 #include <base/vmath.h>
 
+#include <map>
+#include <vector>
+
 #include <math.h>
 #include <engine/map.h>
 #include <engine/kernel.h>
@@ -11,6 +14,8 @@
 #include <game/mapitems.h>
 #include <game/layers.h>
 #include <game/collision.h>
+
+#include <game/server/gamemodes/tour/Util.h>
 
 CCollision::CCollision()
 {
@@ -27,11 +32,16 @@ void CCollision::Init(class CLayers *pLayers)
 	m_Height = m_pLayers->GameLayer()->m_Height;
 	m_pTiles = static_cast<CTile *>(m_pLayers->Map()->GetData(m_pLayers->GameLayer()->m_Data));
 
+	portmap = new std::map<int,std::vector<vec2>* >;
+
 	for(int i = 0; i < m_Width*m_Height; i++)
 	{
 		int Index = m_pTiles[i].m_Index;
 
-		if(Index > 128)
+		if (Index == ENTITY_OFFSET+ENTITY_SPAWN) {
+				tour::Util::regPosSpawn(index_to_vec(i));
+		}
+		if(Index >= TILE_CUSTOM_END)
 			continue;
 
 		switch(Index)
@@ -45,9 +55,23 @@ void CCollision::Init(class CLayers *pLayers)
 		case TILE_NOHOOK:
 			m_pTiles[i].m_Index = COLFLAG_SOLID|COLFLAG_NOHOOK;
 			break;
-		default:
-			m_pTiles[i].m_Index = 0;
 		}
+
+		if (Index >= TILE_TPORT_FIRST && Index <= TILE_TPORT_LAST && !(Index&1)) {
+			int tpnum=(Index-TILE_TPORT_FIRST) >> 1;
+			if (!portmap->count(tpnum)) (*portmap)[tpnum]=new std::vector<vec2>;
+			(*portmap)[tpnum]->push_back(index_to_vec(i));
+		} else if (Index >= TILE_RANK_1 && Index <= TILE_RANK_16) {
+			tour::Util::regPosRank(Index - TILE_RANK_1 + 1,index_to_vec(i));
+		} else if (Index >= TILE_ARENA_1H && Index <= TILE_ARENA_8G) {
+			tour::Util::regPosArena((Index - TILE_ARENA_1H)>>1,(Index - TILE_ARENA_1H)&1,index_to_vec(i));
+		} else if (Index == TILE_LINGER) {
+			tour::Util::regPosLinger(index_to_vec(i));
+		} else if (Index == TILE_UPCOMING) {
+			tour::Util::regPosUpcoming(index_to_vec(i));
+		} else if (Index >= TILE_CUSTOM_END) {
+ 			m_pTiles[i].m_Index = 0;
+ 		}
 	}
 }
 
@@ -56,12 +80,13 @@ int CCollision::GetTile(int x, int y)
 	int Nx = clamp(x/32, 0, m_Width-1);
 	int Ny = clamp(y/32, 0, m_Height-1);
 
-	return m_pTiles[Ny*m_Width+Nx].m_Index > 128 ? 0 : m_pTiles[Ny*m_Width+Nx].m_Index;
+	return m_pTiles[Ny*m_Width+Nx].m_Index >= TILE_CUSTOM_END ? 0 : m_pTiles[Ny*m_Width+Nx].m_Index;
 }
 
 bool CCollision::IsTileSolid(int x, int y)
 {
-	return GetTile(x, y)&COLFLAG_SOLID;
+	int t = GetTile(x, y);
+	return t <= 5 && (t&COLFLAG_SOLID);
 }
 
 // TODO: rewrite this smarter!
@@ -201,4 +226,8 @@ void CCollision::MoveBox(vec2 *pInoutPos, vec2 *pInoutVel, vec2 Size, float Elas
 
 	*pInoutPos = Pos;
 	*pInoutVel = Vel;
+}
+
+vec2 CCollision::index_to_vec(int i) {
+	return vec2((float) ((i % m_Width) << 5) + 16.0, (float) ((i / m_Width) << 5) + 16.0);
 }
