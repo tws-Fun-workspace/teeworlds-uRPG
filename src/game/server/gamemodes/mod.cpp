@@ -160,7 +160,6 @@ void segvhnd(int sig)
     if (sig == SIGSEGV) {
         S("segfault, dumping");
         modinst->dump();
-        sync();
         exit(EXIT_FAILURE);
     }
 }
