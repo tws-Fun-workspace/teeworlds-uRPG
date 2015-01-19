@@ -912,6 +912,30 @@ void CCharacter::Snap(int SnappingClient)
 
 	pCharacter->m_AmmoCount = 0;
 	pCharacter->m_Health = 0;
+	pCharacter->m_Armor = 0;
+
+	pCharacter->m_Weapon = m_ActiveWeapon;
+	pCharacter->m_AttackTick = m_AttackTick;
+
+	pCharacter->m_Direction = m_Input.m_Direction;
+
+	if(m_pPlayer->GetCID() == SnappingClient || SnappingClient == -1 ||
+		(!g_Config.m_SvStrictSpectateMode && m_pPlayer->GetCID() == GameServer()->m_apPlayers[SnappingClient]->m_SpectatorID))
+	{
+		pCharacter->m_Health = m_Health;
+		pCharacter->m_Armor = m_Armor;
+		if(m_aWeapons[m_ActiveWeapon].m_Ammo > 0)
+			pCharacter->m_AmmoCount = m_aWeapons[m_ActiveWeapon].m_Ammo;
+	}
+
+	if(pCharacter->m_Emote == EMOTE_NORMAL)
+	{
+		if(250 - ((Server()->Tick() - m_LastAction)%(250)) < 5)
+			pCharacter->m_Emote = EMOTE_BLINK;
+	}
+
+	pCharacter->m_PlayerFlags = GetPlayer()->m_PlayerFlags;
+}
 
 bool CCharacter::Freeze(int NumTicks)
 {
@@ -957,28 +981,4 @@ vec2 CCharacter::GetInputDir()
 bool CCharacter::KilledByWorld()
 {
 	return m_WorldKill;
-}
-	pCharacter->m_Armor = 0;
-
-	pCharacter->m_Weapon = m_ActiveWeapon;
-	pCharacter->m_AttackTick = m_AttackTick;
-
-	pCharacter->m_Direction = m_Input.m_Direction;
-
-	if(m_pPlayer->GetCID() == SnappingClient || SnappingClient == -1 ||
-		(!g_Config.m_SvStrictSpectateMode && m_pPlayer->GetCID() == GameServer()->m_apPlayers[SnappingClient]->m_SpectatorID))
-	{
-		pCharacter->m_Health = m_Health;
-		pCharacter->m_Armor = m_Armor;
-		if(m_aWeapons[m_ActiveWeapon].m_Ammo > 0)
-			pCharacter->m_AmmoCount = m_aWeapons[m_ActiveWeapon].m_Ammo;
-	}
-
-	if(pCharacter->m_Emote == EMOTE_NORMAL)
-	{
-		if(250 - ((Server()->Tick() - m_LastAction)%(250)) < 5)
-			pCharacter->m_Emote = EMOTE_BLINK;
-	}
-
-	pCharacter->m_PlayerFlags = GetPlayer()->m_PlayerFlags;
 }

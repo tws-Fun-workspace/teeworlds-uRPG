@@ -28,6 +28,19 @@ CGameControllerMOD::~CGameControllerMOD()
 {
 }
 
+void CGameControllerMOD::DoBroadcast()
+{
+	if (m_LastBroadcast + TICKSPEED < TICK)
+	{
+		for(int z=0; z < MAX_CLIENTS; ++z)
+		{
+			if (GameServer()->m_apPlayers[z])
+				GameServer()->SendBroadcast(m_aaBroadcasts[z], z);
+		}
+		m_LastBroadcast = TICK;
+	}
+}
+
 void CGameControllerMOD::Tick()
 {
 	int isr;
@@ -149,6 +162,36 @@ void CGameControllerMOD::UpdateBroadcast(int ClientId, const char *pMsg)
 void CGameControllerMOD::Snap(int SnappingClient)
 {
 	IGameController::Snap(SnappingClient);
+
+	CNetObj_GameData *pGameDataObj = (CNetObj_GameData *)Server()->SnapNewItem(NETOBJTYPE_GAMEDATA, 0, sizeof(CNetObj_GameData));
+	if(!pGameDataObj)
+		return;
+
+	pGameDataObj->m_TeamscoreRed = m_aTeamscore[TEAM_RED];
+	pGameDataObj->m_TeamscoreBlue = m_aTeamscore[TEAM_BLUE];
+
+	if(m_apFlags[TEAM_RED])
+	{
+		if(m_apFlags[TEAM_RED]->m_AtStand)
+			pGameDataObj->m_FlagCarrierRed = FLAG_ATSTAND;
+		else if(m_apFlags[TEAM_RED]->m_pCarryingCharacter && m_apFlags[TEAM_RED]->m_pCarryingCharacter->GetPlayer())
+			pGameDataObj->m_FlagCarrierRed = m_apFlags[TEAM_RED]->m_pCarryingCharacter->GetPlayer()->GetCID();
+		else
+			pGameDataObj->m_FlagCarrierRed = FLAG_TAKEN;
+	}
+	else
+		pGameDataObj->m_FlagCarrierRed = FLAG_MISSING;
+	if(m_apFlags[TEAM_BLUE])
+	{
+		if(m_apFlags[TEAM_BLUE]->m_AtStand)
+			pGameDataObj->m_FlagCarrierBlue = FLAG_ATSTAND;
+		else if(m_apFlags[TEAM_BLUE]->m_pCarryingCharacter && m_apFlags[TEAM_BLUE]->m_pCarryingCharacter->GetPlayer())
+			pGameDataObj->m_FlagCarrierBlue = m_apFlags[TEAM_BLUE]->m_pCarryingCharacter->GetPlayer()->GetCID();
+		else
+			pGameDataObj->m_FlagCarrierBlue = FLAG_TAKEN;
+	}
+	else
+		pGameDataObj->m_FlagCarrierBlue = FLAG_MISSING;
 }
 
 bool CGameControllerMOD::OnEntity(int Index, vec2 Pos)
@@ -234,7 +277,7 @@ void CGameControllerMOD::OnPlayerInfoChange(class CPlayer *pP)
 
 bool CGameControllerMOD::CanSpawn(class CPlayer *pP, vec2 *pPos)
 {
-	bool res = IGameController::CanSpawn(pP, pPos);
+	bool res = IGameController::CanSpawn(pP->GetTeam(), pPos);
 	return res;
 }
 

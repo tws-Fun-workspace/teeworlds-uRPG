@@ -652,7 +652,7 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 				return;
 
 			pPlayer->m_LastChat = Server()->Tick();
-			if (!CChatCommands::HandleMessage(p, pMsg->pMessage))
+			if (!CChatCommands::HandleMessage(pPlayer, pMsg->m_pMessage))
 				SendChat(ClientID, Team, pMsg->m_pMessage);
 		}
 		else if(MsgID == NETMSGTYPE_CL_CALLVOTE)

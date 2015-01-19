@@ -40,6 +40,10 @@ void CFlag::Snap(int SnappingClient)
 	if(!pFlag)
 		return;
 
+	pFlag->m_X = (int)m_Pos.x;
+	pFlag->m_Y = (int)m_Pos.y;
+	pFlag->m_Team = m_Team;
+}
 
 void CFlag::Tick()
 {
@@ -65,8 +69,4 @@ void CFlag::Tick()
 		m_Pos = m_pCarryingCharacter->m_Pos;
 	}
 
-}
-	pFlag->m_X = (int)m_Pos.x;
-	pFlag->m_Y = (int)m_Pos.y;
-	pFlag->m_Team = m_Team;
 }
