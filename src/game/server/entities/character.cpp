@@ -298,7 +298,8 @@ void CCharacter::FireWeapon()
 			{
 				CCharacter *pTarget = apEnts[i];
 
-				if ((pTarget == this) || GameServer()->Collision()->IntersectLine(ProjStartPos, pTarget->m_Pos, NULL, NULL))
+				//for race mod or any other mod, which needs hammer hits through the wall remove second condition
+				if ((pTarget == this) /* || GameServer()->Collision()->IntersectLine(ProjStartPos, pTarget->m_Pos, NULL, NULL) */)
 					continue;
 
 				// set his velocity to fast upward (for now)
@@ -315,6 +316,10 @@ void CCharacter::FireWeapon()
 
 				pTarget->TakeDamage(vec2(0.f, -1.f) + normalize(Dir + vec2(0.f, -1.1f)) * 10.0f, g_pData->m_Weapons.m_Hammer.m_pBase->m_Damage,
 					m_pPlayer->GetCID(), m_ActiveWeapon);
+
+				if (GameServer()->Collision()->GetCollisionAt(pTarget->m_Pos.x, pTarget->m_Pos.y) != TILE_FREEZE)
+					pTarget->m_Core.m_Frozen = 0;
+
 				Hits++;
 			}
 

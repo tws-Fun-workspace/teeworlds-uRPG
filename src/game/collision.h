@@ -14,6 +14,7 @@ class CCollision
 
 	bool IsTileSolid(int x, int y);
 	int GetTile(int x, int y);
+	int IsTileFrz(int x, int y);
 
 public:
 	enum
@@ -27,6 +28,8 @@ public:
 	void Init(class CLayers *pLayers);
 	bool CheckPoint(float x, float y) { return IsTileSolid(round_to_int(x), round_to_int(y)); }
 	bool CheckPoint(vec2 Pos) { return CheckPoint(Pos.x, Pos.y); }
+	int CheckPointFrz(float x, float y) { return IsTileFrz(round_to_int(x), round_to_int(y)); }
+	int CheckPointFrz(vec2 p) { return CheckPointFrz(p.x, p.y); }
 	int GetCollisionAt(float x, float y) { return GetTile(round_to_int(x), round_to_int(y)); }
 	int GetWidth() { return m_Width; };
 	int GetHeight() { return m_Height; };

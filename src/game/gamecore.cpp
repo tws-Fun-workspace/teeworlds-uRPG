@@ -87,7 +87,13 @@ void CCharacterCore::Tick(bool UseInput)
 	if(m_pCollision->CheckPoint(m_Pos.x-PhysSize/2, m_Pos.y+PhysSize/2+5))
 		Grounded = true;
 
-	if (m_Frozen > 0)
+	int Frz = m_pCollision->CheckPointFrz(m_Pos.x, m_Pos.y);
+
+	if (Frz == 1)
+		m_Frozen = m_pWorld->m_Tuning.m_FreezeTicks;
+	else if (Frz == 2)
+		m_Frozen = 0;
+	else if (m_Frozen > 0)
 		m_Frozen--;
 
 	vec2 TargetDirection = normalize(vec2(m_Input.m_TargetX, m_Input.m_TargetY));
