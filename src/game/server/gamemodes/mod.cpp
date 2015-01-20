@@ -92,7 +92,7 @@ void CGameControllerMOD::DoHillOwnage()
 	// iterate over players, update everything
 	forcids(Cid)
 	{
-		int Col = GameServer()->Collision()->GetTile(round(CHAR(Cid)->m_Pos.x), round(CHAR(Cid)->m_Pos.y));
+		int Col = GameServer()->Collision()->GetTile(round_to_int(CHAR(Cid)->m_Pos.x), round_to_int(CHAR(Cid)->m_Pos.y));
 		aTouchedHill[Cid] = (Col >= TILE_HILL_FIRST && Col <= TILE_HILL_LAST) ? Col - TILE_HILL_FIRST : -1;
 
 		if (m_aCharExt[Cid].m_OwnedHill == -1 && aTouchedHill[Cid] == -1) // we don't own a hill, we dont touch a hill
