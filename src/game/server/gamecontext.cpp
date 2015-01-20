@@ -694,7 +694,7 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 			}
 
 			if (pMsg->m_pMessage[0] != '/')//TODO add /info and stuff, in yet to be created CChatCommands
-				SendChat(ClientID, Team, (const char*)pMessage);
+				SendChat(ClientID, Team, (const char*)pMsg->pMessage);
 		}
 		else if(MsgID == NETMSGTYPE_CL_CALLVOTE)
 		{
