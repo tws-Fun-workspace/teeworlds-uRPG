@@ -317,8 +317,7 @@ void CCharacter::FireWeapon()
 				pTarget->TakeDamage(vec2(0.f, -1.f) + normalize(Dir + vec2(0.f, -1.1f)) * 10.0f, g_pData->m_Weapons.m_Hammer.m_pBase->m_Damage,
 					m_pPlayer->GetCID(), m_ActiveWeapon);
 
-				if (GameServer()->Collision()->GetCollisionAt(pTarget->m_Pos.x, pTarget->m_Pos.y) != TILE_FREEZE)
-					pTarget->m_Core.m_Frozen = 0;
+				pTarget->m_Core.m_Frozen = 0;
 
 				Hits++;
 			}
@@ -624,14 +623,9 @@ void CCharacter::Tick()
 	m_Core.Tick(true);
 
 	// handle death-tiles and leaving gamelayer
-	if(GameServer()->Collision()->GetCollisionAt(m_Pos.x+m_ProximityRadius/3.f, m_Pos.y-m_ProximityRadius/3.f)&CCollision::COLFLAG_DEATH ||
-		GameServer()->Collision()->GetCollisionAt(m_Pos.x+m_ProximityRadius/3.f, m_Pos.y+m_ProximityRadius/3.f)&CCollision::COLFLAG_DEATH ||
-		GameServer()->Collision()->GetCollisionAt(m_Pos.x-m_ProximityRadius/3.f, m_Pos.y-m_ProximityRadius/3.f)&CCollision::COLFLAG_DEATH ||
-		GameServer()->Collision()->GetCollisionAt(m_Pos.x-m_ProximityRadius/3.f, m_Pos.y+m_ProximityRadius/3.f)&CCollision::COLFLAG_DEATH ||
-		GameLayerClipped(m_Pos))
-	{
+	int Col = GameServer()->Collision()->GetCollisionAt(m_Pos.x, m_Pos.y);
+	if(((Col&CCollision::COLFLAG_DEATH) && Col<=7) || GameLayerClipped(m_Pos)) //seriously, who could possibly care.
 		Die(m_pPlayer->GetCID(), WEAPON_WORLD);
-	}
 
 	if (m_Core.m_Frozen)
 	{
@@ -718,6 +712,9 @@ void CCharacter::TickDefered()
 		m_Pos.x = m_Input.m_TargetX;
 		m_Pos.y = m_Input.m_TargetY;
 	}
+
+	IServer::CClientInfo CltInfo;
+	Server()->GetClientInfo(m_pPlayer->GetCID(), &CltInfo);
 
 	// update the m_SendCore if needed
 	{

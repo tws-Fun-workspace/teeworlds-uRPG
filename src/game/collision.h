@@ -13,7 +13,6 @@ class CCollision
 	class CLayers *m_pLayers;
 
 	bool IsTileSolid(int x, int y);
-	int GetTile(int x, int y);
 	int IsTileFrz(int x, int y);
 
 public:
@@ -31,6 +30,7 @@ public:
 	int CheckPointFrz(float x, float y) { return IsTileFrz(round_to_int(x), round_to_int(y)); }
 	int CheckPointFrz(vec2 p) { return CheckPointFrz(p.x, p.y); }
 	int GetCollisionAt(float x, float y) { return GetTile(round_to_int(x), round_to_int(y)); }
+	int GetTile(int x, int y);
 	int GetWidth() { return m_Width; };
 	int GetHeight() { return m_Height; };
 	int IntersectLine(vec2 Pos0, vec2 Pos1, vec2 *pOutCollision, vec2 *pOutBeforeCollision);

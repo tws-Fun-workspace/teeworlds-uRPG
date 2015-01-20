@@ -665,7 +665,7 @@ void CMenus::RenderLoading()
 	Graphics()->QuadsEnd();
 
 
-	const char *pCaption = Localize("Loading");
+	const char *pCaption = Localize("Loading KotH client");
 
 	CUIRect r;
 	r.x = x;

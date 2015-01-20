@@ -693,7 +693,8 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 				pMessage++;
 			}
 
-			SendChat(ClientID, Team, pMsg->m_pMessage);
+			if (pMsg->m_pMessage[0] != '/')//TODO add /info and stuff, in yet to be created CChatCommands
+				SendChat(ClientID, Team, (const char*)pMessage);
 		}
 		else if(MsgID == NETMSGTYPE_CL_CALLVOTE)
 		{
@@ -948,7 +949,7 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 		{
 			CNetMsg_Cl_Emoticon *pMsg = (CNetMsg_Cl_Emoticon *)pRawMsg;
 
-			if(g_Config.m_SvSpamprotection && pPlayer->m_LastEmote && pPlayer->m_LastEmote+Server()->TickSpeed()*g_Config.m_SvEmoticonDelay > Server()->Tick())
+			if(g_Config.m_SvSpamprotection && g_Config.m_SvEmoticonDelay && pPlayer->m_LastEmote && pPlayer->m_LastEmote+Server()->TickSpeed()*g_Config.m_SvEmoticonDelay > Server()->Tick())
 				return;
 
 			pPlayer->m_LastEmote = Server()->Tick();
@@ -1479,14 +1480,14 @@ void CGameContext::ConMute(IConsole::IResult *pResult, void *pUserData)
 void CGameContext::ConMuteID(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
-	int ClientID = pResult->GetInteger(0);
-	if (ClientID < 0 || ClientID >= MAX_CLIENTS || !pSelf->m_apPlayers[ClientID])
+	int ClientId = pResult->GetInteger(0);
+	if (ClientId < 0 || ClientId >= MAX_CLIENTS || !pSelf->m_apPlayers[ClientId])
 		return;
 
 	char aIP[16];
-	pSelf->Server()->GetClientAddr(ClientID, aIP, sizeof aIP);
+	pSelf->Server()->GetClientAddr(ClientId, aIP, sizeof aIP);
 
-	pSelf->Mute(aIP, clamp(pResult->GetInteger(1), 1, 60*60*24*365), pSelf->Server()->ClientName(ClientID));
+	pSelf->Mute(aIP, clamp(pResult->GetInteger(1), 1, 60*60*24*365), pSelf->Server()->ClientName(ClientId));
 }
 
 // mute through ip, arguments reversed to workaround parsing
@@ -1705,7 +1706,6 @@ const char *CGameContext::Version() { return GAME_VERSION; }
 const char *CGameContext::NetVersion() { return GAME_NETVERSION; }
 const char *CGameContext::NetVersionCust() { return GAME_NETVERSION_CUST; }
 
-IGameServer *CreateGameServer() { return new CGameContext; }
 
 void CGameContext::Mute(const char *pIP, int Secs, const char *pDisplayName)
 {
@@ -1738,3 +1738,4 @@ void CGameContext::Mute(const char *pIP, int Secs, const char *pDisplayName)
 	else // no free slot found
 		Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "server", "mute array is full");
 }
+IGameServer *CreateGameServer() { return new CGameContext; }

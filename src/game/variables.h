@@ -65,7 +65,7 @@ MACRO_CONFIG_INT(SvRoundSwap, sv_round_swap, 1, 0, 1, CFGFLAG_SERVER, "Swap team
 MACRO_CONFIG_INT(SvPowerups, sv_powerups, 1, 0, 1, CFGFLAG_SERVER, "Allow powerups like ninja")
 MACRO_CONFIG_INT(SvScorelimit, sv_scorelimit, 20, 0, 1000, CFGFLAG_SERVER, "Score limit (0 disables)")
 MACRO_CONFIG_INT(SvTimelimit, sv_timelimit, 0, 0, 1000, CFGFLAG_SERVER, "Time limit in minutes (0 disables)")
-MACRO_CONFIG_STR(SvGametype, sv_gametype, 32, "dm", CFGFLAG_SERVER, "Game type (dm, tdm, ctf)")
+MACRO_CONFIG_STR(SvGametype, sv_gametype, 32, "mod", CFGFLAG_SERVER, "Game type (dm, tdm, ctf)")
 MACRO_CONFIG_INT(SvTournamentMode, sv_tournament_mode, 0, 0, 1, CFGFLAG_SERVER, "Tournament mode. When enabled, players joins the server as spectator")
 MACRO_CONFIG_INT(SvSpamprotection, sv_spamprotection, 1, 0, 1, CFGFLAG_SERVER, "Spam protection")
 
@@ -91,6 +91,35 @@ MACRO_CONFIG_INT(SvEmoticonDelay, sv_emoticon_delay, 2, 0, 5, CFGFLAG_SERVER, "b
 MACRO_CONFIG_INT(SvChatPenalty, sv_chat_penalty, 250, 50, 1000, CFGFLAG_SERVER, "chatscore will be increased by this on every message, and decremented by 1 on every tick.")
 MACRO_CONFIG_INT(SvChatThreshold, sv_chat_threshold, 1000, 50, 10000 , CFGFLAG_SERVER, "if chatscore exceeds this, the player will be muted for sv_spam_mute_duration seconds")
 MACRO_CONFIG_INT(SvSpamMuteDuration, sv_spam_mute_duration, 60, 0, 3600 , CFGFLAG_SERVER, "how many seconds to mute, if player triggers mute on spam. 0 = off")
+
+MACRO_CONFIG_INT(SvAcquireDelay, sv_acquire_delay, 10, 0, 600, CFGFLAG_SERVER, "")
+MACRO_CONFIG_INT(SvLoseDelay, sv_lose_delay, 10, 0, 600, CFGFLAG_SERVER, "")
+MACRO_CONFIG_INT(SvBroadcastInterval, sv_broadcast_interval, 50, 1, 500, CFGFLAG_SERVER, "in ticks, not seconds")
+MACRO_CONFIG_INT(SvMaxKingsPerHill, sv_max_kings_per_hill, 1, 0, 16, CFGFLAG_SERVER, "")
+MACRO_CONFIG_INT(SvEarlyLose, sv_early_lose, 0, 0, 1, CFGFLAG_SERVER, "")
+MACRO_CONFIG_INT(SvEarlyScore, sv_early_score, 1, 0, 1, CFGFLAG_SERVER, "")
+
+MACRO_CONFIG_INT(SvEyesOwn, sv_eyes_own, 3, -1, 5, CFGFLAG_SERVER, "");
+MACRO_CONFIG_INT(SvEyesCannotAcquire, sv_eyes_cannot_acquire, 1, -1, 5, CFGFLAG_SERVER, "");
+
+MACRO_CONFIG_INT(SvEmoticonAcquire, sv_emoticon_acquire, 1, -1, 15, CFGFLAG_SERVER, "");
+MACRO_CONFIG_INT(SvEmoticonLose, sv_emoticon_lose, 3, -1, 15, CFGFLAG_SERVER, "");
+
+MACRO_CONFIG_INT(SvScoreInterval, sv_score_interval, 10, 1, 600, CFGFLAG_SERVER, "")
+
+MACRO_CONFIG_INT(SvScoreHillA, sv_score_hill_a, 1, 1, 10, CFGFLAG_SERVER, "")
+MACRO_CONFIG_INT(SvScoreHillB, sv_score_hill_b, 1, 1, 10, CFGFLAG_SERVER, "")
+MACRO_CONFIG_INT(SvScoreHillC, sv_score_hill_c, 1, 1, 10, CFGFLAG_SERVER, "")
+MACRO_CONFIG_INT(SvScoreHillD, sv_score_hill_d, 1, 1, 10, CFGFLAG_SERVER, "")
+MACRO_CONFIG_INT(SvScoreHillE, sv_score_hill_e, 1, 1, 10, CFGFLAG_SERVER, "")
+MACRO_CONFIG_INT(SvScoreHillF, sv_score_hill_f, 1, 1, 10, CFGFLAG_SERVER, "")
+MACRO_CONFIG_INT(SvScoreHillG, sv_score_hill_g, 1, 1, 10, CFGFLAG_SERVER, "")
+MACRO_CONFIG_INT(SvScoreHillH, sv_score_hill_h, 1, 1, 10, CFGFLAG_SERVER, "")
+MACRO_CONFIG_INT(SvScoreHillI, sv_score_hill_i, 1, 1, 10, CFGFLAG_SERVER, "")
+MACRO_CONFIG_INT(SvScoreHillJ, sv_score_hill_j, 1, 1, 10, CFGFLAG_SERVER, "")
+MACRO_CONFIG_INT(SvScoreHillK, sv_score_hill_k, 1, 1, 10, CFGFLAG_SERVER, "")
+MACRO_CONFIG_INT(SvScoreHillL, sv_score_hill_l, 1, 1, 10, CFGFLAG_SERVER, "")
+MACRO_CONFIG_INT(SvScoreHillM, sv_score_hill_m, 1, 1, 10, CFGFLAG_SERVER, "")
 
 // debug
 #ifdef CONF_DEBUG // this one can crash the server if not used correctly
