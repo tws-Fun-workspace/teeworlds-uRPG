@@ -287,14 +287,16 @@ void CGameControllerOpenFNG::HandleFreeze(int Killer, int Victim)
 	}
 
 	CPlayer *pPlKiller = TPLAYER(Killer);
+	CPlayer *pPlVictim = TPLAYER(Victim);
 
-	if (!pPlKiller)
+	if (!pPlKiller || !pVictim)
 		return;
 
 	//freezing counts as a hostile interaction
 	m_aLastInteraction[pVictim->GetPlayer()->GetCID()] = pPlKiller->GetCID();
 
 	pPlKiller->m_Score += CFG(FreezeScore);
+	pPlVictim->m_Score += CFG(FreezeScoreVic);
 	SendFreezeKill(Killer, Victim, WEAPON_RIFLE);
 
 	if (pPlKiller->GetCharacter())
@@ -376,10 +378,19 @@ void CGameControllerOpenFNG::HandleSacr(int Killer, int Victim, int ShrineTeam)
 	}
 
 	CPlayer *pPlKiller = TPLAYER(Killer);
-	if (!pPlKiller)
+	CPlayer *pPlVictim = TPLAYER(Victim);
+
+	if (!pPlKiller || !pVictim)
 		return;
 
-	pPlKiller->m_Score += Wrong?CFG(WrongSacrScore):(ShrineTeam == -1 ? CFG(SacrScore) : CFG(RightSacrScore));
+	pPlKiller->m_Score += Wrong ? CFG(WrongSacrScore)
+	                            : (ShrineTeam == -1 ? CFG(SacrScore)
+	                                                : CFG(RightSacrScore));
+
+	pPlVictim->m_Score += Wrong ? CFG(WrongSacrScoreVic)
+	                            : (ShrineTeam == -1 ? CFG(SacrScoreVic)
+	                                                : CFG(RightSacrScoreVic));
+
 	SendFreezeKill(Killer, Victim, WEAPON_NINJA);
 
 	if (Wrong && pPlKiller->GetCharacter() && CFG(PunishWrongSacr))
