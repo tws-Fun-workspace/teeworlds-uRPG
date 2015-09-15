@@ -247,18 +247,19 @@ void CGameControllerOpenFNG::DoBroadcasts(bool ForceSend)
 
 void CGameControllerOpenFNG::DoRagequit()
 {
-	if (*m_aRagequitAddr)
+	if (!*m_aRagequitAddr)
+		return;
+
+	NETADDR Addr;
+	if (net_addr_from_str(&Addr, m_aRagequitAddr) == 0)
 	{
-		NETADDR Addr;
-		if (net_addr_from_str(&Addr, m_aRagequitAddr) == 0)
-		{
-			Addr.port = 0;
-			char aBan[128];
-			str_format(aBan, sizeof aBan, "ban %s 1 Forcefully left the server while being frozen.", m_aRagequitAddr);
-			GS->Console()->ExecuteLine(aBan);
-		}
-		*m_aRagequitAddr = '\0';
+		Addr.port = 0;
+		char aBan[128];
+		str_format(aBan, sizeof aBan, "ban %s 1 Forcefully left the server while being frozen.", m_aRagequitAddr);
+		GS->Console()->ExecuteLine(aBan);
 	}
+
+	*m_aRagequitAddr = '\0';
 }
 
 void CGameControllerOpenFNG::HandleFreeze(int Killer, int Victim)
@@ -630,14 +631,14 @@ CBroadcaster::~CBroadcaster()
 
 void CBroadcaster::SetDef(const char *pText)
 {
-	if (str_comp(m_aDefBroadcast, pText) != 0)
-	{
-		str_copy(m_aDefBroadcast, pText, sizeof m_aDefBroadcast);
-		for(int i = 0; i < MAX_CLIENTS; ++i)
-			if (m_aBroadcastStop[i] < 0)
-				str_copy(m_aBroadcast[i], pText, sizeof m_aBroadcast[i]); //this is unfortunately required
-		m_Changed = ~0;
-	}
+	if (str_comp(m_aDefBroadcast, pText) == 0)
+		return;
+
+	str_copy(m_aDefBroadcast, pText, sizeof m_aDefBroadcast);
+	for(int i = 0; i < MAX_CLIENTS; ++i)
+		if (m_aBroadcastStop[i] < 0)
+			str_copy(m_aBroadcast[i], pText, sizeof m_aBroadcast[i]); //this is unfortunately required
+	m_Changed = ~0;
 }
 
 void CBroadcaster::Update(int Cid, const char *pText, int Lifespan)
