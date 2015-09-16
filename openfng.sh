@@ -51,6 +51,7 @@ Update()
 	else
 		Say "Up to date."
 	fi
+	rm "$tmp"
 }
 
 Deps()
