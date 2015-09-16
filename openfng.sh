@@ -26,7 +26,7 @@ Say()
 Bomb()
 {
 	printf '%s: ERROR: %s\n' "$prgnam" "$1" >&2
-	if [ -z "$1" ]; then
+	if [ -z "$2" ]; then
 		printf '%s: ************************************************\n' "$prgnam" >&2
 		printf '%s: * !!!       PLEASE REPORT THIS ERROR       !!! *\n' "$prgnam" >&2
 		printf '%s: * !!!  Write a mail to van.fstd@gmail.com  !!! *\n' "$prgnam" >&2
@@ -41,10 +41,10 @@ Bomb()
 Update()
 {
 	tmp=$(mktemp /tmp/openfng.sh.XXXXXXXX)
-	$git log -n1 >$tmp
+	"$git" log -n1 >$tmp
 	Say "Pulling new commits, if any"
-	$git pull
-	if [ $($git log -n1 | diff -u $tmp - | wc -l) -gt 0 ]; then
+	"$git" pull
+	if [ $("$git" log -n1 | diff -u $tmp - | wc -l) -gt 0 ]; then
 		# move away binary if we updated successfully so that it gets rebuilt
 		mv "$binary" "${binary}.old"
 		Say "Updated, we need to rebuild OpenFNG"
@@ -78,7 +78,7 @@ BuildBam()
 	fi
 	cd .bam_repo || Bomb "Failed to cd into .bam_repo"
 	Say "Cloning bam"
-	$git clone http://github.com/fstd/bam.git || Bomb "Failed to clone the bam repo"
+	"$git" clone http://github.com/fstd/bam.git || Bomb "Failed to clone the bam repo"
 	cd bam || Bomb "Could not cd into .bam_repo/bam"
 
 	Say "Compiling bam"
@@ -92,9 +92,9 @@ BuildBam()
 BuildTW()
 {
 	Say "Building OpenFNG"
-	$bam config
-	$bam -c all #clean just to be sure
-	$bam server_release
+	"$bam" config
+	"$bam" -c all #clean just to be sure
+	"$bam" server_release
 
 	[ -x "$binary" ] || Bomb "Failed to build OpenFNG"
 	Say "OpenFNG successfully built"
