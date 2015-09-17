@@ -1,5 +1,11 @@
 #!/bin/sh
 
+reexecd=false
+if [ "x$1" '=' 'x-u' ]; then
+	reexecd=true
+	shift
+fi
+
 binary='openfng_srv'
 
 argv=
@@ -47,7 +53,13 @@ Update()
 	if [ $("$git" log -n1 | diff -u $tmp - | wc -l) -gt 0 ]; then
 		# move away binary if we updated successfully so that it gets rebuilt
 		mv "$binary" "${binary}.old"
-		Say "Updated, we need to rebuild OpenFNG"
+		Say 'Updated'
+
+		$reexecd && Bomb 'Two updates in a row? Something is wrong.'
+
+		Say 'Re-executing script in case it was updated too'
+		eval "set -- $argv"
+		exec /bin/sh "$0" -u "$@"
 	else
 		Say "Up to date."
 	fi
