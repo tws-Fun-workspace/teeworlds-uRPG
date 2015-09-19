@@ -6,6 +6,15 @@ if [ "x$1" '=' 'x-u' ]; then
 	shift
 fi
 
+forceflag='--yes-i-actually-want-to-run-this-as-root-even-though-i-am-perfectly-aware-of-what-a-stupid-and-dangerous-idea-it-is'
+
+allowroot=false
+if [ "x$1" '=' "x$forceflag" ]; then
+	allowroot=true
+	shift
+fi
+
+
 binary='openfng_srv'
 
 argv=
@@ -16,6 +25,11 @@ prgnam="$(basename "$0")"
 Main()
 {
 	argv="$(list_mklist "$@")"
+
+	if [ $(id -u) -eq 0 ]; then
+		$allowroot || Bomb "Refusing to run as root.  You can override this check with the $forceflag command-line option, but you probably shouldn't." silent
+	fi
+
 	Deps
 	Update
 
