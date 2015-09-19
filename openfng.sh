@@ -8,7 +8,7 @@ fi
 
 binary='openfng_srv'
 
-argv=
+argv="$(list_mklist "$@")"
 bam='.bam_repo/bam/bam'
 git="$(command -v git)"
 prgnam="$(basename "$0")"
