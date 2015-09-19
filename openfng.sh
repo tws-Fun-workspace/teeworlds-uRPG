@@ -8,13 +8,14 @@ fi
 
 binary='openfng_srv'
 
-argv="$(list_mklist "$@")"
+argv=
 bam='.bam_repo/bam/bam'
 git="$(command -v git)"
 prgnam="$(basename "$0")"
 
 Main()
 {
+	argv="$(list_mklist "$@")"
 	Deps
 	Update
 
