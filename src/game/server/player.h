@@ -6,6 +6,8 @@
 // this include should perhaps be removed
 #include "entities/character.h"
 #include "gamecontext.h"
+#include "account.h"
+#include "cmds.h"
 
 // player object
 class CPlayer
@@ -34,9 +36,6 @@ public:
 
 	void KillCharacter(int Weapon = WEAPON_GAME);
 	CCharacter *GetCharacter();
-	
-	CAccount *GetAccount() { return m_pAccount; }
-	void SetAccount(CAccount *pAcc) { m_pAccount = pAcc; }
 
 	//---------------------------------------------------------
 	// this is used for snapping so we know how we can clip the view for the player
@@ -78,6 +77,7 @@ public:
 	int m_RespawnTick;
 	int m_DieTick;
 	int m_Score;
+	bool m_Safe;
 	int m_ScoreStartTick;
 	bool m_ForceBalanced;
 	int m_LastActionTick;
@@ -100,6 +100,31 @@ public:
 	} m_Latency;
 
 	char m_OrigName[MAX_NAME_LENGTH];
+
+	int TotalHP() const;
+
+	struct
+	{
+		// Main
+		char m_Username[32];
+		char m_Password[32];
+		char m_RconPassword[32];
+		int m_UserID;
+		unsigned int m_Money;
+		int m_Health;
+		int m_Armor;	
+		int m_Kills;
+
+		// Rank
+		int m_Donor;
+		int m_VIP;
+
+		int m_Level;
+		int m_ExpPoints;
+	} m_AccData;
+
+	class CCmd *m_pChatCmd;
+	class CAccount *m_pAccount;
 private:
 	CCharacter *m_pCharacter;
 	CGameContext *m_pGameServer;
@@ -112,7 +137,6 @@ private:
 	int m_ClientID;
 	int m_Team;
 
-	CAccount *m_pAccount;
 };
 
 #endif

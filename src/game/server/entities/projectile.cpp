@@ -5,7 +5,7 @@
 #include "projectile.h"
 
 CProjectile::CProjectile(CGameWorld *pGameWorld, int Type, int Owner, vec2 Pos, vec2 Dir, int Span,
-		int Damage, bool Explosive, float Force, int SoundImpact, int Weapon)
+		int Damage, bool Explosive, float Force, int SoundImpact, int Weapon, bool FromMonster)
 : CEntity(pGameWorld, CGameWorld::ENTTYPE_PROJECTILE)
 {
 	m_Type = Type;
@@ -19,6 +19,7 @@ CProjectile::CProjectile(CGameWorld *pGameWorld, int Type, int Owner, vec2 Pos, 
 	m_Weapon = Weapon;
 	m_StartTick = Server()->Tick();
 	m_Explosive = Explosive;
+	m_FromMonster = FromMonster;
 
 	GameWorld()->InsertEntity(this);
 }
@@ -62,21 +63,31 @@ void CProjectile::Tick()
 	vec2 PrevPos = GetPos(Pt);
 	vec2 CurPos = GetPos(Ct);
 	int Collide = GameServer()->Collision()->IntersectLine(PrevPos, CurPos, &CurPos, 0);
-	CCharacter *OwnerChar = GameServer()->GetPlayerChar(m_Owner);
-	CCharacter *TargetChr = GameServer()->m_World.IntersectCharacter(PrevPos, CurPos, 6.0f, CurPos, OwnerChar);
+	CCharacter *TargetChr = GameServer()->m_World.IntersectCharacter(PrevPos, CurPos, 6.0f, CurPos, !m_FromMonster ? GameServer()->GetPlayerChar(m_Owner) : NULL);
+	CMonster *TargetMonster = GameServer()->m_World.IntersectMonster(PrevPos, CurPos, 6.0f, CurPos, m_FromMonster ? GameServer()->GetValidMonster(m_Owner) : NULL);
 
 	m_LifeSpan--;
 
-	if(TargetChr || Collide || m_LifeSpan < 0 || GameLayerClipped(CurPos))
+	if(/*TargetChr || */TargetMonster || Collide || m_LifeSpan < 0 || GameLayerClipped(CurPos)) //avoid blocking
 	{
+	    if(m_FromMonster && GameServer()->GetValidMonster(m_Owner))
+        {
+            if(m_Weapon == WEAPON_GUN || m_Weapon == WEAPON_SHOTGUN)
+                m_Damage += GameServer()->GetValidMonster(m_Owner)->GetDifficulty() / 2;
+            else
+                m_Damage += GameServer()->GetValidMonster(m_Owner)->GetDifficulty() - 1;
+        }
 		if(m_LifeSpan >= 0 || m_Weapon == WEAPON_GRENADE)
 			GameServer()->CreateSound(CurPos, m_SoundImpact);
 
 		if(m_Explosive)
-			GameServer()->CreateExplosion(CurPos, m_Owner, m_Weapon, false);
+			GameServer()->CreateExplosion(CurPos, m_Owner, m_Weapon, false, m_FromMonster);
 
 		else if(TargetChr)
-			TargetChr->TakeDamage(m_Direction * max(0.001f, m_Force), m_Damage, m_Owner, m_Weapon);
+			TargetChr->TakeDamage(m_Direction * max(0.001f, m_Force), m_Damage, m_Owner, m_Weapon, m_FromMonster);
+
+        else if(TargetMonster)
+            TargetMonster->TakeDamage(m_Direction * max(0.001f, m_Force), m_Damage, m_Owner, m_Weapon, m_FromMonster);
 
 		GameServer()->m_World.DestroyEntity(this);
 	}

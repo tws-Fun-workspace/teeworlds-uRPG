@@ -65,6 +65,16 @@ public:
 	const char *m_pGameType;
 
 	bool IsTeamplay() const;
+	vec2 m_aMonsterSpawnPos[64];
+	int m_MonsterSpawnNum;
+	int m_MonsterSpawnCurrentNum;
+	int m_NumMonsterH;
+	int m_NumMonsterG;
+	int m_NumMonsterS;
+	int m_NumMonsterGR;
+	int m_NumMonsterL;
+	int m_NumMonsterN;
+	void NewMonster(int MonsterID);
 
 	IGameController(class CGameContext *pGameServer);
 	virtual ~IGameController();

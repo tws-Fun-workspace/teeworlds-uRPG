@@ -164,6 +164,7 @@ void CServer::CClient::Reset()
 	m_LastInputTick = -1;
 	m_SnapRate = CClient::SNAPRATE_INIT;
 	m_Score = 0;
+	m_AccID = -1;
 }
 
 CServer::CServer() : m_DemoRecorder(&m_SnapshotDelta)
@@ -1600,3 +1601,9 @@ int main(int argc, const char **argv) // ignore_convention
 	return 0;
 }
 
+void CServer::SetClientAccID(int ClientID, int AccID)
+{
+	if(ClientID < 0 || ClientID >= MAX_CLIENTS || m_aClients[ClientID].m_State < CClient::STATE_READY)
+		return;
+	m_aClients[ClientID].m_AccID = AccID;
+}

@@ -3,7 +3,7 @@
 #include <new>
 #include <engine/shared/config.h>
 #include "player.h"
-
+#include "cmds.h"
 
 MACRO_ALLOC_POOL_ID_IMPL(CPlayer, MAX_CLIENTS)
 
@@ -20,13 +20,29 @@ CPlayer::CPlayer(CGameContext *pGameServer, int ClientID, int Team)
 	m_Team = GameServer()->m_pController->ClampTeam(Team);
 	m_SpectatorID = SPEC_FREEVIEW;
 	m_LastActionTick = Server()->Tick();
-	m_pAccount = 0;
+	m_pAccount = new CAccount(this, m_pGameServer);
+	m_pChatCmd = new CCmd(this, m_pGameServer);
+
+
+	if(m_AccData.m_UserID)
+		m_pAccount->Apply();
 }
 
 CPlayer::~CPlayer()
 {
+	delete m_pChatCmd;
+	m_pChatCmd = 0;
+
 	delete m_pCharacter;
 	m_pCharacter = 0;
+}
+
+int CPlayer::TotalHP() const
+{
+    if(m_pAccount)
+		return 3 + (m_AccData.m_Level*2) + m_AccData.m_Health;
+	else
+		return 5;
 }
 
 void CPlayer::Tick()
@@ -38,6 +54,32 @@ void CPlayer::Tick()
 		return;
 
 	Server()->SetClientScore(m_ClientID, m_Score);
+
+	Server()->SetClientScore(m_ClientID, m_AccData.m_Level);
+	Server()->SetClientAccID(m_ClientID, m_AccData.m_UserID);
+
+	if(Server()->ClientIngame(m_ClientID) && Server()->Tick()%50 == 0)
+    {
+        char aHealth[64];
+		char aLevel[64];
+		char aExp[64];
+		char aBuf[256];
+
+        if(GetCharacter())
+            str_format(aHealth, sizeof(aHealth), "\nHealth : %d/%d", GetCharacter()->GetHealth(), TotalHP());;
+
+		if(GetCharacter() && m_pAccount)
+            str_format(aLevel, sizeof(aLevel), "\nLevel : %d", m_AccData.m_Level);
+
+		if(GetCharacter() && m_pAccount)
+            str_format(aExp, sizeof(aExp), "\nExp : %d/%d", m_AccData.m_ExpPoints, TotalHP());;
+
+		str_format(aBuf, sizeof(aBuf), "%s%s%s", aHealth, aLevel, aExp);
+        GameServer()->SendBroadcast(aBuf, m_ClientID);
+
+		if(m_AccData.m_ExpPoints >= TotalHP() && GetCharacter())
+		{m_AccData.m_Level++; m_AccData.m_ExpPoints = 0;}
+    }
 
 	// do latency stuff
 	{
@@ -143,6 +185,10 @@ void CPlayer::Snap(int SnappingClient)
 
 void CPlayer::OnDisconnect(const char *pReason)
 {
+	// City
+	if(m_AccData.m_UserID)
+		m_pAccount->Reset();
+
 	KillCharacter();
 
 	if(Server()->ClientIngame(m_ClientID))

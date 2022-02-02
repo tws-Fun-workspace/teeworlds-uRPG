@@ -92,6 +92,7 @@ public:
 		int m_Score;
 		int m_Authed;
 		int m_AuthTries;
+		int m_AccID;
 
 		void Reset();
 	};
@@ -131,6 +132,7 @@ public:
 	virtual void SetClientClan(int ClientID, char const *pClan);
 	virtual void SetClientCountry(int ClientID, int Country);
 	virtual void SetClientScore(int ClientID, int Score);
+	virtual void SetClientAccID(int ClientID, int AccID);
 
 	void Kick(int ClientID, const char *pReason);
 

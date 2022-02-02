@@ -56,7 +56,7 @@ bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
 {
 	m_EmoteStop = -1;
 	m_LastAction = -1;
-	m_ActiveWeapon = WEAPON_GUN;
+	m_ActiveWeapon = WEAPON_HAMMER;
 	m_LastWeapon = WEAPON_HAMMER;
 	m_QueuedWeapon = -1;
 
@@ -529,6 +529,10 @@ void CCharacter::OnDirectInput(CNetObj_PlayerInput *pNewInput)
 
 void CCharacter::Tick()
 {
+
+	if(m_Health >= m_pPlayer->TotalHP() && m_pPlayer)
+		m_Health = m_pPlayer->TotalHP();
+
 	if(m_pPlayer->m_ForceBalanced)
 	{
 		char Buf[128];
@@ -549,6 +553,27 @@ void CCharacter::Tick()
 		GameLayerClipped(m_Pos))
 	{
 		Die(m_pPlayer->GetCID(), WEAPON_WORLD);
+	}
+
+	for(int id = 0; id < MAX_CLIENTS; id++)
+	{
+		if(GameServer()->m_apPlayers[id] && GameServer()->m_apPlayers[id]->GetCharacter())
+		{
+			if(GameServer()->Collision()->GetCollisionAt(GameServer()->m_apPlayers[id]->GetCharacter()->GetPos().x, GameServer()->m_apPlayers[id]->GetCharacter()->GetPos().y) & CCollision::COLFLAG_HEALING)
+			{
+				if(Server()->Tick()%100)
+				{
+					if(GameServer()->m_apPlayers[id]->TotalHP() < 10)
+					{
+						GameServer()->m_apPlayers[id]->GetCharacter()->m_Health++;
+					}
+				}
+			}
+			else if(GameServer()->Collision()->GetCollisionAt(GameServer()->m_apPlayers[id]->GetCharacter()->GetPos().x, GameServer()->m_apPlayers[id]->GetCharacter()->GetPos().y) & CCollision::COLFLAG_SAFE)
+			{
+				GameServer()->m_apPlayers[id]->m_Safe = true;
+			}
+		}
 	}
 
 	// handle Weapons
@@ -644,9 +669,9 @@ void CCharacter::TickDefered()
 
 bool CCharacter::IncreaseHealth(int Amount)
 {
-	if(m_Health >= 10)
+	if(m_Health >= m_pPlayer->TotalHP())
 		return false;
-	m_Health = clamp(m_Health+Amount, 0, 10);
+	m_Health = clamp(m_Health+Amount, 0, m_pPlayer->TotalHP());
 	return true;
 }
 
@@ -690,7 +715,7 @@ void CCharacter::Die(int Killer, int Weapon)
 	GameServer()->CreateDeath(m_Pos, m_pPlayer->GetCID());
 }
 
-bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon)
+bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, bool FromMonster)
 {
 	m_Core.m_Vel += Force;
 
@@ -819,7 +844,7 @@ void CCharacter::Snap(int SnappingClient)
 
 	if(m_pPlayer->GetCID() == SnappingClient || SnappingClient == -1 || m_pPlayer->GetCID() == GameServer()->m_apPlayers[SnappingClient]->m_SpectatorID)
 	{
-		pCharacter->m_Health = m_Health;
+		pCharacter->m_Health = round((float)m_Health / (float)m_pPlayer->TotalHP() * 10.f);
 		pCharacter->m_Armor = m_Armor;
 		if(m_aWeapons[m_ActiveWeapon].m_Ammo > 0)
 			pCharacter->m_AmmoCount = m_aWeapons[m_ActiveWeapon].m_Ammo;

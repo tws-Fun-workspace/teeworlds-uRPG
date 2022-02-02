@@ -4,7 +4,7 @@
 #include <game/server/gamecontext.h>
 #include "laser.h"
 
-CLaser::CLaser(CGameWorld *pGameWorld, vec2 Pos, vec2 Direction, float StartEnergy, int Owner)
+CLaser::CLaser(CGameWorld *pGameWorld, vec2 Pos, vec2 Direction, float StartEnergy, int Owner, bool FromMonster)
 : CEntity(pGameWorld, CGameWorld::ENTTYPE_LASER)
 {
 	m_Pos = Pos;
@@ -15,21 +15,30 @@ CLaser::CLaser(CGameWorld *pGameWorld, vec2 Pos, vec2 Direction, float StartEner
 	m_EvalTick = 0;
 	GameWorld()->InsertEntity(this);
 	DoBounce();
+	m_FromMonster = FromMonster;
 }
 
 
 bool CLaser::HitCharacter(vec2 From, vec2 To)
 {
 	vec2 At;
-	CCharacter *OwnerChar = GameServer()->GetPlayerChar(m_Owner);
-	CCharacter *Hit = GameServer()->m_World.IntersectCharacter(m_Pos, To, 0.f, At, OwnerChar);
-	if(!Hit)
+	CCharacter *pOwnerChar = GameServer()->GetPlayerChar(m_Owner);
+	CMonster *pOwnerMonst = GameServer()->GetValidMonster(m_Owner);
+	CCharacter *pHit = GameServer()->m_World.IntersectCharacter(m_Pos, To, 0.f, At, !m_FromMonster ? pOwnerChar : 0);
+	CMonster *pHit2 = GameServer()->m_World.IntersectMonster(m_Pos, To, 0.f, At, m_FromMonster ? pOwnerMonst : 0);
+	if(!pHit && !pHit2)
 		return false;
 
 	m_From = From;
 	m_Pos = At;
 	m_Energy = -1;
-	Hit->TakeDamage(vec2(0.f, 0.f), GameServer()->Tuning()->m_LaserDamage, m_Owner, WEAPON_RIFLE);
+	int Damage = 0;
+	if(m_FromMonster && GameServer()->GetValidMonster(m_Owner))
+        Damage += GameServer()->GetValidMonster(m_Owner)->GetDifficulty() - 1;
+	if(pHit)
+        pHit->TakeDamage(vec2(0.f, 0.f), GameServer()->Tuning()->m_LaserDamage + Damage, m_Owner, WEAPON_RIFLE, m_FromMonster);
+    else if(pHit2)
+        pHit2->TakeDamage(vec2(0.f, 0.f), GameServer()->Tuning()->m_LaserDamage + Damage, m_Owner, WEAPON_RIFLE, m_FromMonster);
 	return true;
 }
 

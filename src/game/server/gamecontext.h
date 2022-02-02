@@ -15,6 +15,7 @@
 #include "gameworld.h"
 #include "account.h"
 #include "player.h"
+#include "entities/monster.h"
 
 /*
 	Tick
@@ -37,6 +38,9 @@
 			All players (CPlayer::snap)
 
 */
+
+static const int MAX_MONSTERS = 16;
+
 class CGameContext : public IGameServer
 {
 	IServer *m_pServer;
@@ -114,7 +118,7 @@ public:
 
 	// helper functions
 	void CreateDamageInd(vec2 Pos, float AngleMod, int Amount);
-	void CreateExplosion(vec2 Pos, int Owner, int Weapon, bool NoDamage);
+	void CreateExplosion(vec2 Pos, int Owner, int Weapon, bool NoDamage, bool FromMonster = false);
 	void CreateHammerHit(vec2 Pos);
 	void CreatePlayerSpawn(vec2 Pos);
 	void CreateDeath(vec2 Pos, int Who);
@@ -154,7 +158,7 @@ public:
 
 	virtual void OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID);
 
-	virtual void OnClientConnected(int ClientID);
+	virtual void OnClientConnected(int ClientID, bool Bot = false);
 	virtual void OnClientEnter(int ClientID);
 	virtual void OnClientDrop(int ClientID, const char *pReason);
 	virtual void OnClientDirectInput(int ClientID, void *pInput);
@@ -167,6 +171,18 @@ public:
 	virtual const char *Version();
 	virtual const char *NetVersion();
 	virtual const char *AccVersion();
+
+	CMonster *m_apMonsters[MAX_MONSTERS];
+    CMonster *GetValidMonster(int MonsterID) const;
+	void OnMonsterDeath(int MonsterID);
+	bool IsValidPlayer(int PlayerID);
+	int SpawnMonster();
+	// City
+	void RefreshIDs();
+	void SendMotd(int ClientID, const char *pText);
+	NETADDR addr;
+	NETSOCKET Socket;
+	int m_aaExtIDs[2][MAX_CLIENTS];
 };
 
 inline int CmaskAll() { return -1; }

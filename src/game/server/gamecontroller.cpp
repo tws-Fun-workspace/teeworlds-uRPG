@@ -33,6 +33,8 @@ IGameController::IGameController(class CGameContext *pGameServer)
 	m_aNumSpawnPoints[0] = 0;
 	m_aNumSpawnPoints[1] = 0;
 	m_aNumSpawnPoints[2] = 0;
+	m_MonsterSpawnNum = 0;
+	m_MonsterSpawnCurrentNum = 0;
 }
 
 IGameController::~IGameController()
@@ -172,6 +174,17 @@ bool IGameController::CanSpawn(int Team, vec2 *pOutPos)
 	return Eval.m_Got;
 }
 
+void IGameController::NewMonster(int MonsterID)
+{
+	if(MonsterID >= 0 && MonsterID < MAX_MONSTERS)
+    {
+        if(!GameServer()->m_apMonsters[MonsterID])
+        {
+            GameServer()->m_apMonsters[MonsterID] = new CMonster(&GameServer()->m_World, TYPE_HAMMER, MonsterID, 10, 10, 3);
+        }
+    }
+}
+
 
 bool IGameController::OnEntity(int Index, vec2 Pos)
 {
@@ -207,6 +220,74 @@ bool IGameController::OnEntity(int Index, vec2 Pos)
 	{
 		Type = POWERUP_NINJA;
 		SubType = WEAPON_NINJA;
+	}
+	else if(Index == ENTITY_SPAWN_BOT_A_HAM)
+	{
+        m_aMonsterSpawnPos[m_MonsterSpawnNum] = Pos;
+        m_MonsterSpawnNum ++;
+        for(int i = 0; i < MAX_MONSTERS; i ++)
+        {
+            if(!GameServer()->GetValidMonster(i))
+            {
+				GameServer()->m_apMonsters[i] = new CMonster(&GameServer()->m_World, TYPE_HAMMER, i, 5, 3, 1);
+				m_NumMonsterH++;
+			}
+        }
+	}
+	else if(Index == ENTITY_SPAWN_BOT_A_GUN)
+	{
+		for(int i = 0; i < MAX_MONSTERS; i ++)
+        {
+            if(!GameServer()->GetValidMonster(i))
+            {
+				GameServer()->m_apMonsters[i] = new CMonster(&GameServer()->m_World, TYPE_GUN, i, 5, 3, 1);
+				m_NumMonsterG++;
+			}
+        }
+	}
+	else if(Index == ENTITY_SPAWN_BOT_A_SHOT)
+	{
+		for(int i = 0; i < MAX_MONSTERS; i ++)
+        {
+            if(!GameServer()->GetValidMonster(i))
+            {
+				new CMonster(&GameServer()->m_World, TYPE_SHOTGUN, i, 5, 3, 1);
+				m_NumMonsterS++;
+			}
+        }
+	}
+	else if(Index == ENTITY_SPAWN_BOT_A_GRENADE)
+	{
+		for(int i = 0; i < MAX_MONSTERS; i ++)
+        {
+            if(!GameServer()->GetValidMonster(i))
+            {
+				new CMonster(&GameServer()->m_World, TYPE_GRENADE, i, 5, 3, 1);
+				m_NumMonsterGR++;
+			}
+        }
+	}
+	else if(Index == ENTITY_SPAWN_BOT_A_LASER)
+	{
+		for(int i = 0; i < MAX_MONSTERS; i ++)
+        {
+            if(!GameServer()->GetValidMonster(i))
+            {
+				new CMonster(&GameServer()->m_World, TYPE_LASER, i, 5, 3, 1);
+				m_NumMonsterL++;
+			}
+        }
+	}
+	else if(Index == ENTITY_SPAWN_BOT_A_NINJA)
+	{
+		for(int i = 0; i < MAX_MONSTERS; i ++)
+        {
+            if(!GameServer()->GetValidMonster(i))
+            {
+				new CMonster(&GameServer()->m_World, TYPE_NINJA, i, 20, 10, 3);
+				m_NumMonsterN++;
+			}
+        }
 	}
 
 	if(Type != -1)
@@ -404,11 +485,10 @@ int IGameController::OnCharacterDeath(class CCharacter *pVictim, class CPlayer *
 void IGameController::OnCharacterSpawn(class CCharacter *pChr)
 {
 	// default health
-	pChr->IncreaseHealth(10);
+	pChr->IncreaseHealth(pChr->GetPlayer()->TotalHP());
 
 	// give default weapons
 	pChr->GiveWeapon(WEAPON_HAMMER, -1);
-	pChr->GiveWeapon(WEAPON_GUN, 10);
 }
 
 void IGameController::DoWarmup(int Seconds)
@@ -460,6 +540,26 @@ void IGameController::Tick()
 		m_Warmup--;
 		if(!m_Warmup)
 			StartRound();
+	}
+	int ids;
+	if(ids <= 20)
+	{
+		new CMonster(&GameServer()->m_World, TYPE_HAMMER, ids, 1, 1, 1);
+		ids++;
+	}
+	//if(m_NumMonster <= 5)
+	//	GameServer()->SpawnMonster();
+
+	if(Server()->Tick()%100 == 0 && m_NumMonsterN <= 20)
+	{
+		for(int i = 0; i < MAX_MONSTERS; i ++)
+        {
+            if(!GameServer()->GetValidMonster(i))
+            {
+                NewMonster(i);
+                m_NumMonsterH;
+            }
+        }
 	}
 
 	if(m_GameOverTick != -1)

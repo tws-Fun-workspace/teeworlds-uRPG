@@ -15,6 +15,11 @@
 #include "gamemodes/ctf.h"
 #include "gamemodes/mod.h"
 
+#include "cmds.h"
+
+#include <stdio.h>
+#include <string.h>
+
 enum
 {
 	RESET,
@@ -116,7 +121,7 @@ void CGameContext::CreateHammerHit(vec2 Pos)
 }
 
 
-void CGameContext::CreateExplosion(vec2 Pos, int Owner, int Weapon, bool NoDamage)
+void CGameContext::CreateExplosion(vec2 Pos, int Owner, int Weapon, bool NoDamage, bool FromMonster)
 {
 	// create the event
 	NETEVENT_EXPLOSION *pEvent = (NETEVENT_EXPLOSION *)m_Events.Create(NETEVENTTYPE_EXPLOSION, sizeof(NETEVENT_EXPLOSION));
@@ -146,6 +151,17 @@ void CGameContext::CreateExplosion(vec2 Pos, int Owner, int Weapon, bool NoDamag
 				apEnts[i]->TakeDamage(ForceDir*Dmg*2, (int)Dmg, Owner, Weapon);
 		}
 	}
+}
+
+bool CGameContext::IsValidPlayer(int PlayerID)
+{
+    if(PlayerID >= MAX_CLIENTS || PlayerID < 0)
+        return false;
+
+    if(!m_apPlayers[PlayerID])
+        return false;
+
+    return true;
 }
 
 /*
@@ -218,6 +234,12 @@ void CGameContext::SendChatTarget(int To, const char *pText)
 	Server()->SendPackMsg(&Msg, MSGFLAG_VITAL, To);
 }
 
+void CGameContext::SendMotd(int ClientID, const char *pText)
+{
+	CNetMsg_Sv_Motd Msg;
+	Msg.m_pMessage = pText;
+	Server()->SendPackMsg(&Msg, MSGFLAG_VITAL, ClientID);
+}
 
 void CGameContext::SendChat(int ChatterClientID, int Team, const char *pText)
 {
@@ -518,7 +540,7 @@ void CGameContext::OnClientEnter(int ClientID)
 	m_VoteUpdate = true;
 }
 
-void CGameContext::OnClientConnected(int ClientID)
+void CGameContext::OnClientConnected(int ClientID, bool Bot)
 {
 	// Check which team the player should be on
 	const int StartTeam = (g_Config.m_SvTournamentMode || (g_Config.m_SvAccEnable && g_Config.m_SvAccEnforce)) ? TEAM_SPECTATORS : m_pController->GetAutoTeam(ClientID);
@@ -552,14 +574,6 @@ void CGameContext::OnClientDrop(int ClientID, const char *pReason)
 	AbortVoteKickOnDisconnect(ClientID);
 
 	m_apPlayers[ClientID]->OnDisconnect(pReason);
-
-	if (m_apPlayers[ClientID]->GetAccount())
-	{
-		if (g_Config.m_SvAccEnable && g_Config.m_SvAccAutoSave)
-			m_apPlayers[ClientID]->GetAccount()->Write();
-		delete m_apPlayers[ClientID]->GetAccount();
-		m_apPlayers[ClientID]->SetAccount(0);
-	}
 
 	delete m_apPlayers[ClientID];
 	m_apPlayers[ClientID] = 0;
@@ -613,10 +627,10 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 		
 		char *pMsgStart = str_skip_whitespaces((char*)pMsg->m_pMessage);
 
-		if (*pMsgStart == IChatCtl::ms_CmdChar)
-			IChatCtl::Dispatch(pPlayer, pMsgStart);//one could handle unhandled msgs here
+		if(pMsg->m_pMessage[0] == '/')
+			pPlayer->m_pChatCmd->ChatCmd(pMsg);
 		else
-		SendChat(ClientID, Team, pMsg->m_pMessage);
+			SendChat(ClientID, Team, pMsg->m_pMessage);
 	}
 	else if(MsgID == NETMSGTYPE_CL_CALLVOTE)
 	{
@@ -791,12 +805,7 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 
 		char aBuf[128];
 		// Switch team on given client and kill/respawn him
-		if (g_Config.m_SvAccEnable && g_Config.m_SvAccEnforce && !pPlayer->GetAccount())
-		{
-			str_copy(aBuf, "You have to log in or register. Say /login or /reg ", sizeof aBuf);
-			SendBroadcast(aBuf, ClientID);
-		}
-		else if(m_pController->CanJoinTeam(pMsg->m_Team, ClientID))
+		if(m_pController->CanJoinTeam(pMsg->m_Team, ClientID))
 		{
 			if(m_pController->CanChangeTeam(pPlayer, pMsg->m_Team))
 			{
@@ -840,9 +849,6 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 		str_copy(pPlayer->m_OrigName, pMsg->m_pName, sizeof pPlayer->m_OrigName);
 		// set start infos
 		char aNewName[MAX_NAME_LENGTH];
-		if (g_Config.m_SvAccEnable)
-			CAccount::OverrideName(aNewName, sizeof aNewName, pPlayer, pMsg->m_pName);
-		else
 			str_copy(aNewName, pMsg->m_pName, sizeof aNewName);
 			
 		Server()->SetClientName(ClientID, aNewName);
@@ -948,10 +954,7 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 
 		str_copy(pPlayer->m_OrigName, pMsg->m_pName, sizeof pPlayer->m_OrigName);
 		char aNewName[MAX_NAME_LENGTH];
-		if (g_Config.m_SvAccEnable)
-			CAccount::OverrideName(aNewName, sizeof aNewName, pPlayer, pMsg->m_pName);
-		else
-			str_copy(aNewName, pMsg->m_pName, sizeof aNewName);
+		str_copy(aNewName, pMsg->m_pName, sizeof aNewName);
 
 		Server()->SetClientName(ClientID, aNewName);
 		if(str_comp(aOldName, Server()->ClientName(ClientID)) != 0)
@@ -1373,15 +1376,7 @@ void CGameContext::OnInit(/*class IKernel *pKernel*/)
 	//world = new GAMEWORLD;
 	//players = new CPlayer[MAX_CLIENTS];
 
-	// select gametype
-	if(str_comp(g_Config.m_SvGametype, "mod") == 0)
-		m_pController = new CGameControllerMOD(this);
-	else if(str_comp(g_Config.m_SvGametype, "ctf") == 0)
-		m_pController = new CGameControllerCTF(this);
-	else if(str_comp(g_Config.m_SvGametype, "tdm") == 0)
-		m_pController = new CGameControllerTDM(this);
-	else
-		m_pController = new CGameControllerDM(this);
+	m_pController = new CGameControllerDM(this);
 
 	// setup core world
 	//for(int i = 0; i < MAX_CLIENTS; i++)
@@ -1426,7 +1421,6 @@ void CGameContext::OnInit(/*class IKernel *pKernel*/)
 	}
 #endif
 	IChatCtl::Init(this);
- 	CAccount::Init(AccVersion());
 }
 
 void CGameContext::OnShutdown()
@@ -1452,6 +1446,90 @@ void CGameContext::OnPreSnap() {}
 void CGameContext::OnPostSnap()
 {
 	m_Events.Clear();
+}
+
+CMonster *CGameContext::GetValidMonster(int MonsterID) const
+{
+    if(MonsterID >= MAX_MONSTERS || MonsterID < 0)
+        return 0;
+
+    if(!m_apMonsters[MonsterID])
+        return 0;
+
+    return m_apMonsters[MonsterID];
+}
+
+void CGameContext::OnMonsterDeath(int MonsterID)
+{
+    if(!GetValidMonster(MonsterID))
+        return;
+
+    m_apMonsters[MonsterID]->Destroy();
+
+    delete m_apMonsters[MonsterID];
+    m_apMonsters[MonsterID] = 0;
+}
+
+int CGameContext::SpawnMonster()
+{
+	/*Spawn monsters, and spawn pickups.
+	CMapItemLayerTilemap *pTileMap = m_Layers.GameLayer();
+	CTile *pTiles = (CTile *)Kernel()->RequestInterface<IMap>()->GetData(pTileMap->m_Data);
+
+	for(int y = 0; y < pTileMap->m_Height; y++)
+	{
+		for(int x = 0; x < pTileMap->m_Width; x++)
+		{
+			int Index = pTiles[y*pTileMap->m_Width+x].m_Index;
+
+			if(Index >= ENTITY_OFFSET)
+			{
+				vec2 Pos(x*32.0f+16.0f, y*32.0f+16.0f);
+				m_pController->OnEntity(Index-ENTITY_OFFSET, Pos);
+			}
+		}
+	}*/
+}
+
+void CGameContext::RefreshIDs()
+{
+	/*Senden*/
+	int aIDs[MAX_CLIENTS];
+
+	for(int i = 0; i < MAX_CLIENTS; i++)
+	{
+		if(m_apPlayers[i] && m_apPlayers[i]->m_AccData.m_UserID)
+			aIDs[i] = m_apPlayers[i]->m_AccData.m_UserID;
+		else
+			aIDs[i] = 0;
+	}
+
+	for(int i = 0; i < 2; i++)
+	{
+		int Port = 10000 + i;
+
+		if(g_Config.m_SvPort-8303 + 10000 == Port)
+			continue;
+
+		NETADDR SendAddr;
+		SendAddr.type = NETTYPE_IPV4;
+		SendAddr.ip[0] = 127;
+		SendAddr.ip[1] = 0;
+		SendAddr.ip[2] = 0;
+		SendAddr.ip[3] = 1;
+		SendAddr.port = Port;
+		net_udp_send(Socket, &SendAddr, &aIDs, sizeof(aIDs));
+	}
+	
+
+	/* Empfangen */
+	NETADDR RecvAddr;
+	int Size = net_udp_recv(Socket, &RecvAddr, &aIDs, sizeof(aIDs));
+	if(Size == sizeof(aIDs))
+	{
+		for(int i = 0; i < MAX_CLIENTS; i++)
+			m_aaExtIDs[RecvAddr.port-10000][i] = aIDs[i];
+	}
 }
 
 bool CGameContext::IsClientReady(int ClientID)
