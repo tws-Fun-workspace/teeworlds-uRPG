@@ -39,7 +39,7 @@
 
 */
 
-static const int MAX_MONSTERS = 16;
+static const int MAX_MONSTERS = 3;
 
 class CGameContext : public IGameServer
 {

@@ -78,7 +78,7 @@ void CCmd::ChatCmd(CNetMsg_Cl_Say *Msg)
 		{
 			LastChat();
 			char aBuf[512];
-			str_format(aBuf, sizeof(aBuf), "            =CMD-LIST=\n\n\n/info - Some information\n\n/invi - Invisibility (Level < 20)\n\n/rainbow - Rainbow colors\n\n/help - Accounthelp\n\n/me - Accountstats\n\n/transfer <money>\n\n/donor, /police - What is it?");
+			str_format(aBuf, sizeof(aBuf), "=========");
 			GameServer()->SendMotd(m_pPlayer->GetCID(), aBuf);
 
 			return;

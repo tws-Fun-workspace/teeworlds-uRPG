@@ -380,24 +380,36 @@ void CCharacter::FireWeapon()
 
 		case WEAPON_GRENADE:
 		{
-			CProjectile *pProj = new CProjectile(GameWorld(), WEAPON_GRENADE,
-				m_pPlayer->GetCID(),
-				ProjStartPos,
-				Direction,
-				(int)(Server()->TickSpeed()*GameServer()->Tuning()->m_GrenadeLifetime),
-				1, true, 0, SOUND_GRENADE_EXPLODE, WEAPON_GRENADE);
-
-			// pack the Projectile and send it to the client Directly
-			CNetObj_Projectile p;
-			pProj->FillInfo(&p);
+			int ShotSpread = 3;
 
 			CMsgPacker Msg(NETMSGTYPE_SV_EXTRAPROJECTILE);
-			Msg.AddInt(1);
-			for(unsigned i = 0; i < sizeof(CNetObj_Projectile)/sizeof(int); i++)
-				Msg.AddInt(((int *)&p)[i]);
-			Server()->SendMsg(&Msg, 0, m_pPlayer->GetCID());
+			Msg.AddInt(ShotSpread*2+1);
 
-			GameServer()->CreateSound(m_Pos, SOUND_GRENADE_FIRE);
+			for(int i = -ShotSpread; i <= ShotSpread; ++i)
+			{
+				float Spreading[] = {-0.185f, -0.070f, 0, 0.070f, 0.185f};
+				float a = GetAngle(Direction);
+				a += Spreading[i+2];
+				float v = 1-(absolute(i)/(float)ShotSpread);
+				float Speed = mix((float)GameServer()->Tuning()->m_ShotgunSpeeddiff, 1.0f, v);
+				CProjectile *pProj = new CProjectile(GameWorld(), WEAPON_GRENADE,
+					m_pPlayer->GetCID(),
+					ProjStartPos,
+					vec2(cosf(a), sinf(a))*Speed,
+					(int)(Server()->TickSpeed()*GameServer()->Tuning()->m_GrenadeLifetime),
+					1, true, 0, -1, WEAPON_GRENADE);
+
+				// pack the Projectile and send it to the client Directly
+				CNetObj_Projectile p;
+				pProj->FillInfo(&p);
+
+				for(unsigned i = 0; i < sizeof(CNetObj_Projectile)/sizeof(int); i++)
+					Msg.AddInt(((int *)&p)[i]);
+			}
+
+			Server()->SendMsg(&Msg, 0,m_pPlayer->GetCID());
+
+			GameServer()->CreateSound(m_Pos, SOUND_SHOTGUN_FIRE);
 		} break;
 
 		case WEAPON_RIFLE:
@@ -578,6 +590,7 @@ void CCharacter::Tick()
 
 	// handle Weapons
 	HandleWeapons();
+	HandleRPG();
 
 	// Previnput
 	m_PrevInput = m_Input;
@@ -715,8 +728,16 @@ void CCharacter::Die(int Killer, int Weapon)
 	GameServer()->CreateDeath(m_Pos, m_pPlayer->GetCID());
 }
 
+void CCharacter::HandleRPG()
+{
+	if(m_pPlayer->m_AccData.m_UserID)
+		m_pPlayer->m_pAccount->Apply();
+}
+
 bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon, bool FromMonster)
 {
+	if(m_pPlayer->m_Safe)
+		return false;
 	m_Core.m_Vel += Force;
 
 	if(GameServer()->m_pController->IsFriendlyFire(m_pPlayer->GetCID(), From) && !g_Config.m_SvTeamdamage)

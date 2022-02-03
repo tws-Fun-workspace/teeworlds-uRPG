@@ -53,12 +53,23 @@ void CPlayer::Tick()
 	if(!Server()->ClientIngame(m_ClientID))
 		return;
 
-	Server()->SetClientScore(m_ClientID, m_Score);
-
 	Server()->SetClientScore(m_ClientID, m_AccData.m_Level);
 	Server()->SetClientAccID(m_ClientID, m_AccData.m_UserID);
 
-	if(Server()->ClientIngame(m_ClientID) && Server()->Tick()%50 == 0)
+	if(m_AccData.m_ExpPoints >= m_AccData.m_Level*200)
+	{
+		m_AccData.m_ExpPoints -= m_AccData.m_Level*200;
+		m_AccData.m_Level++;
+	}
+
+	if(!m_AccData.m_UserID)
+	{
+		if(m_Team != TEAM_SPECTATORS)
+			SetTeam(TEAM_SPECTATORS);
+		if(Server()->Tick()%50 == 0)
+			GameServer()->SendBroadcast("\n\n\n\n\n\n\n\n\n输入/register 用户名 密码后可进入游戏\n====\n如果已经有一个账号，请输入/login 用户名 密码进入游戏", m_ClientID);
+	}
+	if(Server()->ClientIngame(m_ClientID) && Server()->Tick()%50 == 0 && m_Team != TEAM_SPECTATORS)
     {
         char aHealth[64];
 		char aLevel[64];
@@ -66,19 +77,16 @@ void CPlayer::Tick()
 		char aBuf[256];
 
         if(GetCharacter())
-            str_format(aHealth, sizeof(aHealth), "\nHealth : %d/%d", GetCharacter()->GetHealth(), TotalHP());;
+            str_format(aHealth, sizeof(aHealth), "\n真实生命值 : %d/%d", GetCharacter()->GetHealth(), TotalHP());;
 
 		if(GetCharacter() && m_pAccount)
-            str_format(aLevel, sizeof(aLevel), "\nLevel : %d", m_AccData.m_Level);
+            str_format(aLevel, sizeof(aLevel), "\n等级 : %d", m_AccData.m_Level);
 
 		if(GetCharacter() && m_pAccount)
-            str_format(aExp, sizeof(aExp), "\nExp : %d/%d", m_AccData.m_ExpPoints, TotalHP());;
+            str_format(aExp, sizeof(aExp), "\n经验 : %d/%d", m_AccData.m_ExpPoints, m_AccData.m_Level*200);;
 
 		str_format(aBuf, sizeof(aBuf), "%s%s%s", aHealth, aLevel, aExp);
         GameServer()->SendBroadcast(aBuf, m_ClientID);
-
-		if(m_AccData.m_ExpPoints >= TotalHP() && GetCharacter())
-		{m_AccData.m_Level++; m_AccData.m_ExpPoints = 0;}
     }
 
 	// do latency stuff
@@ -165,7 +173,7 @@ void CPlayer::Snap(int SnappingClient)
 	pPlayerInfo->m_Latency = SnappingClient == -1 ? m_Latency.m_Min : GameServer()->m_apPlayers[SnappingClient]->m_aActLatency[m_ClientID];
 	pPlayerInfo->m_Local = 0;
 	pPlayerInfo->m_ClientID = m_ClientID;
-	pPlayerInfo->m_Score = m_Score;
+	pPlayerInfo->m_Score = m_AccData.m_Level;
 	pPlayerInfo->m_Team = m_Team;
 
 	if(m_ClientID == SnappingClient)

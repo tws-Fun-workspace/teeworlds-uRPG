@@ -28,7 +28,7 @@ class CMonster : public CEntity
     };
 public:
 	//monster's size
-	static const int ms_PhysSize = 28;
+	static const int ms_PhysSize = 18;
 
 	CMonster(CGameWorld *pWorld, int Type, int MonsterID, int Health, int Armor, int Difficulty);
 

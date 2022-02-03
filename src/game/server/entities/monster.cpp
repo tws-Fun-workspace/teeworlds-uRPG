@@ -21,8 +21,8 @@ CMonster::CMonster(CGameWorld *pWorld, int Type, int MonsterID, int Health, int 
 	m_ProximityRadius = ms_PhysSize;
     m_MaxArmor = Armor;
 	m_Armor = Armor;
-    m_Health = 10 + Health;
-	m_MaxHealth = 10 + Health;
+    m_Health = Health;
+	m_MaxHealth = Health;
 	m_Difficulty = Difficulty;
 
 	Spawn();
@@ -1317,15 +1317,15 @@ void CMonster::Die(int Killer)
         int Score;
         switch(m_Type)
         {
-            case TYPE_HAMMER: Score = 1; break;
-            case TYPE_GUN: Score = 1; break;
-            case TYPE_SHOTGUN: Score = 2; break;
-            case TYPE_GRENADE: Score = 2; break;
-            case TYPE_LASER: Score = 3; break;
-            case TYPE_NINJA: Score = 3; break;
+            case TYPE_HAMMER: Score = 50; break;
+            case TYPE_GUN: Score = 50; break;
+            case TYPE_SHOTGUN: Score = 100; break;
+            case TYPE_GRENADE: Score = 100; break;
+            case TYPE_LASER: Score = 200; break;
+            case TYPE_NINJA: Score = 200; break;
             default: Score = 1; break; // Security :p
         }
-        GameServer()->m_apPlayers[Killer]->m_Score += Score;
+        GameServer()->m_apPlayers[Killer]->m_AccData.m_ExpPoints += Score;
         //GameServer()->CreateDeath(m_Pos, Killer);
         //char aBuf[128];
         //str_format(aBuf, sizeof(aBuf), "%s has killed a %s", Server()->ClientName(Killer), MonsterName());

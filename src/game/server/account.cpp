@@ -17,6 +17,46 @@
 	#include <unistd.h>
 #endif
 
+int CAccount::PlayerLevelUp()
+{
+	if(m_pPlayer->m_AccData.m_UserID)
+	{
+		bool upgraded = false;
+		long int NeedExp = m_pPlayer->m_AccData.m_Level*GetNeedForUp();
+		while(m_pPlayer->m_AccData.m_ExpPoints >= NeedExp)
+		{
+			upgraded = true;
+			m_pPlayer->m_AccData.m_ExpPoints -= m_pPlayer->m_AccData.m_Level*GetNeedForUp();
+			NeedExp = m_pPlayer->m_AccData.m_Level*GetNeedForUp();
+			//m_pPlayer->m_AccData.m_Money += 1000;
+			if(m_pPlayer->m_AccData.m_Level == 2)
+				GameServer()->SendChatTarget(m_pPlayer->GetCID(), "FIRST STEP!.");		
+		}
+		if(upgraded)
+		{
+			GameServer()->SendChatTarget(m_pPlayer->GetCID(), "[Level UP] 恭喜你, 你升级了!");
+			GameServer()->CreateSoundGlobal(SOUND_CTF_CAPTURE, m_pPlayer->GetCID());
+			m_pPlayer->m_AccData.m_Level++;
+			m_pPlayer->m_AccData.m_Money += GetPlayerLevel()*100;
+		}
+	}
+}
+
+int CAccount::GetNeedForUp()
+{
+}
+
+int CAccount::GetPlayerLevel()
+{
+	return m_pPlayer->m_AccData.m_Level;
+}
+
+int CAccount::GetPlayerExp()
+{
+	return m_pPlayer->m_AccData.m_ExpPoints;
+}
+
+
 CAccount::CAccount(CPlayer *pPlayer, CGameContext *pGameServer)
 {
    m_pPlayer = pPlayer;
@@ -40,26 +80,26 @@ void CAccount::Login(char *Username, char *Password)
 	if(m_pPlayer->m_AccData.m_UserID)
 	{
 		dbg_msg("account", "Account login failed ('%s' - Already logged in)", Username);
-		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Already logged in");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "您当前已经登录了一个账号");
 		return;
 	}
 	else if(strlen(Username) > 15 || !strlen(Username))
 	{
-		str_format(aBuf, sizeof(aBuf), "Username too %s", strlen(Username)?"long":"short");
+		str_format(aBuf, sizeof(aBuf), "您设置的用户名太%s了", strlen(Username)?"长":"短");
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
 		return;
     }
 	else if(strlen(Password) > 15 || !strlen(Password))
 	{
-		str_format(aBuf, sizeof(aBuf), "Password too %s!", strlen(Password)?"long":"short");
+		str_format(aBuf, sizeof(aBuf), "您设置的密码太%s了!", strlen(Password)?"长":"短");
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
 		return;
     }
 	else if(!Exists(Username))
 	{
 		dbg_msg("account", "Account login failed ('%s' - Missing)", Username);
-		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "This account does not exist.");
-		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Please register first. (/register <user> <pass>)");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "不存在此用户名的账号，请检查是否输入正确");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "如果还没有注册账号，请输入以下指令注册 (/register <用户名> <密码>)，不需要输入<>");
 		return;
 	}
 
@@ -86,7 +126,7 @@ void CAccount::Login(char *Username, char *Password)
 			if(GameServer()->m_apPlayers[j] && GameServer()->m_apPlayers[j]->m_AccData.m_UserID == AccID)
 			{
 				dbg_msg("account", "Account login failed ('%s' - already in use (local))", Username);
-				GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Account already in use");
+				GameServer()->SendChatTarget(m_pPlayer->GetCID(), "此账号正在使用中");
 				return;
 			}
 
@@ -96,7 +136,7 @@ void CAccount::Login(char *Username, char *Password)
 			if(AccID == GameServer()->m_aaExtIDs[i][j])
 			{
 				dbg_msg("account", "Account login failed ('%s' - already in use (extern))", Username);
-				GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Account already in use");
+				GameServer()->SendChatTarget(m_pPlayer->GetCID(), "此账号正在使用中");
 				return;
 			}
 		}
@@ -105,21 +145,21 @@ void CAccount::Login(char *Username, char *Password)
 	if(strcmp(Username, AccUsername))
 	{
 		dbg_msg("account", "Account login failed ('%s' - Wrong username)", Username);
-		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Wrong username or password");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "错误的用户名或密码");
 		return;
 	}
 
 	if(strcmp(Password, AccPassword))
 	{
 		dbg_msg("account", "Account login failed ('%s' - Wrong password)", Username);
-		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Wrong username or password");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "错误的用户名或密码");
 		return;
 	}
 
 
 	Accfile = fopen(aBuf, "r"); 		
 
-	fscanf(Accfile, "%s\n%s\n%s\n%d\n\n%d\n%d\n%d\n%d\n\n%d\n%d\n\n%d\n%d\n\nAdd",
+	fscanf(Accfile, "%s\n%s\n%s\n%d\n\n%d\n%d\n%d\n\n%d\n%d\n\n%d\n%d\n\nAdd",
 		m_pPlayer->m_AccData.m_Username, // Done
 		m_pPlayer->m_AccData.m_Password, // Done
 		m_pPlayer->m_AccData.m_RconPassword,
@@ -128,7 +168,6 @@ void CAccount::Login(char *Username, char *Password)
  		&m_pPlayer->m_AccData.m_Money, // Done
 		&m_pPlayer->m_AccData.m_Health, // Done
 		&m_pPlayer->m_AccData.m_Armor, // Done
-		&m_pPlayer->m_Score, // Done
 
 		&m_pPlayer->m_AccData.m_Donor, 
 		&m_pPlayer->m_AccData.m_VIP, // Done
@@ -139,18 +178,12 @@ void CAccount::Login(char *Username, char *Password)
 	fclose(Accfile);
 
 	CCharacter *pOwner = GameServer()->GetPlayerChar(m_pPlayer->GetCID());
-
-	if(pOwner)
-	{
-		if(pOwner->IsAlive())
-			pOwner->Die(m_pPlayer->GetCID(), WEAPON_GAME);
-	}
 	 
 	if(m_pPlayer->GetTeam() == TEAM_SPECTATORS)
-		m_pPlayer->SetTeam(TEAM_RED);
+		m_pPlayer->SetTeam(0);
   	
 	dbg_msg("account", "Account login sucessful ('%s')", Username);
-	GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Login succesful");
+	GameServer()->SendChatTarget(m_pPlayer->GetCID(), "登录成功！");
 }
 
 void CAccount::Register(char *Username, char *Password)
@@ -159,25 +192,25 @@ void CAccount::Register(char *Username, char *Password)
 	if(m_pPlayer->m_AccData.m_UserID)
 	{
 		dbg_msg("account", "Account registration failed ('%s' - Logged in)", Username);
-		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Already logged in");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "您当前已经登录了一个账号，不可重复登录");
 		return;
 	}
 	if(strlen(Username) > 15 || !strlen(Username))
 	{
-		str_format(aBuf, sizeof(aBuf), "Username too %s", strlen(Username)?"long":"short");
+		str_format(aBuf, sizeof(aBuf), "您设置的用户名太%s了", strlen(Username)?"长":"短");
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
 		return;
     }
 	else if(strlen(Password) > 15 || !strlen(Password))
 	{
-		str_format(aBuf, sizeof(aBuf), "Password too %s!", strlen(Password)?"long":"short");
+		str_format(aBuf, sizeof(aBuf), "您设置的密码太%s了!", strlen(Password)?"长":"短");
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
 		return;
     }
 	else if(Exists(Username))
 	{
 		dbg_msg("account", "Account registration failed ('%s' - Already exists)", Username);
-		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Account already exists.");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "账号已存在");
 		return;
 	}
 
@@ -187,8 +220,8 @@ void CAccount::Register(char *Username, char *Password)
 	char *p = strpbrk(Username, Filter);
 	if(!p)
 	{
-		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Don't use invalid chars for username!");
-		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "A - Z, a - z, 0 - 9, . - _");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "请不要使用中文等特殊字符作为用户名！");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "仅支持A到Z, a到z, 0到9, .到_");
 		return;
 	}
 
@@ -212,7 +245,7 @@ void CAccount::Register(char *Username, char *Password)
 	FILE *Accfile;
 	Accfile = fopen(aBuf, "a+");
 
-	str_format(aBuf, sizeof(aBuf), "%s\n%s\n%s\n%d\n\n%d\n%d\n%d\n%d\n\n%d\n%d\n\n%d\n%d\n\nAdd", 
+	str_format(aBuf, sizeof(aBuf), "%s\n%s\n%s\n%d\n\n%d\n%d\n%d\n\n%d\n%d\n\n%d\n%d\n\nAdd", 
 		Username, 
 		Password, 
 		"0",
@@ -220,8 +253,7 @@ void CAccount::Register(char *Username, char *Password)
 
 		m_pPlayer->m_AccData.m_Money,
 		m_pPlayer->m_AccData.m_Health,
-		m_pPlayer->m_AccData.m_Armor,
-		m_pPlayer->m_Score<0?0:m_pPlayer->m_Score, 
+		m_pPlayer->m_AccData.m_Armor, 
 
 		m_pPlayer->m_AccData.m_Donor,
 		m_pPlayer->m_AccData.m_VIP,
@@ -233,7 +265,7 @@ void CAccount::Register(char *Username, char *Password)
 	fclose(Accfile);
 
 	dbg_msg("account", "Registration succesful ('%s')", Username);
-	str_format(aBuf, sizeof(aBuf), "Registration succesful - ('/login %s %s'): ", Username, Password);
+	str_format(aBuf, sizeof(aBuf), "账号注册成功！下次进入时输入以下指令登录 - ('/login %s %s'): ", Username, Password);
 	GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
 	Login(Username, Password);
 }
@@ -257,7 +289,7 @@ void CAccount::Apply()
 	FILE *Accfile;
 	Accfile = fopen(aBuf,"a+");
 	
-	str_format(aBuf, sizeof(aBuf), "%s\n%s\n%s\n%d\n\n%d\n%d\n%d\n%d\n\n%d\n%d\n\n%d\n%d\n\nAdd", 
+	str_format(aBuf, sizeof(aBuf), "%s\n%s\n%s\n%d\n\n%d\n%d\n%d\n\n%d\n%d\n\n%d\n%d\n\nAdd", 
 		m_pPlayer->m_AccData.m_Username,
 		m_pPlayer->m_AccData.m_Password, 
 		m_pPlayer->m_AccData.m_RconPassword, 
@@ -266,7 +298,6 @@ void CAccount::Apply()
 		m_pPlayer->m_AccData.m_Money,
 		m_pPlayer->m_AccData.m_Health,
 		m_pPlayer->m_AccData.m_Armor,
-		m_pPlayer->m_Score, 
 
 		m_pPlayer->m_AccData.m_Donor,
 		m_pPlayer->m_AccData.m_VIP,
@@ -286,9 +317,8 @@ void CAccount::Reset()
 	m_pPlayer->m_AccData.m_UserID = 0;
 	
 	m_pPlayer->m_AccData.m_Money = 0;
-	m_pPlayer->m_AccData.m_Health = 10;
-	m_pPlayer->m_AccData.m_Armor = 10;
-	m_pPlayer->m_Score = 0;
+	m_pPlayer->m_AccData.m_Health = 0;
+	m_pPlayer->m_AccData.m_Armor = 0;
 
 	m_pPlayer->m_AccData.m_Level = 1;
 	m_pPlayer->m_AccData.m_ExpPoints = 0;
@@ -304,10 +334,10 @@ void CAccount::Delete()
 		str_format(aBuf, sizeof(aBuf), "accounts/+%s.acc", m_pPlayer->m_AccData.m_Username);
 		std::remove(aBuf);
 		dbg_msg("account", "Account deleted ('%s')", m_pPlayer->m_AccData.m_Username);
-		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Account deleted!");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "账号成功删除！");
 	}
 	else
-		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Please, login to delete your account");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "抱歉，您得先登录才能删除账号");
 }
 
 void CAccount::NewPassword(char *NewPassword)
@@ -315,12 +345,12 @@ void CAccount::NewPassword(char *NewPassword)
 	char aBuf[128];
 	if(!m_pPlayer->m_AccData.m_UserID)
 	{
-		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Please, login to change the password");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "抱歉，您得先登录才能修改账号密码");
 		return;
 	}
 	if(strlen(NewPassword) > 15 || !strlen(NewPassword))
 	{
-		str_format(aBuf, sizeof(aBuf), "Password too %s!", strlen(NewPassword)?"long":"short");
+		str_format(aBuf, sizeof(aBuf), "新密码太%s了！", strlen(NewPassword)?"长":"短");
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
 		return;
     }
@@ -330,7 +360,7 @@ void CAccount::NewPassword(char *NewPassword)
 
 	
 	dbg_msg("account", "Password changed - ('%s')", m_pPlayer->m_AccData.m_Username);
-	GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Password successfully changed!");
+	GameServer()->SendChatTarget(m_pPlayer->GetCID(), "密码成功更改！");
 }
 
 void CAccount::NewUsername(char *NewUsername)
@@ -338,12 +368,12 @@ void CAccount::NewUsername(char *NewUsername)
 	char aBuf[128];
 	if(!m_pPlayer->m_AccData.m_UserID)
 	{
-		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Please, login to change the username");
+		GameServer()->SendChatTarget(m_pPlayer->GetCID(), "抱歉，您得先登录才能修改用户名");
 		return;
 	}
 	if(strlen(NewUsername) > 15 || !strlen(NewUsername))
 	{
-		str_format(aBuf, sizeof(aBuf), "Username too %s!", strlen(NewUsername)?"long":"short");
+		str_format(aBuf, sizeof(aBuf), "用户名太%s了！", strlen(NewUsername)?"长":"短");
 		GameServer()->SendChatTarget(m_pPlayer->GetCID(), aBuf);
 		return;
     }
@@ -356,7 +386,7 @@ void CAccount::NewUsername(char *NewUsername)
 
 	
 	dbg_msg("account", "Username changed - ('%s')", m_pPlayer->m_AccData.m_Username);
-	GameServer()->SendChatTarget(m_pPlayer->GetCID(), "Username successfully changed!");
+	GameServer()->SendChatTarget(m_pPlayer->GetCID(), "用户名已成功更改！");
 }
 
 int CAccount::NextID()

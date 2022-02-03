@@ -68,12 +68,7 @@ public:
 	vec2 m_aMonsterSpawnPos[64];
 	int m_MonsterSpawnNum;
 	int m_MonsterSpawnCurrentNum;
-	int m_NumMonsterH;
-	int m_NumMonsterG;
-	int m_NumMonsterS;
-	int m_NumMonsterGR;
-	int m_NumMonsterL;
-	int m_NumMonsterN;
+	int m_NumMonster;
 	void NewMonster(int MonsterID);
 
 	IGameController(class CGameContext *pGameServer);
@@ -153,6 +148,7 @@ public:
 	int ClampTeam(int Team);
 
 	virtual void PostReset();
+	int m_AliveMonsters;
 };
 
 #endif

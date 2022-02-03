@@ -180,8 +180,17 @@ void IGameController::NewMonster(int MonsterID)
     {
         if(!GameServer()->m_apMonsters[MonsterID])
         {
-            GameServer()->m_apMonsters[MonsterID] = new CMonster(&GameServer()->m_World, TYPE_HAMMER, MonsterID, 10, 10, 3);
-        }
+            GameServer()->m_apMonsters[MonsterID] = new CMonster(&GameServer()->m_World, TYPE_HAMMER, MonsterID, 5, 5, 1);
+			m_AliveMonsters++;
+			GameServer()->m_apMonsters[MonsterID] = new CMonster(&GameServer()->m_World, TYPE_GUN, MonsterID+1, 5, 5, 1);
+			m_AliveMonsters++;
+			GameServer()->m_apMonsters[MonsterID] = new CMonster(&GameServer()->m_World, TYPE_SHOTGUN, MonsterID+2, 5, 5, 1);
+			m_AliveMonsters++;
+			GameServer()->m_apMonsters[MonsterID] = new CMonster(&GameServer()->m_World, TYPE_GRENADE, MonsterID+3, 5, 5, 1);
+			m_AliveMonsters++;
+			GameServer()->m_apMonsters[MonsterID] = new CMonster(&GameServer()->m_World, TYPE_LASER, MonsterID+4, 5, 5, 1);
+			m_AliveMonsters++;
+		}
     }
 }
 
@@ -225,69 +234,6 @@ bool IGameController::OnEntity(int Index, vec2 Pos)
 	{
         m_aMonsterSpawnPos[m_MonsterSpawnNum] = Pos;
         m_MonsterSpawnNum ++;
-        for(int i = 0; i < MAX_MONSTERS; i ++)
-        {
-            if(!GameServer()->GetValidMonster(i))
-            {
-				GameServer()->m_apMonsters[i] = new CMonster(&GameServer()->m_World, TYPE_HAMMER, i, 5, 3, 1);
-				m_NumMonsterH++;
-			}
-        }
-	}
-	else if(Index == ENTITY_SPAWN_BOT_A_GUN)
-	{
-		for(int i = 0; i < MAX_MONSTERS; i ++)
-        {
-            if(!GameServer()->GetValidMonster(i))
-            {
-				GameServer()->m_apMonsters[i] = new CMonster(&GameServer()->m_World, TYPE_GUN, i, 5, 3, 1);
-				m_NumMonsterG++;
-			}
-        }
-	}
-	else if(Index == ENTITY_SPAWN_BOT_A_SHOT)
-	{
-		for(int i = 0; i < MAX_MONSTERS; i ++)
-        {
-            if(!GameServer()->GetValidMonster(i))
-            {
-				new CMonster(&GameServer()->m_World, TYPE_SHOTGUN, i, 5, 3, 1);
-				m_NumMonsterS++;
-			}
-        }
-	}
-	else if(Index == ENTITY_SPAWN_BOT_A_GRENADE)
-	{
-		for(int i = 0; i < MAX_MONSTERS; i ++)
-        {
-            if(!GameServer()->GetValidMonster(i))
-            {
-				new CMonster(&GameServer()->m_World, TYPE_GRENADE, i, 5, 3, 1);
-				m_NumMonsterGR++;
-			}
-        }
-	}
-	else if(Index == ENTITY_SPAWN_BOT_A_LASER)
-	{
-		for(int i = 0; i < MAX_MONSTERS; i ++)
-        {
-            if(!GameServer()->GetValidMonster(i))
-            {
-				new CMonster(&GameServer()->m_World, TYPE_LASER, i, 5, 3, 1);
-				m_NumMonsterL++;
-			}
-        }
-	}
-	else if(Index == ENTITY_SPAWN_BOT_A_NINJA)
-	{
-		for(int i = 0; i < MAX_MONSTERS; i ++)
-        {
-            if(!GameServer()->GetValidMonster(i))
-            {
-				new CMonster(&GameServer()->m_World, TYPE_NINJA, i, 20, 10, 3);
-				m_NumMonsterN++;
-			}
-        }
 	}
 
 	if(Type != -1)
@@ -468,8 +414,6 @@ int IGameController::OnCharacterDeath(class CCharacter *pVictim, class CPlayer *
 	// do scoreing
 	if(!pKiller || Weapon == WEAPON_GAME)
 		return 0;
-	if(pKiller == pVictim->GetPlayer())
-		pVictim->GetPlayer()->m_Score--; // suicide
 	else
 	{
 		if(IsTeamplay() && pVictim->GetPlayer()->GetTeam() == pKiller->GetTeam())
@@ -540,26 +484,6 @@ void IGameController::Tick()
 		m_Warmup--;
 		if(!m_Warmup)
 			StartRound();
-	}
-	int ids;
-	if(ids <= 20)
-	{
-		new CMonster(&GameServer()->m_World, TYPE_HAMMER, ids, 1, 1, 1);
-		ids++;
-	}
-	//if(m_NumMonster <= 5)
-	//	GameServer()->SpawnMonster();
-
-	if(Server()->Tick()%100 == 0 && m_NumMonsterN <= 20)
-	{
-		for(int i = 0; i < MAX_MONSTERS; i ++)
-        {
-            if(!GameServer()->GetValidMonster(i))
-            {
-                NewMonster(i);
-                m_NumMonsterH;
-            }
-        }
 	}
 
 	if(m_GameOverTick != -1)
@@ -667,6 +591,24 @@ void IGameController::Tick()
 				}
 			}
 		}
+	}
+
+	int AliveMonsters = 0;
+    for(int i = 0; i < MAX_MONSTERS; i ++)
+        if(GameServer()->GetValidMonster(i))
+            AliveMonsters ++;
+
+    m_AliveMonsters = AliveMonsters;
+
+	if(m_AliveMonsters <= 5)
+	{
+		for(int i = 0; i < 1; i ++)
+	    {
+    	    if(!GameServer()->GetValidMonster(i))
+        	{
+            	NewMonster(i);
+    	    }
+    	}
 	}
 }
 

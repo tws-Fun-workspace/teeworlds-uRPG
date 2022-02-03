@@ -96,7 +96,7 @@ MACRO_CONFIG_INT(SvAccAutoSave, sv_acc_auto_save, 1, 0, 1, CFGFLAG_SERVER, "save
 MACRO_CONFIG_INT(SvAccNocase, sv_acc_nocase, 0, 0, 1, CFGFLAG_SERVER, "deny multiple accnames differing only in letter cases")
 
 MACRO_CONFIG_INT(HardNinja, sv_hard_ninja, 1, 0, 1, CFGFLAG_SERVER, "OH NO IT KATANA MONSTER!!RUN!!!!")
-MACRO_CONFIG_INT(SvDeathAnimation, sv_death_animation, 1, 0, 1, CFGFLAG_SERVER, "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD")
+MACRO_CONFIG_INT(SvDeathAnimation, sv_death_animation, 0, 0, 1, CFGFLAG_SERVER, "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD")
 
 MACRO_CONFIG_INT(Debug, debug, 0, 0, 1, CFGFLAG_CLIENT|CFGFLAG_SERVER, "Debug mode")
 MACRO_CONFIG_INT(DbgStress, dbg_stress, 0, 0, 0, CFGFLAG_CLIENT|CFGFLAG_SERVER, "Stress systems")

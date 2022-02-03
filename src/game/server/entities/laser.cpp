@@ -1,5 +1,11 @@
 /* (c) Magnus Auvinen. See licence.txt in the root of the distribution for more information. */
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+/* Copyright � 2013 Neox.                                                                                                */
+/* If you are missing that file, acquire a complete release at https://www.teeworlds.com/forum/viewtopic.php?pid=106934  */
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+//Bot ai by Neox
 #include <game/generated/protocol.h>
 #include <game/server/gamecontext.h>
 #include "laser.h"
@@ -13,9 +19,9 @@ CLaser::CLaser(CGameWorld *pGameWorld, vec2 Pos, vec2 Direction, float StartEner
 	m_Dir = Direction;
 	m_Bounces = 0;
 	m_EvalTick = 0;
+	m_FromMonster = FromMonster;
 	GameWorld()->InsertEntity(this);
 	DoBounce();
-	m_FromMonster = FromMonster;
 }
 
 

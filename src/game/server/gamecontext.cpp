@@ -120,7 +120,6 @@ void CGameContext::CreateHammerHit(vec2 Pos)
 	}
 }
 
-
 void CGameContext::CreateExplosion(vec2 Pos, int Owner, int Weapon, bool NoDamage, bool FromMonster)
 {
 	// create the event
@@ -148,7 +147,28 @@ void CGameContext::CreateExplosion(vec2 Pos, int Owner, int Weapon, bool NoDamag
 			l = 1-clamp((l-InnerRadius)/(Radius-InnerRadius), 0.0f, 1.0f);
 			float Dmg = 6 * l;
 			if((int)Dmg)
-				apEnts[i]->TakeDamage(ForceDir*Dmg*2, (int)Dmg, Owner, Weapon);
+				apEnts[i]->TakeDamage(ForceDir*Dmg*2, (int)Dmg, Owner, Weapon, FromMonster);
+		}
+
+		CMonster *apMonsts[MAX_MONSTERS];
+		int Num2 = m_World.FindEntities(Pos, Radius, (CEntity**)apMonsts, MAX_MONSTERS, CGameWorld::ENTTYPE_MONSTER);
+		for(int i = 0; i < Num2; i++)
+		{
+			vec2 Diff = apMonsts[i]->GetPos() - Pos;
+			vec2 ForceDir(0,1);
+			float l = length(Diff);
+			if(l)
+				ForceDir = normalize(Diff);
+			l = 1-clamp((l-InnerRadius)/(Radius-InnerRadius), 0.0f, 1.0f);
+			int ExtraDmg = 0;
+			if(FromMonster)
+            {
+                if(GetValidMonster(Owner)) // Security
+                    ExtraDmg += GetValidMonster(Owner)->GetDifficulty() - 1;
+            }
+			float Dmg = (6 + ExtraDmg) * l;
+			if((int)Dmg)
+				apMonsts[i]->TakeDamage(ForceDir*Dmg*2, (int)Dmg, Owner, Weapon, FromMonster);
 		}
 	}
 }

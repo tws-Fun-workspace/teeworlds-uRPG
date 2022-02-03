@@ -66,11 +66,16 @@ public:
 	CCharacterCore m_Core;
 
 	int GetHealth() const { return m_Health; }
+
+	void HandleRPG();
+	bool Freeze(int Secouds);
 private:
 	// player controlling this character
 	class CPlayer *m_pPlayer;
 
 	bool m_Alive;
+
+	bool m_Safe;
 
 	// weapon info
 	CEntity *m_apHitObjects[10];
